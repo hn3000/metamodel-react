@@ -1,0 +1,23 @@
+{
+  "name": "metamodel-react",
+  "version": "0.9.0",
+  "description": "react components for metamodel rendering",
+  "main": "out/metamodel-react.js",
+  "scripts": {
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Harald Niesche",
+  "license": "ISC",
+  "jspm": {
+    "configFile": "system-config.js",
+    "dependencies": {
+      "react": "npm:react@^15.1.0",
+      "react-dom": "npm:react-dom@^15.1.0"
+    }
+  },
+  "dependencies": {
+    "metamodel": "github:hn3000/metamodel"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "noImplicitAny": true,
+    "outDir": "out",
+    "declaration": true
+  },
+  "files": [
+    "src/metamodel-react.tsx",
+    "test/testapp.tsx"
+  ]
+}

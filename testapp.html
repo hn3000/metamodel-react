@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div id="form-content">
+
+    </div>
+    <script src="jspm_packages/system-polyfills.src.js"></script>
+    <script src="jspm_packages/system.src.js"></script>
+    <script src="system-config.js"></script>
+    <script>
+      System.config({
+        map: {
+          "metamodel-react": "out/src/metamodel-react.js",
+          "testapp": "out/test/testapp.js",
+          "@hn3000/metamodel": "node_modules/@hn3000/metamodel/out/src/model.js"
+        },
+        packages: {
+          "out": {
+
+          }
+        }
+      });
+      System.import('testapp')
+    </script>
+  </body>
+</html>

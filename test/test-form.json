@@ -1,0 +1,19 @@
+{
+    "type": "object",
+    "properties": {
+      "firstname": { "type": "string", "maxLength": 20 },
+      "lastname":  { "type": "string", "maxLength": 20 },
+      "username":  { "type": "string", "maxLength": 20, "format": "username" },
+      "email":     { "type": "string", "maxLength": 20, "format": "email" },
+      "email2":    { "type": "string", "maxLength": 20, "format": "email" },
+      "country":   { "type": "string", "format": "countrycode" },
+      "birth":     { "type": "string", "format": "date-time", "constraints":[ { "kind": "minAge", "value": "18years" }] }
+    },
+    "constraints": [
+      { "kind": "equalFields", "fields": [ "email2", "email" ] }
+    ],
+    "pages": [
+      { "fields": ["firstname", "lastname"] },
+      { "fields": ["email", "email2", "blah"] }
+    ]
+  }

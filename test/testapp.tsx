@@ -15,8 +15,9 @@ import { ContactFormPage2 } from './testpage2';
 
 var registry = new mm.ModelSchemaParser();
 
+/*
 registry.addSchemaObject(
-  "ContactForm",
+  "TestForm",
   {
     type: "object",
     properties: {
@@ -37,12 +38,21 @@ registry.addSchemaObject(
     ]
   }
 );
+*/
 
-var model = registry.type("ContactForm") as mm.ModelTypeObject<any>; //</any>
+var promise = registry.addSchemaFromURL("./test/test-form.json");
 
-//model = model.withConstraints([new ConstraintFieldsEqual("email", "email2")]);
+promise.then(formWithModel);
+
+function formWithModel(model:mm.ModelTypeObject<any>) {
+
+  ReactDom.render(<TestApp currentPage={0} model={model}/>, document.getElementById('form-content'));
+
+}
+
 
 interface TestFormProps {
+  model:mm.ModelTypeObject<any>; //</any>
   currentPage?: number;
 }
 interface TestFormState {
@@ -86,7 +96,7 @@ class TestApp extends React.Component<TestFormProps,TestFormState> {
   }
   render() {
     let context = {
-      metamodel: model,
+      metamodel: this.props.model,
       config: new MetaFormConfig()
     };
 
@@ -109,5 +119,3 @@ class TestApp extends React.Component<TestFormProps,TestFormState> {
     );
   }
 }
-
-ReactDom.render(<TestApp currentPage={0}/>, document.getElementById('form-content'));

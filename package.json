@@ -12,9 +12,9 @@
   "author": "Harald Niesche",
   "license": "ISC",
   "dependencies": {
+    "@hn3000/metamodel": "github:hn3000/metamodel#develop",
     "react": "^15.1.0",
-    "react-dom": "^15.1.0",
-    "@hn3000/metamodel": "github:hn3000/metamodel#develop"
+    "react-dom": "^15.1.0"
   },
   "devDependencies": {
     "systemjs": "^0.19.31"

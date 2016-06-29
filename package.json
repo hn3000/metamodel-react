@@ -1,5 +1,5 @@
 {
-  "name": "metamodel-react",
+  "name": "@hn3000/metamodel-react",
   "version": "0.9.0",
   "description": "react components for metamodel rendering",
   "main": "out/src/metamodel-react.js",

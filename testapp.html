@@ -5,12 +5,13 @@
     <div id="form-content">
 
     </div>
-    <script src="jspm_packages/system-polyfills.src.js"></script>
-    <script src="jspm_packages/system.src.js"></script>
-    <script src="system-config.js"></script>
+    <script src="node_modules/systemjs/dist/system-polyfills.src.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
     <script>
       System.config({
         map: {
+          "react": "node_modules/react/dist/react-with-addons.js",
+          "react-dom": "node_modules/react-dom/dist/react-dom.js",
           "metamodel-react": "out/src/metamodel-react.js",
           "testapp": "out/test/testapp.js",
           "@hn3000/metamodel": "node_modules/@hn3000/metamodel/out/src/model.js"
@@ -18,6 +19,14 @@
         packages: {
           "out": {
 
+          },
+          "@hn3000/metamodel": {
+            format: 'cjs',
+            defaultExtension: 'js'
+          },
+          "node_modules/@hn3000/metamodel/out": {
+            format: 'cjs',
+            defaultExtension: 'js'
           }
         }
       });

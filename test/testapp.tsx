@@ -5,7 +5,9 @@ import * as ReactDom from 'react-dom';
 import {
   MetaForm,
   MetaPage,
-  MetaInput
+  MetaInput,
+  IFormContext,
+  MetaFormConfig
 } from '../src/metamodel-react';
 import * as mm from '@hn3000/metamodel';
 
@@ -24,7 +26,7 @@ registry.addSchemaObject(
       email:     { type: "string", maxLength: 20, format: "email" },
       email2:    { type: "string", maxLength: 20, format: "email" },
       country:   { type: "string", format: "countrycode" },
-      age: { type: "date", constraints:[ { kind: "minAge", value: "18years" }] }
+      birth:     { type: "string", format: "date-time", constraints:[ { kind: "minAge", value: "18years" }] }
     },
     constraints: [
       { kind: "equalFields", fields: [ "email2", "email" ] }
@@ -36,7 +38,7 @@ registry.addSchemaObject(
   }
 );
 
-var model = registry.type("ContactForm") as mm.ModelTypeObject<any>; 
+var model = registry.type("ContactForm") as mm.ModelTypeObject<any>; //</any>
 
 //model = model.withConstraints([new ConstraintFieldsEqual("email", "email2")]);
 
@@ -83,17 +85,22 @@ class TestApp extends React.Component<TestFormProps,TestFormState> {
     event.preventDefault();
   }
   render() {
+    let context = {
+      metamodel: model,
+      config: new MetaFormConfig()
+    };
+
     return (
-      <MetaForm metamodel={model}>
+      <MetaForm context={context}>
         <div>
-          <MetaPage page={0} currentPage={this.state.currentPage}>
-            <MetaInput field="firstname" metamodel={model} />
-            <MetaInput field="lastname" metamodel={model} />
+          <MetaPage page={0} currentPage={this.state.currentPage} context={context}>
+            <MetaInput field="firstname" context={context} />
+            <MetaInput field="lastname" context={context} flavor="nolabel" />
             <button onClick={this.next}>next</button>
           </MetaPage>
           <ContactFormPage2
             currentPage={this.state.currentPage}
-            metamodel={model}
+            context={context}
             next={this.next}
             previous={this.previous}
           />

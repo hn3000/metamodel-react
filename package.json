@@ -10,14 +10,12 @@
   },
   "author": "Harald Niesche",
   "license": "ISC",
-  "jspm": {
-    "configFile": "system-config.js",
-    "dependencies": {
-      "react": "npm:react@^15.1.0",
-      "react-dom": "npm:react-dom@^15.1.0"
-    }
-  },
   "dependencies": {
-    "metamodel": "github:hn3000/metamodel"
+    "@hn3000/metamodel": "github:hn3000/metamodel"
+  },
+  "devDependencies": {
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "systemjs": "^0.19.31"
   }
 }

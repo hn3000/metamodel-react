@@ -13,6 +13,7 @@
     "declaration": true
   },
   "files": [
+    "typings/index.d.ts",
     "src/metamodel-react.tsx",
     "test/testapp.tsx"
   ]

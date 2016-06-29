@@ -1,4 +1,3 @@
-/// <reference path="../../typings/index.d.ts" />
 import * as React from 'react';
 import { IModelTypeComposite } from '@hn3000/metamodel';
 export { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';

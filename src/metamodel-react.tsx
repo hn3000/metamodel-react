@@ -3,85 +3,169 @@
 import * as React from 'react';
 import {
   IModelType,
-  IModelTypeComposite
+  IModelTypeComposite,
+  IModelTypeItem
 } from '@hn3000/metamodel';
 
+export {
+  IFormProps,
+  IFormState,
+  IPageProps,
+  IPageState,
+  IInputProps,
+  IInputState,
+  IWrappers,
+  IComponentMatcher,
+  IFormConfig,
+  IFormContext,
+  InputComponent
+} from './interfaces';
+
+import {
+  IFormProps,
+  IFormState,
+  IPageProps,
+  IPageState,
+  IInputProps,
+  IInputState,
+  IWrappers,
+  IComponentMatcher,
+  IFormConfig,
+  IFormContext,
+  InputComponent
+} from './interfaces';
+
+
+
+import * as fields from './default-field-types';
+
+
 export class ViewModel {
-  constructor(metamodel:IModelTypeComposite<any>) {
+  constructor(metamodel:IModelTypeComposite<any>) { // </any>
     this._metamodel = metamodel;
   }
 
-  private _metamodel:IModelTypeComposite<any>;
+  private _metamodel:IModelTypeComposite<any>; // </any> (to make VS code happy)
 }
 
-export interface IFormContext {
-  getWidget(field:IModelType<any>, fieldName?:string): any;
+
+function kindMatcher(kind:string):(field:IModelType<any>)=>number {
+  return (field:IModelType<any>) => (field.kind === kind?1:0)
 }
 
-export interface IFormProps {
-  metamodel: IModelTypeComposite<any>;
-  currentPage?:number;
+
+export class MetaFormConfig implements IFormConfig {
+
+  setWrappers(wrappers:IWrappers) {
+    this._wrappers = wrappers;
+  }
+
+  public get wrappers():IWrappers {
+    return this._wrappers;
+  }
+
+  private _wrappers:IWrappers = {
+    form: fields.FormWrapper,
+    page: fields.PageWrapper,
+    field: fields.FieldWrapper,
+  };
+
+
+  public get matchers(): IComponentMatcher[] {
+    return this._matchers;
+  }
+
+  findBest(...matchargs: any[]): InputComponent {
+    var bestQ = 0;
+    var match:React.ReactType = fields.MetaFormUnknownFieldType;
+
+    let matchers = this._matchers;
+    for (var i = 0, n = matchers.length; i<n; ++i) {
+      let thisQ = matchers[i].matchQuality(...matchargs);
+      if (thisQ > bestQ) {
+        match = matchers[i].component;
+      }
+    }
+
+    return match;
+  }
+
+  add(cm:IComponentMatcher) {
+    if (-1 == this._matchers.indexOf(cm)) {
+      this._matchers.push(cm);
+    }
+  }
+  remove(cm:IComponentMatcher) {
+    this._matchers = this._matchers.filter((x) => x != cm);
+  }
+
+  private _matchers: IComponentMatcher[] = [
+    {
+      matchQuality: kindMatcher('string'),
+      component: fields.MetaFormInputString
+    },
+    {
+      matchQuality: kindMatcher('number'),
+      component: fields.MetaFormInputNumber
+    }
+  ];
 }
 
-export interface IFormState extends IFormProps {
-  currentPage: number;
-}
 
 export class MetaForm extends React.Component<IFormProps, IFormState> {
+  //childContextTypes = {
+  //  formcontext: React.PropTypes.object
+  //}
+  //getChildContext() {
+  //  return { formcontext: this.props.context };
+  //}
+
   render() {
-    return <form id={this.props.metamodel.name} >{this.props.children}</form>;
+    let Wrapper = this.props.context.config.wrappers.form;
+
+    /*
+    let adjustedChildren = React.Children.map(this.props.children,
+      (c) => React.cloneElement(c, {context: this.props.context}));
+    */
+    return (<Wrapper>
+      <form id={this.props.context.metamodel.name} >
+        {this.props.children}
+      </form>
+      </Wrapper>);
   }
-}
-
-export interface IPageProps {
-  currentPage:number;
-  page: number;
-}
-
-export interface IPageState extends IPageProps {
 }
 
 export class MetaPage extends React.Component<IPageProps, IPageState> {
+  //contextProps: { formcontext: React.PropTypes.object }
+
   render() {
+    //let context = this.context.formcontext || this.props.context;
+    let context = this.props.context;
     if (this.props.page == this.props.currentPage) {
-      return <div class="metamodel-react--page">{this.props.children}</div>;
+      let Wrapper = this.props.context.config.wrappers.page;
+      return <Wrapper>{this.props.children}</Wrapper>;
     }
     return null;
   }
-}
-
-export interface IInputProps {
-  metamodel: IModelTypeComposite<any>;
-  field: string;
-  flavour?: string;
-  flavor?: string;
-}
-
-export interface IInputState extends IInputProps {
-  flavour: string;
 }
 
 export class MetaInput extends React.Component<IInputProps, IInputState> {
-  getFormContext():IFormContext {
-    // ...
-    return null;
-  }
   render() {
 
     var fieldName = this.props.field;
-    var field = this.props.metamodel.subModel(fieldName).asItemType();
-    var typeSelector = field.kind;
+    var fieldType = this.props.context.metamodel.subModel(fieldName);
+    var field = fieldType && fieldType.asItemType();
 
-    switch (field.kind) {
-      case 'string':
-        return <input type="text"  placeholder={fieldName}></input>;
-      case 'number':
-        return <input type="number" placeholder="<a number>"></input>;
-      case 'bool':
-        // ... 
-        return React.createElement(this.getFormContext().getWidget(field, fieldName));
-      default:
-        return <span>missing input kind {field.kind}</span>;
+    if (!field) {
+      console.log(`field ${fieldName} not found in ${this.props.context.metamodel.name}`);
+      return null;
     }
+
+    var Input = this.props.context.config.findBest(field, fieldName); 
+
+    let Wrapper = this.props.context.config.wrappers.field;
+    return <Wrapper><Input {...this.props} /></Wrapper>;
   }
+
+  private _context:any;
 }

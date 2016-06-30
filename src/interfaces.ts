@@ -3,7 +3,9 @@ import * as React from 'react';
 import {
   IModelType,
   IModelTypeComposite,
-  IModelTypeItem
+  IModelTypeItem,
+  IModelView,
+  IModelParseMessage
 } from '@hn3000/metamodel';
 
 
@@ -11,16 +13,17 @@ export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
 }
-export interface IFormState extends IFormProps {
+export interface IFormState {
+    viewmodel:IModelView<any>;
     currentPage: number;
 }
 
 export interface IPageProps {
     context: IFormContext;
-    currentPage: number;
     page: number;
 }
-export interface IPageState extends IPageProps {
+export interface IPageState {
+    currentPage: number;
 }
 export interface IInputProps {
     context?: IFormContext;
@@ -32,7 +35,23 @@ export interface IInputState extends IInputProps {
     flavour: string;
 }
 
-export type InputComponent = React.ComponentClass<any> | React.StatelessComponent<any>;
+export interface IInputComponentProps {
+    context?: IFormContext;
+    field: string;
+    fieldType: IModelType<any>;
+    flavour?: string;
+    flavor?: string;
+
+    value?:any;
+    onChange?:(newValue:any)=>void;
+}
+
+export interface IInputComponentState extends IInputProps {
+    flavour: string;
+}
+
+
+export type InputComponent = React.ComponentClass<IInputComponentProps> | React.StatelessComponent<IInputComponentProps>;
 
 export interface IComponentLookup {
     [key: string]: React.ReactType;
@@ -55,12 +74,43 @@ export interface IComponentFinder {
     remove(matcher: IComponentMatcher): any;
 }
 
-
 export interface IFormConfig extends IComponentFinder {
   wrappers: IWrappers;
+}
+
+export interface IFormValidationMessage extends IModelParseMessage {
+    // nothing added for now
+}
+
+export interface IFormValidationResult {
+    valid: boolean;
+    messages: IFormValidationMessage[];
+}
+
+export interface IFormValidator {
+    (oldModel:any, newModel:any):Promise<IFormValidationResult>;
 }
 
 export interface IFormContext {
   config: IFormConfig;
   metamodel: IModelTypeComposite<any>;
+  viewmodel: IModelView<any>;
+  currentPage: number;
+
+  /* 
+   * similar to redux: returns the unsubscribe function
+   * listeners always called asynchronously: validation runs before
+   * listeners are notfied
+   */
+  subscribe(listener:()=>any):()=>void;
+
+  addValidator(validator:IFormValidator):()=>void;
+  addPageValidator(validator:IFormValidator):()=>void;
+
+  updateModel(field:string, value:any):void;
+
+  updatePage(step:number):void;
+  
+  pageNext:(event:UIEvent)=>void;
+  pageBack:(event:UIEvent)=>void;
 }

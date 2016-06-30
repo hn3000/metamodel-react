@@ -17,12 +17,12 @@
           "whatwg-fetch": "node_modules/whatwg-fetch/fetch.js",
           "@hn3000/metamodel-react": "out/src/metamodel-react.js",
           "@hn3000/metamodel": "node_modules/@hn3000/metamodel/out/src/model.js",
-          "testapp": "out/test/testapp.js"
+          "testform": "out/test/testform.js"
 
         },
         packages: {
           "out": {
-
+            format: 'cjs',
           },
           "@hn3000/metamodel": {
             format: 'cjs',
@@ -34,7 +34,9 @@
           }
         }
       });
-      System.import('testapp')
+      System.import('testform')
+        .then(console.log.bind(console, "success: loaded testform"))
+        .then(null, console.log.bind(console, "error while loading testform"))
     </script>
   </body>
 </html>

@@ -44,7 +44,8 @@ var MetaFormInputString = (function (_super) {
         _super.apply(this, arguments);
     }
     MetaFormInputString.prototype.render = function () {
-        return React.createElement("input", {type: "text", placeholder: this.props.field});
+        var props = this.props;
+        return React.createElement("input", {type: "text", placeholder: props.field, onChange: props.onChange, value: props.value});
     };
     return MetaFormInputString;
 }(React.Component));
@@ -55,7 +56,8 @@ var MetaFormInputNumber = (function (_super) {
         _super.apply(this, arguments);
     }
     MetaFormInputNumber.prototype.render = function () {
-        return React.createElement("input", {type: "text", placeholder: this.props.field});
+        var props = this.props;
+        return React.createElement("input", {type: "text", placeholder: this.props.field, onChange: props.onChange, value: props.value});
     };
     return MetaFormInputNumber;
 }(React.Component));
@@ -66,11 +68,29 @@ var MetaFormInputBool = (function (_super) {
         _super.apply(this, arguments);
     }
     MetaFormInputBool.prototype.render = function () {
-        return React.createElement("input", {type: "checkbox"});
+        var props = this.props;
+        return React.createElement("input", {type: "checkbox", onChange: props.onChange, value: props.value});
     };
     return MetaFormInputBool;
 }(React.Component));
 exports.MetaFormInputBool = MetaFormInputBool;
+var MetaFormInputEnum = (function (_super) {
+    __extends(MetaFormInputEnum, _super);
+    function MetaFormInputEnum() {
+        _super.apply(this, arguments);
+    }
+    MetaFormInputEnum.prototype.render = function () {
+        var props = this.props;
+        var fieldType = props.fieldType;
+        var itemType = fieldType.asItemType();
+        var values = ["a", "b"];
+        if (null != itemType) {
+        }
+        return (React.createElement("select", {onChange: props.onChange, value: props.value}, values.map(function (x) { return (React.createElement("option", {value: x}, "x")); })));
+    };
+    return MetaFormInputEnum;
+}(React.Component));
+exports.MetaFormInputEnum = MetaFormInputEnum;
 var MetaFormUnknownFieldType = (function (_super) {
     __extends(MetaFormUnknownFieldType, _super);
     function MetaFormUnknownFieldType() {

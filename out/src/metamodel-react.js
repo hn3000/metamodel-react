@@ -207,9 +207,7 @@ var MetaForm = (function (_super) {
         let adjustedChildren = React.Children.map(this.props.children,
           (c) => React.cloneElement(c, {context: this.props.context}));
         */
-        return (React.createElement(Wrapper, null, 
-            React.createElement("form", {id: this.props.context.metamodel.name}, this.props.children)
-        ));
+        return (React.createElement(Wrapper, null, React.createElement("form", {id: this.props.context.metamodel.name}, this.props.children)));
     };
     MetaForm.prototype.componentDidMount = function () {
         var _this = this;
@@ -289,9 +287,7 @@ var MetaInput = (function (_super) {
         };
         var Input = context.config.findBest(field, fieldName);
         var Wrapper = context.config.wrappers.field;
-        return React.createElement(Wrapper, null, 
-            React.createElement(Input, __assign({}, props))
-        );
+        return React.createElement(Wrapper, null, React.createElement(Input, __assign({}, props)));
     };
     return MetaInput;
 }(React.Component));

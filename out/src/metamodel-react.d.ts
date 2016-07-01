@@ -7,10 +7,10 @@ export declare class MetaFormContext implements IFormContext {
     constructor(config: IFormConfig, metamodel: IModelTypeComposite<any>, data?: any);
     pageNext: (event: UIEvent) => void;
     pageBack: (event: UIEvent) => void;
-    readonly config: IFormConfig;
-    readonly metamodel: IModelTypeComposite<any>;
-    readonly viewmodel: IModelView<any>;
-    readonly currentPage: number;
+    config: IFormConfig;
+    metamodel: IModelTypeComposite<any>;
+    viewmodel: IModelView<any>;
+    currentPage: number;
     subscribe(listener: () => any): () => void;
     addValidator(validator: IFormValidator): () => void;
     addPageValidator(validator: IFormValidator): () => void;
@@ -28,8 +28,8 @@ export declare class MetaFormContext implements IFormContext {
 export declare class MetaFormConfig implements IFormConfig {
     constructor(wrappers?: IWrappers, components?: IComponentMatcher[]);
     setWrappers(wrappers: IWrappers): void;
-    readonly wrappers: IWrappers;
-    readonly matchers: IComponentMatcher[];
+    wrappers: IWrappers;
+    matchers: IComponentMatcher[];
     findBest(...matchargs: any[]): InputComponent;
     add(cm: IComponentMatcher): void;
     remove(cm: IComponentMatcher): void;

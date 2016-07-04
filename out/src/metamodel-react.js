@@ -24,12 +24,9 @@ var MetaFormContext = (function () {
         this._config = config;
         this._metamodel = metamodel;
         this._viewmodel = new metamodel_1.ModelView(metamodel, data);
-        this._currentPage = 1;
         this.pageBack = listenermanager_1.clickHandler(this.updatePage, this, -1);
         this.pageNext = listenermanager_1.clickHandler(this.updatePage, this, +1);
         this._listeners = new listenermanager_1.ListenerManager();
-        this._validators = new listenermanager_1.ListenerManager();
-        this._pageValidators = new listenermanager_1.ListenerManager();
     }
     Object.defineProperty(MetaFormContext.prototype, "config", {
         get: function () {
@@ -54,7 +51,7 @@ var MetaFormContext = (function () {
     });
     Object.defineProperty(MetaFormContext.prototype, "currentPage", {
         get: function () {
-            return this._currentPage;
+            return this._viewmodel.currentPageIndex;
         },
         enumerable: true,
         configurable: true
@@ -67,25 +64,33 @@ var MetaFormContext = (function () {
     MetaFormContext.prototype.subscribe = function (listener) {
         return this._listeners.subscribe(listener);
     };
-    MetaFormContext.prototype.addValidator = function (validator) {
-        return this._validators.subscribe(validator);
-    };
-    MetaFormContext.prototype.addPageValidator = function (validator) {
-        return this._validators.subscribe(validator);
-    };
     MetaFormContext.prototype.updateModel = function (field, value) {
         var _this = this;
-        this._viewmodel = this._viewmodel.withChangedField(field, value);
-        this._runValidation().then(function () { return _this._listeners.forEach(function (x) { return x(); }); });
+        var newModel = this._viewmodel.withChangedField(field, value);
+        this._updateViewModel(newModel);
+        var validated = newModel.validateDefault();
+        validated.then(function (x) { return _this._updateViewModel(x); });
     };
-    MetaFormContext.prototype.updatePage = function (step) {
-        if (step > 0) {
-        }
-        this._currentPage += step;
+    MetaFormContext.prototype._updateViewModel = function (viewmodel) {
+        this._viewmodel = viewmodel;
+        this._notifyAll();
+    };
+    MetaFormContext.prototype._notifyAll = function () {
         this._listeners.forEach(function (x) { return x(); });
     };
-    MetaFormContext.prototype._runValidation = function () {
-        return es6_promise_1.Promise.resolve(null);
+    MetaFormContext.prototype.updatePage = function (step) {
+        var _this = this;
+        var model = this._viewmodel;
+        var nextModel = step > 0 ? model.validatePage() : es6_promise_1.Promise.resolve(model);
+        nextModel
+            .then(function (x) {
+            if (x.isPageValid(null)) {
+                // todo: call callbacks here
+                return x.changePage(step);
+            }
+            return x;
+        })
+            .then(function (x) { return _this._updateViewModel(x); });
     };
     return MetaFormContext;
 }());
@@ -93,7 +98,7 @@ exports.MetaFormContext = MetaFormContext;
 function objMatcher(template) {
     var keys = Object.keys(template);
     var n = keys.length;
-    return (function (field) {
+    return (function (field /*</any>*/) {
         var result = 0;
         var fieldObj = field;
         for (var i = 0; i < n; i++) {
@@ -207,12 +212,16 @@ var MetaForm = (function (_super) {
         let adjustedChildren = React.Children.map(this.props.children,
           (c) => React.cloneElement(c, {context: this.props.context}));
         */
-        return (React.createElement(Wrapper, null, React.createElement("form", {id: this.props.context.metamodel.name}, this.props.children)));
+        return (React.createElement(Wrapper, null, 
+            React.createElement("form", {id: this.props.context.metamodel.name}, this.props.children)
+        ));
     };
     MetaForm.prototype.componentDidMount = function () {
         var _this = this;
         this._unsubscribe && this._unsubscribe();
         this._unsubscribe = this.props.context.subscribe(function () {
+            if (!_this._unsubscribe)
+                return;
             _this.setState({
                 viewmodel: _this.props.context.viewmodel,
                 currentPage: _this.props.context.currentPage
@@ -267,8 +276,9 @@ function changeHandler(model, fieldName) {
 }
 var MetaInput = (function (_super) {
     __extends(MetaInput, _super);
-    function MetaInput() {
-        _super.apply(this, arguments);
+    function MetaInput(props, context) {
+        _super.call(this, props, context);
+        this.state = this._updatedState();
     }
     MetaInput.prototype.render = function () {
         var context = this.props.context;
@@ -282,12 +292,37 @@ var MetaInput = (function (_super) {
         var props = {
             field: this.props.field,
             fieldType: fieldType,
-            value: context.viewmodel.getFieldValue(fieldName),
+            hasErrors: (0 < this.state.fieldErrors.length),
+            errors: this.state.fieldErrors,
+            defaultValue: this.state.fieldValue || "",
             onChange: changeHandler(context, fieldName)
         };
         var Input = context.config.findBest(field, fieldName);
         var Wrapper = context.config.wrappers.field;
-        return React.createElement(Wrapper, null, React.createElement(Input, __assign({}, props)));
+        return React.createElement(Wrapper, __assign({}, props), 
+            React.createElement(Input, __assign({}, props))
+        );
+    };
+    MetaInput.prototype.componentDidMount = function () {
+        var _this = this;
+        this._unsubscribe && this._unsubscribe();
+        this._unsubscribe = this.props.context.subscribe(function () {
+            if (!_this._unsubscribe)
+                return;
+            _this.setState(_this._updatedState());
+        });
+    };
+    MetaInput.prototype.componentWillUnmount = function () {
+        this._unsubscribe && this._unsubscribe();
+        this._unsubscribe = null;
+    };
+    MetaInput.prototype._updatedState = function () {
+        var context = this.props.context;
+        var fieldName = this.props.field;
+        return {
+            fieldErrors: context.viewmodel.getFieldMessages(fieldName),
+            fieldValue: context.viewmodel.getFieldValue(fieldName)
+        };
     };
     return MetaInput;
 }(React.Component));

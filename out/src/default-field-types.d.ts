@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { IInputComponentProps, IInputComponentState } from './interfaces';
-export declare class FieldWrapper extends React.Component<void, void> {
+import { IInputComponentProps, IInputComponentState, IWrapperComponentProps } from './interfaces';
+export declare class FieldWrapper extends React.Component<IWrapperComponentProps, void> {
     render(): JSX.Element;
 }
-export declare class PageWrapper extends React.Component<void, void> {
+export declare class PageWrapper extends React.Component<IWrapperComponentProps, void> {
     render(): JSX.Element;
 }
-export declare class FormWrapper extends React.Component<void, void> {
+export declare class FormWrapper extends React.Component<IWrapperComponentProps, void> {
     render(): JSX.Element;
 }
 export declare class MetaFormInputString extends React.Component<IInputComponentProps, IInputComponentState> {

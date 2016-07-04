@@ -24,9 +24,7 @@ export {
   IComponentMatcher,
   IFormConfig,
   IFormContext,
-  InputComponent,
-  IFormValidationResult,
-  IFormValidator
+  InputComponent
 } from './interfaces';
 
 import {
@@ -42,9 +40,7 @@ import {
   IComponentMatcher,
   IFormConfig,
   IFormContext,
-  InputComponent,
-  IFormValidationResult,
-  IFormValidator
+  InputComponent
 } from './interfaces';
 
 import * as fields from './default-field-types';
@@ -63,16 +59,12 @@ export class MetaFormContext implements IFormContext {
     this._config = config;
     this._metamodel = metamodel;
     this._viewmodel = new ModelView(metamodel, data);
-    this._currentPage = 1;
-
 
     this.pageBack = clickHandler(this.updatePage, this, -1);
     this.pageNext = clickHandler(this.updatePage, this, +1);
 
 
     this._listeners = new ListenerManager<()=>void>();
-    this._validators = new ListenerManager<IFormValidator>();
-    this._pageValidators = new ListenerManager<IFormValidator>();
   }
 
   pageNext:(event:UIEvent)=>void;
@@ -88,7 +80,7 @@ export class MetaFormContext implements IFormContext {
     return this._viewmodel;
   }
   get currentPage(): number {
-    return this._currentPage;
+    return this._viewmodel.currentPageIndex;
   }
 
   /* 
@@ -100,6 +92,40 @@ export class MetaFormContext implements IFormContext {
     return this._listeners.subscribe(listener);
   }
 
+  updateModel(field:string, value:any) {
+    let newModel = this._viewmodel.withChangedField(field, value);
+    this._updateViewModel(newModel);
+    let validated = newModel.validateDefault();
+    validated.then((x) => this._updateViewModel(x));
+  }
+
+  _updateViewModel(viewmodel:IModelView<any>) {
+    this._viewmodel = viewmodel;
+    this._notifyAll();
+  }
+
+  _notifyAll() {
+    this._listeners.forEach((x) => x());
+  }
+
+  updatePage(step:number) {
+    let model = this._viewmodel;
+
+    let nextModel = step > 0 ? model.validatePage() : Promise.resolve(model);
+    
+    nextModel
+      .then((x) => {
+        if (x.isPageValid(null)) {
+          // todo: call callbacks here
+          return x.changePage(step);
+        }
+        return x;
+      })
+      .then((x) => this._updateViewModel(x));
+
+  }
+
+/*
   addValidator(validator:IFormValidator) {
     return this._validators.subscribe(validator);
   }
@@ -107,38 +133,24 @@ export class MetaFormContext implements IFormContext {
     return this._validators.subscribe(validator);
   }
 
-  updateModel(field:string, value:any) {
-    this._viewmodel = this._viewmodel.withChangedField(field, value);
-    this._runValidation().then(() => this._listeners.forEach((x) => x()));
-  }
-
-  updatePage(step:number) {
-    if (step > 0) {
-
-    }
-    this._currentPage += step;
-    this._listeners.forEach((x) => x());
-  }
-
   _runValidation():Promise<IFormValidationResult> {
     return Promise.resolve(null);
   }
-
-  private _listeners:ListenerManager<()=>void>;
   private _validators:ListenerManager<IFormValidator>;
   private _pageValidators:ListenerManager<IFormValidator>;
-  private _config:IFormConfig;
-  private _metamodel: IModelTypeComposite<any>;
-  private _viewmodel: IModelView<any>;
+*/
 
-  private _currentPage:number;
+  private _listeners:ListenerManager<()=>void>;
+  private _config:IFormConfig;
+  private _metamodel: IModelTypeComposite<any>;   //</any>
+  private _viewmodel: IModelView<any>;            //</any>
 }
 
-function objMatcher(template:any):(field:IModelType<any>)=>number {
+function objMatcher(template:any):(field:IModelType<any>)=>number { //</any>
   var keys = Object.keys(template);
   var n = keys.length;
 
-  return ((field:IModelType<any>) => {
+  return ((field:IModelType<any> /*</any>*/) => { 
     var result = 0;
     var fieldObj = field as any;
     for (var i = 0; i < n; i++) {
@@ -176,7 +188,7 @@ export class MetaFormConfig implements IFormConfig {
 
   findBest(...matchargs: any[]): InputComponent {
     var bestQ = 0;
-    var match:React.ReactType = fields.MetaFormUnknownFieldType;
+    var match:InputComponent = fields.MetaFormUnknownFieldType;
 
     let matchers = this._components;
     for (var i = 0, n = matchers.length; i<n; ++i) {
@@ -268,6 +280,7 @@ export class MetaForm extends React.Component<IFormProps, IFormState> {
   componentDidMount() {
     this._unsubscribe && this._unsubscribe();
     this._unsubscribe = this.props.context.subscribe(() => {
+      if (!this._unsubscribe) return;
       this.setState({
         viewmodel: this.props.context.viewmodel,
         currentPage: this.props.context.currentPage
@@ -327,8 +340,12 @@ function changeHandler(model:IFormContext, fieldName:string) {
 }
 
 export class MetaInput extends React.Component<IInputProps, IInputState> {
-  render() {
+  constructor(props:IInputProps, context:any) {
+    super(props, context);
+    this.state = this._updatedState();
+  }
 
+  render() {
     var context = this.props.context;
     var fieldName = this.props.field;
     var fieldType = context.metamodel.subModel(fieldName);
@@ -339,18 +356,45 @@ export class MetaInput extends React.Component<IInputProps, IInputState> {
       return null;
     }
 
+
     let props:IInputComponentProps = { 
       field: this.props.field,
       fieldType: fieldType,
-      value: context.viewmodel.getFieldValue(fieldName),
+      hasErrors: (0 < this.state.fieldErrors.length),
+      errors: this.state.fieldErrors,
+      defaultValue: this.state.fieldValue || "",
       onChange: changeHandler(context, fieldName)
     };
 
-    var Input = context.config.findBest(field, fieldName); 
+    var Input:InputComponent = context.config.findBest(field, fieldName); 
     let Wrapper = context.config.wrappers.field;
 
-    return <Wrapper><Input {...props} /></Wrapper>;
+    return <Wrapper {...props}><Input {...props} /></Wrapper>;
   }
 
+  componentDidMount() {
+    this._unsubscribe && this._unsubscribe();
+    this._unsubscribe = this.props.context.subscribe(
+      () => { 
+        if (!this._unsubscribe) return;
+        this.setState(this._updatedState()); 
+    });
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe && this._unsubscribe();
+    this._unsubscribe = null;
+  }
+
+  _updatedState ():IInputState {
+      var context = this.props.context;
+      var fieldName = this.props.field;
+      return {
+    	  fieldErrors: context.viewmodel.getFieldMessages(fieldName),
+    	  fieldValue: context.viewmodel.getFieldValue(fieldName)
+      };
+    }
+
+  private _unsubscribe:()=>void;
   private _context:any;
 }

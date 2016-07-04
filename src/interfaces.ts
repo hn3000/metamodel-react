@@ -5,7 +5,8 @@ import {
   IModelTypeComposite,
   IModelTypeItem,
   IModelView,
-  IModelParseMessage
+  IModelParseMessage,
+  IValidationMessage
 } from '@hn3000/metamodel';
 
 
@@ -31,11 +32,12 @@ export interface IInputProps {
     flavour?: string;
     flavor?: string;
 }
-export interface IInputState extends IInputProps {
-    flavour: string;
+export interface IInputState {
+    fieldValue:any;
+    fieldErrors: IValidationMessage[];
 }
 
-export interface IInputComponentProps {
+export interface IInputComponentProps extends IWrapperComponentProps {
     context?: IFormContext;
     field: string;
     fieldType: IModelType<any>;
@@ -43,6 +45,7 @@ export interface IInputComponentProps {
     flavor?: string;
 
     value?:any;
+    defaultValue?:any;
     onChange?:(newValue:any)=>void;
 }
 
@@ -50,16 +53,21 @@ export interface IInputComponentState extends IInputProps {
     flavour: string;
 }
 
+export interface IWrapperComponentProps {
+    hasErrors?: boolean;
+    errors?: IValidationMessage[];
+}
 
-export type InputComponent = React.ComponentClass<IInputComponentProps> | React.StatelessComponent<IInputComponentProps>;
+
+export type InputComponent = React.ComponentClass<IInputComponentProps>;// | React.StatelessComponent<IInputComponentProps>;
 
 export interface IComponentLookup {
     [key: string]: React.ReactType;
 }
 export interface IWrappers extends IComponentLookup {
-    form: React.ComponentClass<any>;  // </any>
-    page: React.ComponentClass<any>;  // </any>
-    field: React.ComponentClass<any>; // </any>
+    form: React.ComponentClass<IWrapperComponentProps>;  // </IWrapperComponentProps>
+    page: React.ComponentClass<IWrapperComponentProps>;  // </IWrapperComponentProps>
+    field: React.ComponentClass<IWrapperComponentProps>; // </IWrapperComponentProps>
 }
 export interface IComponentMatchFun {
     (...matchArgs: any[]): number;
@@ -78,19 +86,6 @@ export interface IFormConfig extends IComponentFinder {
   wrappers: IWrappers;
 }
 
-export interface IFormValidationMessage extends IModelParseMessage {
-    // nothing added for now
-}
-
-export interface IFormValidationResult {
-    valid: boolean;
-    messages: IFormValidationMessage[];
-}
-
-export interface IFormValidator {
-    (oldModel:any, newModel:any):Promise<IFormValidationResult>;
-}
-
 export interface IFormContext {
   config: IFormConfig;
   metamodel: IModelTypeComposite<any>;
@@ -104,9 +99,7 @@ export interface IFormContext {
    */
   subscribe(listener:()=>any):()=>void;
 
-  addValidator(validator:IFormValidator):()=>void;
-  addPageValidator(validator:IFormValidator):()=>void;
-
+  //updated in place, viewmodel will change, though
   updateModel(field:string, value:any):void;
 
   updatePage(step:number):void;

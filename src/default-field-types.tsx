@@ -7,20 +7,25 @@ import {
 
 import {
   IInputComponentProps,
-  IInputComponentState
+  IInputComponentState,
+  IWrapperComponentProps
 } from './interfaces';
 
-export class FieldWrapper extends React.Component<void,void> {
+export class FieldWrapper extends React.Component<IWrapperComponentProps,void> {
+  render() {
+    var props:any = {};
+    if (this.props.hasErrors) {
+      props['className'] = 'has-error'; 
+    }
+    return <div {...props}>{this.props.children}</div>;
+  }
+}
+export class PageWrapper extends React.Component<IWrapperComponentProps,void> {
   render() {
     return <div>{this.props.children}</div>;
   }
 }
-export class PageWrapper extends React.Component<void,void> {
-  render() {
-    return <div>{this.props.children}</div>;
-  }
-}
-export class FormWrapper extends React.Component<void,void> {
+export class FormWrapper extends React.Component<IWrapperComponentProps,void> {
   render() {
     return <div>{this.props.children}</div>;
   }
@@ -29,14 +34,14 @@ export class FormWrapper extends React.Component<void,void> {
 export class MetaFormInputString extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
-    return <input type="text" placeholder={props.field} onChange={props.onChange} value={props.value}></input>;
+    return <input type="text" placeholder={props.field} onChange={props.onChange} defaultValue={props.defaultValue}></input>;
   }
 }
 
 export class MetaFormInputNumber extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
-    return <input type="text" placeholder={this.props.field} onChange={props.onChange} value={props.value}></input>;
+    return <input type="text" placeholder={this.props.field} onChange={props.onChange} defaultValue={props.defaultValue}></input>;
   }
 }
 

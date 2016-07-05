@@ -34,14 +34,14 @@ export class FormWrapper extends React.Component<IWrapperComponentProps,void> {
 export class MetaFormInputString extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
-    return <input type="text" placeholder={props.field} onChange={props.onChange} defaultValue={props.defaultValue}></input>;
+    return <input type="text" placeholder={props.field} onChange={props.onChange} value={props.value}></input>;
   }
 }
 
 export class MetaFormInputNumber extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
-    return <input type="text" placeholder={this.props.field} onChange={props.onChange} defaultValue={props.defaultValue}></input>;
+    return <input type="text" placeholder={this.props.field} onChange={props.onChange} value={props.value}></input>;
   }
 }
 

@@ -362,6 +362,7 @@ export class MetaInput extends React.Component<IInputProps, IInputState> {
       fieldType: fieldType,
       hasErrors: (0 < this.state.fieldErrors.length),
       errors: this.state.fieldErrors,
+      value: this.state.fieldValue || "",
       defaultValue: this.state.fieldValue || "",
       onChange: changeHandler(context, fieldName)
     };

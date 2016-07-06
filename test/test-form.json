@@ -17,9 +17,11 @@
     "required": ["firstname", "lastname", "username", "country", "email", "email2", "birth", "flag1", "flag2"],
     "pages": [
       { 
+        "alias": "names-and-country",
         "fields": ["firstname", "lastname", "username", "country"] 
       },
       { 
+        "alias": "email-etc",
         "fields": ["email", "email2", "birth", "flag1", "flag2" ]
       }
     ],

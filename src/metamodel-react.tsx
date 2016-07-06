@@ -6,7 +6,17 @@ import {
   IModelTypeComposite,
   IModelTypeItem,
   IModelView,
-  ModelView
+  ModelView,
+  IValidationMessage
+} from '@hn3000/metamodel';
+
+export {
+  IModelType,
+  IModelTypeComposite,
+  IModelTypeItem,
+  IModelView,
+  ModelView,
+  IValidationMessage
 } from '@hn3000/metamodel';
 
 import { Promise } from 'es6-promise';
@@ -65,6 +75,15 @@ export class MetaFormContext implements IFormContext {
 
 
     this._listeners = new ListenerManager<()=>void>();
+
+    if (null != this._config.onFormInit) {
+      var update = this._config.onFormInit(this);
+      update.then((x) => {
+        if (x) {
+          this._updateViewModel(this._viewmodel.withAddedData(x));
+        }
+      });
+    }
   }
 
   pageNext:(event:UIEvent)=>void;
@@ -80,6 +99,9 @@ export class MetaFormContext implements IFormContext {
     return this._viewmodel;
   }
   get currentPage(): number {
+    if (!this._config.usePageIndex) {
+      return this._viewmodel.currentPageNo;
+    }
     return this._viewmodel.currentPageIndex;
   }
 
@@ -114,31 +136,31 @@ export class MetaFormContext implements IFormContext {
     let nextModel = step > 0 ? model.validatePage() : Promise.resolve(model);
     
     nextModel
-      .then((x) => {
-        if (x.isPageValid(null)) {
-          // todo: call callbacks here
-          return x.changePage(step);
+      .then((validatedModel) => {
+        if (validatedModel.isPageValid(null)) {
+
+          if (this._config.onPageTransition) {
+            let moreValidation = this._config.onPageTransition(this, step);
+            return moreValidation.then((messages) => {
+              if (messages && messages.length) {
+                let result = validatedModel.withValidationMessages(messages);
+
+                if (result.isPageValid(null)) {
+                  return result.changePage(step); 
+                }
+                return result;
+              }
+              return validatedModel.changePage(step);
+            });
+          }
+
+          return validatedModel.changePage(step);
         }
-        return x;
+        return validatedModel;
       })
       .then((x) => this._updateViewModel(x));
 
   }
-
-/*
-  addValidator(validator:IFormValidator) {
-    return this._validators.subscribe(validator);
-  }
-  addPageValidator(validator:IFormValidator) {
-    return this._validators.subscribe(validator);
-  }
-
-  _runValidation():Promise<IFormValidationResult> {
-    return Promise.resolve(null);
-  }
-  private _validators:ListenerManager<IFormValidator>;
-  private _pageValidators:ListenerManager<IFormValidator>;
-*/
 
   private _listeners:ListenerManager<()=>void>;
   private _config:IFormConfig;
@@ -209,6 +231,12 @@ export class MetaFormConfig implements IFormConfig {
   remove(cm:IComponentMatcher) {
     this._components = this._components.filter((x) => x != cm);
   }
+
+  public usePageIndex = false;
+  public validateOnUpdate: boolean = false;
+
+  public onFormInit:(form:IFormContext)=>Promise<any> = null;
+  public onPageTransition:(form:IFormContext, direction:number)=>Promise<IValidationMessage[]> = null;
 
   private _wrappers:IWrappers;
   private _components: IComponentMatcher[];
@@ -388,12 +416,13 @@ export class MetaInput extends React.Component<IInputProps, IInputState> {
   }
 
   _updatedState ():IInputState {
-      var context = this.props.context;
-      var fieldName = this.props.field;
-      return {
+      let context = this.props.context;
+      let fieldName = this.props.field;
+      let result = {
     	  fieldErrors: context.viewmodel.getFieldMessages(fieldName),
     	  fieldValue: context.viewmodel.getFieldValue(fieldName)
-      };
+      }; 
+      return result; 
     }
 
   private _unsubscribe:()=>void;

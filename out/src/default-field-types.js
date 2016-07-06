@@ -57,7 +57,7 @@ var MetaFormInputString = (function (_super) {
     }
     MetaFormInputString.prototype.render = function () {
         var props = this.props;
-        return React.createElement("input", {type: "text", placeholder: props.field, onChange: props.onChange, defaultValue: props.defaultValue});
+        return React.createElement("input", {type: "text", placeholder: props.field, onChange: props.onChange, value: props.value});
     };
     return MetaFormInputString;
 }(React.Component));
@@ -69,7 +69,7 @@ var MetaFormInputNumber = (function (_super) {
     }
     MetaFormInputNumber.prototype.render = function () {
         var props = this.props;
-        return React.createElement("input", {type: "text", placeholder: this.props.field, onChange: props.onChange, defaultValue: props.defaultValue});
+        return React.createElement("input", {type: "text", placeholder: this.props.field, onChange: props.onChange, value: props.value});
     };
     return MetaFormInputNumber;
 }(React.Component));

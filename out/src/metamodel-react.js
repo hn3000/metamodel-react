@@ -15,11 +15,14 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 };
 var React = require('react');
 var metamodel_1 = require('@hn3000/metamodel');
+var metamodel_2 = require('@hn3000/metamodel');
+exports.ModelView = metamodel_2.ModelView;
 var es6_promise_1 = require('es6-promise');
 var fields = require('./default-field-types');
 var listenermanager_1 = require('./listenermanager');
 var MetaFormContext = (function () {
     function MetaFormContext(config, metamodel, data) {
+        var _this = this;
         if (data === void 0) { data = {}; }
         this._config = config;
         this._metamodel = metamodel;
@@ -27,6 +30,14 @@ var MetaFormContext = (function () {
         this.pageBack = listenermanager_1.clickHandler(this.updatePage, this, -1);
         this.pageNext = listenermanager_1.clickHandler(this.updatePage, this, +1);
         this._listeners = new listenermanager_1.ListenerManager();
+        if (null != this._config.onFormInit) {
+            var update = this._config.onFormInit(this);
+            update.then(function (x) {
+                if (x) {
+                    _this._updateViewModel(_this._viewmodel.withAddedData(x));
+                }
+            });
+        }
     }
     Object.defineProperty(MetaFormContext.prototype, "config", {
         get: function () {
@@ -51,6 +62,9 @@ var MetaFormContext = (function () {
     });
     Object.defineProperty(MetaFormContext.prototype, "currentPage", {
         get: function () {
+            if (!this._config.usePageIndex) {
+                return this._viewmodel.currentPageNo;
+            }
             return this._viewmodel.currentPageIndex;
         },
         enumerable: true,
@@ -83,12 +97,24 @@ var MetaFormContext = (function () {
         var model = this._viewmodel;
         var nextModel = step > 0 ? model.validatePage() : es6_promise_1.Promise.resolve(model);
         nextModel
-            .then(function (x) {
-            if (x.isPageValid(null)) {
-                // todo: call callbacks here
-                return x.changePage(step);
+            .then(function (validatedModel) {
+            if (validatedModel.isPageValid(null)) {
+                if (_this._config.onPageTransition) {
+                    var moreValidation = _this._config.onPageTransition(_this, step);
+                    return moreValidation.then(function (messages) {
+                        if (messages && messages.length) {
+                            var result = validatedModel.withValidationMessages(messages);
+                            if (result.isPageValid(null)) {
+                                return result.changePage(step);
+                            }
+                            return result;
+                        }
+                        return validatedModel.changePage(step);
+                    });
+                }
+                return validatedModel.changePage(step);
             }
-            return x;
+            return validatedModel;
         })
             .then(function (x) { return _this._updateViewModel(x); });
     };
@@ -115,6 +141,10 @@ function kindMatcher(kind) {
 }
 var MetaFormConfig = (function () {
     function MetaFormConfig(wrappers, components) {
+        this.usePageIndex = false;
+        this.validateOnUpdate = false;
+        this.onFormInit = null;
+        this.onPageTransition = null;
         this._wrappers = wrappers || MetaFormConfig.defaultWrappers();
         this._components = components || MetaFormConfig.defaultComponents();
     }
@@ -294,6 +324,7 @@ var MetaInput = (function (_super) {
             fieldType: fieldType,
             hasErrors: (0 < this.state.fieldErrors.length),
             errors: this.state.fieldErrors,
+            value: this.state.fieldValue || "",
             defaultValue: this.state.fieldValue || "",
             onChange: changeHandler(context, fieldName)
         };
@@ -319,10 +350,11 @@ var MetaInput = (function (_super) {
     MetaInput.prototype._updatedState = function () {
         var context = this.props.context;
         var fieldName = this.props.field;
-        return {
+        var result = {
             fieldErrors: context.viewmodel.getFieldMessages(fieldName),
             fieldValue: context.viewmodel.getFieldValue(fieldName)
         };
+        return result;
     };
     return MetaInput;
 }(React.Component));

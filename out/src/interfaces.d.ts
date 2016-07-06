@@ -63,8 +63,14 @@ export interface IComponentFinder {
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;
 }
-export interface IFormConfig extends IComponentFinder {
+export interface IFormEvents {
+    onFormInit?: (ctx: IFormContext) => Promise<any>;
+    onPageTransition?: (ctx: IFormContext, direction: number) => Promise<IValidationMessage[]>;
+}
+export interface IFormConfig extends IComponentFinder, IFormEvents {
     wrappers: IWrappers;
+    usePageIndex: boolean;
+    validateOnUpdate: boolean;
 }
 export interface IFormContext {
     config: IFormConfig;

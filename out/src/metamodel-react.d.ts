@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { IModelType, IModelTypeComposite, IModelView } from '@hn3000/metamodel';
+import { IModelType, IModelTypeComposite, IModelView, IValidationMessage } from '@hn3000/metamodel';
+export { IModelType, IModelTypeComposite, IModelTypeItem, IModelView, ModelView, IValidationMessage } from '@hn3000/metamodel';
 export { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IInputComponentProps, IInputComponentState, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
 import { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
 import * as fields from './default-field-types';
@@ -29,6 +30,10 @@ export declare class MetaFormConfig implements IFormConfig {
     findBest(...matchargs: any[]): InputComponent;
     add(cm: IComponentMatcher): void;
     remove(cm: IComponentMatcher): void;
+    usePageIndex: boolean;
+    validateOnUpdate: boolean;
+    onFormInit: (form: IFormContext) => Promise<any>;
+    onPageTransition: (form: IFormContext, direction: number) => Promise<IValidationMessage[]>;
     private _wrappers;
     private _components;
     static defaultWrappers(): IWrappers;

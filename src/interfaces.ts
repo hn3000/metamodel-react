@@ -9,6 +9,8 @@ import {
   IValidationMessage
 } from '@hn3000/metamodel';
 
+import * as Promise from 'es6-promise';
+
 
 export interface IFormProps {
     context: IFormContext;

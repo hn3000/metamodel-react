@@ -26,9 +26,10 @@ export interface IInputState {
     fieldErrors: IValidationMessage[];
 }
 export interface IInputComponentProps extends IWrapperComponentProps {
+    id?: string;
     context?: IFormContext;
-    field: string;
-    fieldType: IModelType<any>;
+    field?: string;
+    fieldType?: IModelType<any>;
     flavour?: string;
     flavor?: string;
     value?: any;
@@ -52,14 +53,14 @@ export interface IWrappers extends IComponentLookup {
     field: React.ComponentClass<IWrapperComponentProps>;
 }
 export interface IComponentMatchFun {
-    (...matchArgs: any[]): number;
+    (type: IModelType<any>, fieldName: string, flavor: string, ...matchArgs: any[]): number;
 }
 export interface IComponentMatcher {
-    matchQuality(...matchargs: any[]): number;
+    matchQuality(type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]): number;
     component: InputComponent;
 }
 export interface IComponentFinder {
-    findBest(...matchargs: any[]): InputComponent;
+    findBest(type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]): InputComponent;
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;
 }

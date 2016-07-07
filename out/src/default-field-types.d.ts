@@ -18,7 +18,15 @@ export declare class MetaFormInputNumber extends React.Component<IInputComponent
 export declare class MetaFormInputBool extends React.Component<IInputComponentProps, IInputComponentState> {
     render(): JSX.Element;
 }
-export declare class MetaFormInputEnum extends React.Component<IInputComponentProps, IInputComponentState> {
+export declare class MetaFormInputEnumSelect extends React.Component<IInputComponentProps, IInputComponentState> {
+    render(): JSX.Element;
+}
+export declare class MetaFormInputEnumRadios extends React.Component<IInputComponentProps, IInputComponentState> {
+    constructor(props: IInputComponentProps, context: any);
+    render(): JSX.Element;
+    private _group;
+}
+export declare class MetaFormInputEnumCheckbox extends React.Component<IInputComponentProps, IInputComponentState> {
     render(): JSX.Element;
 }
 export declare class MetaFormUnknownFieldType extends React.Component<IInputComponentProps, IInputComponentState> {

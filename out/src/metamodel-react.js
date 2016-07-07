@@ -95,24 +95,44 @@ var MetaFormContext = (function () {
     MetaFormContext.prototype.updatePage = function (step) {
         var _this = this;
         var model = this._viewmodel;
-        var nextModel = step > 0 ? model.validatePage() : es6_promise_1.Promise.resolve(model);
+        var nextModel;
+        if (step < 0) {
+            nextModel = es6_promise_1.Promise.resolve(model);
+        }
+        else if (model.currentPageNo == model.getPages().length) {
+            nextModel = model.validateVisited(); //model.validateAll();
+        }
+        else {
+            nextModel = model.validatePage();
+        }
         nextModel
             .then(function (validatedModel) {
             if (validatedModel.isPageValid(null)) {
+                var promise;
                 if (_this._config.onPageTransition) {
+                    // this._viewmodel = validatedModel; ??
                     var moreValidation = _this._config.onPageTransition(_this, step);
-                    return moreValidation.then(function (messages) {
+                    promise = moreValidation.then(function (messages) {
+                        var result = validatedModel;
                         if (messages && messages.length) {
-                            var result = validatedModel.withValidationMessages(messages);
-                            if (result.isPageValid(null)) {
-                                return result.changePage(step);
-                            }
-                            return result;
+                            result = validatedModel.withValidationMessages(messages);
                         }
-                        return validatedModel.changePage(step);
+                        return result;
+                    }, function () {
+                        return validatedModel.withValidationMessages([
+                            { path: "", msg: "server communication failed", isError: true }
+                        ]);
                     });
                 }
-                return validatedModel.changePage(step);
+                else {
+                    promise = es6_promise_1.Promise.resolve(validatedModel);
+                }
+                return promise.then(function (serverValidatedModel) {
+                    if (step < 0 || serverValidatedModel.isPageValid(null)) {
+                        return serverValidatedModel.changePage(step);
+                    }
+                    return serverValidatedModel;
+                });
             }
             return validatedModel;
         })
@@ -139,12 +159,32 @@ function objMatcher(template) {
 function kindMatcher(kind) {
     return function (field) { return (field.kind === kind ? 1 : 0); };
 }
+function andMatcher() {
+    var matcher = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        matcher[_i - 0] = arguments[_i];
+    }
+    return function (field) { return matcher.reduce(function (q, m) {
+        var qq = m(field);
+        return qq && q + qq;
+    }, 0); };
+}
+function hasPVC(from, to) {
+    return function (field) {
+        var pv = field.asItemType() && field.asItemType().possibleValues();
+        var pvc = pv ? pv.length : 0;
+        if ((pvc >= from) && (!to || pvc < to)) {
+            return 1;
+        }
+        return 0;
+    };
+}
 var MetaFormConfig = (function () {
     function MetaFormConfig(wrappers, components) {
         this.usePageIndex = false;
         this.validateOnUpdate = false;
-        this.onFormInit = null;
-        this.onPageTransition = null;
+        this.onFormInit = null; // </any>
+        this.onPageTransition = null; // </IValidationMessage>
         this._wrappers = wrappers || MetaFormConfig.defaultWrappers();
         this._components = components || MetaFormConfig.defaultComponents();
     }
@@ -165,18 +205,19 @@ var MetaFormConfig = (function () {
         enumerable: true,
         configurable: true
     });
-    MetaFormConfig.prototype.findBest = function () {
+    MetaFormConfig.prototype.findBest = function (type, fieldName, flavor) {
         var matchargs = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            matchargs[_i - 0] = arguments[_i];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            matchargs[_i - 3] = arguments[_i];
         }
         var bestQ = 0;
         var match = fields.MetaFormUnknownFieldType;
         var matchers = this._components;
         for (var i = 0, n = matchers.length; i < n; ++i) {
-            var thisQ = (_a = matchers[i]).matchQuality.apply(_a, matchargs);
+            var thisQ = (_a = matchers[i]).matchQuality.apply(_a, [type, fieldName, flavor].concat(matchargs));
             if (thisQ > bestQ) {
                 match = matchers[i].component;
+                bestQ = thisQ;
             }
         }
         return match;
@@ -214,6 +255,18 @@ var MetaFormConfig = (function () {
             {
                 matchQuality: objMatcher({ kind: 'bool' }),
                 component: fields.MetaFormInputBool
+            },
+            {
+                matchQuality: andMatcher(kindMatcher('string'), hasPVC(10)),
+                component: fields.MetaFormInputEnumSelect
+            },
+            {
+                matchQuality: andMatcher(kindMatcher('string'), hasPVC(2, 10)),
+                component: fields.MetaFormInputEnumRadios
+            },
+            {
+                matchQuality: andMatcher(kindMatcher('string'), hasPVC(1, 2)),
+                component: fields.MetaFormInputEnumCheckbox
             }
         ];
     };
@@ -301,7 +354,12 @@ exports.MetaPage = MetaPage;
 function changeHandler(model, fieldName) {
     return function (event) {
         var target = event.target;
-        model.updateModel(fieldName, target.value);
+        if (target.type === "checkbox") {
+            model.updateModel(fieldName, target.checked);
+        }
+        else {
+            model.updateModel(fieldName, target.value);
+        }
     };
 }
 var MetaInput = (function (_super) {
@@ -319,20 +377,31 @@ var MetaInput = (function (_super) {
             console.log("field " + fieldName + " not found in " + context.metamodel.name);
             return null;
         }
+        var formid = this.props.context.metamodel.name;
         var props = {
+            id: formid + '#' + this.props.field,
             field: this.props.field,
             fieldType: fieldType,
             hasErrors: (0 < this.state.fieldErrors.length),
             errors: this.state.fieldErrors,
             value: this.state.fieldValue || "",
             defaultValue: this.state.fieldValue || "",
-            onChange: changeHandler(context, fieldName)
+            onChange: changeHandler(context, fieldName),
+            context: context
         };
-        var Input = context.config.findBest(field, fieldName);
+        var flavor = this.props.flavor || this.props.flavour;
         var Wrapper = context.config.wrappers.field;
-        return React.createElement(Wrapper, __assign({}, props), 
-            React.createElement(Input, __assign({}, props))
-        );
+        var Input;
+        if (0 === React.Children.count(this.props.children)) {
+            Input = context.config.findBest(field, fieldName, flavor);
+            return React.createElement(Wrapper, __assign({}, props), 
+                React.createElement(Input, __assign({}, props))
+            );
+        }
+        else {
+            var children = React.Children.map(this.props.children, function (c) { return React.cloneElement(c, props); });
+            return React.createElement(Wrapper, __assign({}, props), children);
+        }
     };
     MetaInput.prototype.componentDidMount = function () {
         var _this = this;

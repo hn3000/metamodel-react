@@ -81,28 +81,73 @@ var MetaFormInputBool = (function (_super) {
     }
     MetaFormInputBool.prototype.render = function () {
         var props = this.props;
-        return React.createElement("input", {type: "checkbox", onChange: props.onChange, value: props.value});
+        return React.createElement("input", {type: "checkbox", onChange: props.onChange, checked: props.value});
     };
     return MetaFormInputBool;
 }(React.Component));
 exports.MetaFormInputBool = MetaFormInputBool;
-var MetaFormInputEnum = (function (_super) {
-    __extends(MetaFormInputEnum, _super);
-    function MetaFormInputEnum() {
+var MetaFormInputEnumSelect = (function (_super) {
+    __extends(MetaFormInputEnumSelect, _super);
+    function MetaFormInputEnumSelect() {
         _super.apply(this, arguments);
     }
-    MetaFormInputEnum.prototype.render = function () {
+    MetaFormInputEnumSelect.prototype.render = function () {
         var props = this.props;
         var fieldType = props.fieldType;
         var itemType = fieldType.asItemType();
-        var values = ["a", "b"];
+        var values = [];
         if (null != itemType) {
+            values = itemType.possibleValues();
         }
         return (React.createElement("select", {onChange: props.onChange, value: props.value}, values.map(function (x) { return (React.createElement("option", {value: x}, "x")); })));
     };
-    return MetaFormInputEnum;
+    return MetaFormInputEnumSelect;
 }(React.Component));
-exports.MetaFormInputEnum = MetaFormInputEnum;
+exports.MetaFormInputEnumSelect = MetaFormInputEnumSelect;
+var MetaFormInputEnumRadios = (function (_super) {
+    __extends(MetaFormInputEnumRadios, _super);
+    function MetaFormInputEnumRadios(props, context) {
+        _super.call(this, props, context);
+        this._group = (Math.random() * Number.MAX_VALUE).toString(36);
+    }
+    MetaFormInputEnumRadios.prototype.render = function () {
+        var props = this.props;
+        var fieldType = props.fieldType;
+        var itemType = fieldType.asItemType();
+        var values = [];
+        if (null != itemType) {
+            values = itemType.possibleValues();
+        }
+        var group = this._group;
+        var radios = values.map(function (x) { return (React.createElement("label", {key: x + '_' + group}, 
+            React.createElement("input", {type: "radio", name: group, onChange: props.onChange, value: x, checked: x === props.value}), 
+            x)); });
+        return React.createElement("div", null, radios);
+    };
+    return MetaFormInputEnumRadios;
+}(React.Component));
+exports.MetaFormInputEnumRadios = MetaFormInputEnumRadios;
+var MetaFormInputEnumCheckbox = (function (_super) {
+    __extends(MetaFormInputEnumCheckbox, _super);
+    function MetaFormInputEnumCheckbox() {
+        _super.apply(this, arguments);
+    }
+    MetaFormInputEnumCheckbox.prototype.render = function () {
+        var props = this.props;
+        var fieldType = props.fieldType;
+        var itemType = fieldType.asItemType();
+        var values = [];
+        if (null != itemType) {
+            values = itemType.possibleValues();
+        }
+        var radios = values.map(function (x) { return (React.createElement("label", null, 
+            React.createElement("input", {type: "checkbox", onChange: props.onChange, value: x, checked: x === props.value}), 
+            x)); });
+        return React.createElement("div", null, radios);
+    };
+    return MetaFormInputEnumCheckbox;
+}(React.Component));
+exports.MetaFormInputEnumCheckbox = MetaFormInputEnumCheckbox;
 var MetaFormUnknownFieldType = (function (_super) {
     __extends(MetaFormUnknownFieldType, _super);
     function MetaFormUnknownFieldType() {

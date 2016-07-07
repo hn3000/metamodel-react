@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IModelType, IModelTypeComposite, IModelView, IValidationMessage } from '@hn3000/metamodel';
 export { IModelType, IModelTypeComposite, IModelTypeItem, IModelView, ModelView, IValidationMessage } from '@hn3000/metamodel';
-export { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IInputComponentProps, IInputComponentState, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
+export { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IWrapperComponentProps, IInputComponentProps, IInputComponentState, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
 import { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
 import * as fields from './default-field-types';
 export declare class MetaFormContext implements IFormContext {
@@ -27,7 +27,7 @@ export declare class MetaFormConfig implements IFormConfig {
     setWrappers(wrappers: IWrappers): void;
     readonly wrappers: IWrappers;
     readonly matchers: IComponentMatcher[];
-    findBest(...matchargs: any[]): InputComponent;
+    findBest(type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]): InputComponent;
     add(cm: IComponentMatcher): void;
     remove(cm: IComponentMatcher): void;
     usePageIndex: boolean;

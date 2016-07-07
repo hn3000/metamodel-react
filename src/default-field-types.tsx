@@ -48,24 +48,72 @@ export class MetaFormInputNumber extends React.Component<IInputComponentProps, I
 export class MetaFormInputBool extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
-    return <input type="checkbox" onChange={props.onChange} value={props.value}></input>;
+    return <input type="checkbox" onChange={props.onChange} checked={props.value}></input>;
   }
 }
 
-export class MetaFormInputEnum extends React.Component<IInputComponentProps, IInputComponentState> {
+export class MetaFormInputEnumSelect extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
     let fieldType = props.fieldType;
     
     let itemType = fieldType.asItemType();
-    var values = [ "a", "b" ];
+    var values:any[] = [  ];
     if (null != itemType) {
-      //let possibleValuesConstraints = itemType.
+      values = itemType.possibleValues();
     }
 
     return (<select onChange={props.onChange} value={props.value}>
       {values.map((x:string)=> (<option value={x}>x</option>))}
     </select>);
+  }
+}
+
+export class MetaFormInputEnumRadios extends React.Component<IInputComponentProps, IInputComponentState> {
+  constructor(props:IInputComponentProps, context:any) {
+    super(props, context);
+    this._group = (Math.random()*Number.MAX_VALUE).toString(36);
+  }
+  render() {
+    let props = this.props;
+    let fieldType = props.fieldType;
+    
+    let itemType = fieldType.asItemType();
+    var values:any[] = [  ];
+    if (null != itemType) {
+      values = itemType.possibleValues();
+    }
+    let group = this._group;
+    let radios = values.map((x:string)=> (
+      <label key={x+'_'+group}>
+        <input type="radio" name={group} onChange={props.onChange} value={x} checked={x === props.value} />{x}
+      </label>
+    ));
+
+    return <div>{radios}</div>;
+  }
+
+  private _group:string;
+}
+
+export class MetaFormInputEnumCheckbox extends React.Component<IInputComponentProps, IInputComponentState> {
+  render() {
+    let props = this.props;
+    let fieldType = props.fieldType;
+    
+    let itemType = fieldType.asItemType();
+    var values:any[] = [  ];
+    if (null != itemType) {
+      values = itemType.possibleValues();
+    }
+
+    let radios = values.map((x:string)=> (
+      <label>
+        <input type="checkbox" onChange={props.onChange} value={x} checked={x === props.value} />{x}
+      </label>
+    ));
+
+    return <div>{radios}</div>;
   }
 }
 

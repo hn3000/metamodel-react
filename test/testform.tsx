@@ -61,9 +61,9 @@ class TestForm extends React.Component<TestFormProps,any> {
         <div>
           <MetaPage page={0} context={context}>
             <MetaInput field="firstname" context={context} />
-            <MetaInput field="lastname" context={context} flavor="nolabel" />
-            <MetaInput field="username" context={context} flavor="nolabel" />
-            <MetaInput field="country" context={context} flavor="nolabel" />
+            <MetaInput field="lastname"  context={context} />
+            <MetaInput field="username"  context={context} />
+            <MetaInput field="country"   context={context} flavor="select"/>
             <button onClick={context.pageNext}>next</button>
           </MetaPage>
           <ContactFormPage2

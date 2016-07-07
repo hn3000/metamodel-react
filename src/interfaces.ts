@@ -38,15 +38,15 @@ export interface IInputState {
 }
 
 export interface IInputComponentProps extends IWrapperComponentProps {
+    id?: string;
     context?: IFormContext;
-    field: string;
-    fieldType: IModelType<any>;
+    field?: string;
+    fieldType?: IModelType<any>;
     flavour?: string;
     flavor?: string;
-
-    value?:any;
-    defaultValue?:any;
-    onChange?:(newValue:any)=>void;
+    value?: any;
+    defaultValue?: any;
+    onChange?: (newValue: any) => void;
 }
 
 export interface IInputComponentState extends IInputProps {
@@ -70,14 +70,14 @@ export interface IWrappers extends IComponentLookup {
     field: React.ComponentClass<IWrapperComponentProps>; // </IWrapperComponentProps>
 }
 export interface IComponentMatchFun {
-    (...matchArgs: any[]): number;
+    (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]): number;
 }
 export interface IComponentMatcher {
-    matchQuality(...matchargs: any[]): number;
+    matchQuality(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): number;
     component: InputComponent;
 }
 export interface IComponentFinder {
-    findBest(...matchargs: any[]): InputComponent;
+    findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent;
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;
 }

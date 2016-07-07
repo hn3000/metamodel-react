@@ -1,6 +1,7 @@
 /* /// <reference path="../typings/index.d.ts" /> */
 
 import * as React from 'react';
+
 import {
   IModelType,
   IModelTypeComposite,
@@ -29,6 +30,7 @@ export {
   IInputProps,
   IInputState,
   IWrappers,
+  IWrapperComponentProps,
   IInputComponentProps,
   IInputComponentState,
   IComponentMatcher,
@@ -72,7 +74,6 @@ export class MetaFormContext implements IFormContext {
 
     this.pageBack = clickHandler(this.updatePage, this, -1);
     this.pageNext = clickHandler(this.updatePage, this, +1);
-
 
     this._listeners = new ListenerManager<()=>void>();
 
@@ -133,28 +134,47 @@ export class MetaFormContext implements IFormContext {
   updatePage(step:number) {
     let model = this._viewmodel;
 
-    let nextModel = step > 0 ? model.validatePage() : Promise.resolve(model);
+    let nextModel:Promise<IModelView<any>>;
+    
+    if (step < 0) {
+      nextModel = Promise.resolve(model);
+    } else if (model.currentPageNo == model.getPages().length) {
+      nextModel = model.validateVisited(); //model.validateAll();
+    } else {
+      nextModel = model.validatePage();
+    }
     
     nextModel
       .then((validatedModel) => {
         if (validatedModel.isPageValid(null)) {
+          
+          var promise:Promise<IModelView<any>>;
 
           if (this._config.onPageTransition) {
-            let moreValidation = this._config.onPageTransition(this, step);
-            return moreValidation.then((messages) => {
-              if (messages && messages.length) {
-                let result = validatedModel.withValidationMessages(messages);
+            // this._viewmodel = validatedModel; ??
 
-                if (result.isPageValid(null)) {
-                  return result.changePage(step); 
-                }
-                return result;
+            let moreValidation = this._config.onPageTransition(this, step);
+            promise = moreValidation.then((messages) => {
+              var result = validatedModel
+              if (messages && messages.length) {
+                result = validatedModel.withValidationMessages(messages);
               }
-              return validatedModel.changePage(step);
+              return result;
+            }, () => {
+              return validatedModel.withValidationMessages([
+                { path:"", msg:"server communication failed", isError: true }
+              ])
             });
+          } else {
+            promise = Promise.resolve(validatedModel);
           }
 
-          return validatedModel.changePage(step);
+          return promise.then((serverValidatedModel) => {
+            if (step < 0 || serverValidatedModel.isPageValid(null)) {
+              return serverValidatedModel.changePage(step);
+            }
+            return serverValidatedModel;
+          });
         }
         return validatedModel;
       })
@@ -168,7 +188,9 @@ export class MetaFormContext implements IFormContext {
   private _viewmodel: IModelView<any>;            //</any>
 }
 
-function objMatcher(template:any):(field:IModelType<any>)=>number { //</any>
+type matchQFun = (field:IModelType<any>)=>number;
+
+function objMatcher(template:any):matchQFun { //</any>
   var keys = Object.keys(template);
   var n = keys.length;
 
@@ -185,8 +207,26 @@ function objMatcher(template:any):(field:IModelType<any>)=>number { //</any>
   });
 }
 
-function kindMatcher(kind:string):(field:IModelType<any>)=>number {
+function kindMatcher(kind:string):matchQFun {
   return (field:IModelType<any>) => (field.kind === kind?1:0)
+}
+
+function andMatcher(...matcher:matchQFun[]):matchQFun {
+  return (field:IModelType<any>) => matcher.reduce((q, m) => {
+    let qq = m(field);
+    return qq && q + qq;
+  }, 0);
+}
+
+function hasPVC(from:number, to?:number) {
+  return (field:IModelType<any>) => {
+    let pv = field.asItemType() && field.asItemType().possibleValues();
+    let pvc = pv ? pv.length : 0;
+    if ((pvc >= from) && (!to || pvc < to)) {
+      return 1;
+    }
+    return 0;
+  }
 }
 
 export class MetaFormConfig implements IFormConfig {
@@ -208,15 +248,16 @@ export class MetaFormConfig implements IFormConfig {
     return this._components;
   }
 
-  findBest(...matchargs: any[]): InputComponent {
+  findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent {
     var bestQ = 0;
     var match:InputComponent = fields.MetaFormUnknownFieldType;
 
     let matchers = this._components;
     for (var i = 0, n = matchers.length; i<n; ++i) {
-      let thisQ = matchers[i].matchQuality(...matchargs);
+      let thisQ = matchers[i].matchQuality(type, fieldName, flavor, ...matchargs);
       if (thisQ > bestQ) {
         match = matchers[i].component;
+        bestQ = thisQ;
       }
     }
 
@@ -235,8 +276,8 @@ export class MetaFormConfig implements IFormConfig {
   public usePageIndex = false;
   public validateOnUpdate: boolean = false;
 
-  public onFormInit:(form:IFormContext)=>Promise<any> = null;
-  public onPageTransition:(form:IFormContext, direction:number)=>Promise<IValidationMessage[]> = null;
+  public onFormInit:(form:IFormContext)=>Promise<any> = null; // </any>
+  public onPageTransition:(form:IFormContext, direction:number)=>Promise<IValidationMessage[]> = null; // </IValidationMessage>
 
   private _wrappers:IWrappers;
   private _components: IComponentMatcher[];
@@ -266,6 +307,18 @@ export class MetaFormConfig implements IFormConfig {
       {
         matchQuality: objMatcher({kind:'bool'}),
         component: fields.MetaFormInputBool
+      },
+      {
+        matchQuality: andMatcher(kindMatcher('string'), hasPVC(10)),
+        component: fields.MetaFormInputEnumSelect
+      },
+      {
+        matchQuality: andMatcher(kindMatcher('string'), hasPVC(2,10)),
+        component: fields.MetaFormInputEnumRadios
+      },
+      {
+        matchQuality: andMatcher(kindMatcher('string'), hasPVC(1,2)),
+        component: fields.MetaFormInputEnumCheckbox
       }
     ];
   }
@@ -363,7 +416,11 @@ export class MetaPage extends React.Component<IPageProps, IPageState> {
 function changeHandler(model:IFormContext, fieldName:string) {
   return (event:React.FormEvent) => {
     let target = event.target as any;
-    model.updateModel(fieldName, target.value);
+    if (target.type === "checkbox") {
+      model.updateModel(fieldName, target.checked);
+    } else {
+      model.updateModel(fieldName, target.value);
+    }
   }
 }
 
@@ -384,21 +441,32 @@ export class MetaInput extends React.Component<IInputProps, IInputState> {
       return null;
     }
 
+    let formid = this.props.context.metamodel.name;
 
     let props:IInputComponentProps = { 
+      id: formid+'#'+this.props.field,
       field: this.props.field,
       fieldType: fieldType,
       hasErrors: (0 < this.state.fieldErrors.length),
       errors: this.state.fieldErrors,
       value: this.state.fieldValue || "",
       defaultValue: this.state.fieldValue || "",
-      onChange: changeHandler(context, fieldName)
+      onChange: changeHandler(context, fieldName),
+      context: context
     };
 
-    var Input:InputComponent = context.config.findBest(field, fieldName); 
-    let Wrapper = context.config.wrappers.field;
+    let flavor = this.props.flavor || this.props.flavour;
 
-    return <Wrapper {...props}><Input {...props} /></Wrapper>;
+    let Wrapper = context.config.wrappers.field;
+    var Input:InputComponent;
+    if (0 === React.Children.count(this.props.children)) {
+      Input = context.config.findBest(field, fieldName, flavor); 
+      return <Wrapper {...props}><Input {...props} /></Wrapper>;
+    } else {
+      let children = React.Children.map(this.props.children, (c) => React.cloneElement(c as JSX.Element, props));
+      return <Wrapper {...props}>{children}</Wrapper>;
+    }
+
   }
 
   componentDidMount() {

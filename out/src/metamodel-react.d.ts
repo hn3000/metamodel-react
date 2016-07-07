@@ -42,12 +42,22 @@ export declare class MetaFormConfig implements IFormConfig {
         component: typeof fields.MetaFormInputString;
     }[];
 }
-export declare class MetaForm extends React.Component<IFormProps, IFormState> {
-    constructor(props: IFormProps, context: any);
-    render(): JSX.Element;
+export interface IMetaFormBaseProps {
+    context?: IFormContext;
+}
+export interface IMetaFormBaseState {
+    currentPage?: number;
+}
+export declare abstract class MetaFormBase<P extends IMetaFormBaseProps, S extends IMetaFormBaseState> extends React.Component<P, S> {
+    constructor(props: P, state: S);
+    protected _updateState(context?: IFormContext): void;
     componentDidMount(): void;
     componentWillUnmount(): void;
     private _unsubscribe;
+}
+export declare class MetaForm extends MetaFormBase<IFormProps, IFormState> {
+    constructor(props: IFormProps, context: any);
+    render(): JSX.Element;
 }
 export declare class MetaPage extends React.Component<IPageProps, IPageState> {
     constructor(props: IPageProps, context: any);

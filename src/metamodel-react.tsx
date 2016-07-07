@@ -325,8 +325,49 @@ export class MetaFormConfig implements IFormConfig {
 
 }
 
+export interface IMetaFormBaseProps {
+  context?: IFormContext;
+}
+export interface IMetaFormBaseState {
+  currentPage?:number;
+}
+export abstract class MetaFormBase<
+      P extends IMetaFormBaseProps, 
+      S extends IMetaFormBaseState
+    > 
+    extends React.Component<P, S> 
+{
+  constructor(props:P, state:S) {
+    super(props, state);
+    this._unsubscribe = null;
+  }
 
-export class MetaForm extends React.Component<IFormProps, IFormState> {
+  protected _updateState(context?:IFormContext) {
+    let newState:S = { 
+      currentPage: context.currentPage 
+    } as any;
+    this.setState(newState);
+  }
+
+  componentDidMount() {
+    this._unsubscribe && this._unsubscribe();
+    this._unsubscribe = this.props.context.subscribe(() => {
+      if (!this._unsubscribe) return;
+      this._updateState(this.props.context);
+    });
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe && this._unsubscribe();
+    this._unsubscribe = null;
+  }
+
+  private _unsubscribe:()=>void;
+
+}
+
+
+export class MetaForm extends MetaFormBase<IFormProps, IFormState> {
   //childContextTypes = {
   //  formcontext: React.PropTypes.object
   //}
@@ -340,7 +381,6 @@ export class MetaForm extends React.Component<IFormProps, IFormState> {
       viewmodel: this.props.context.viewmodel,
       currentPage: this.props.context.currentPage
     };
-    this._unsubscribe = null;
   }
 
 
@@ -358,23 +398,6 @@ export class MetaForm extends React.Component<IFormProps, IFormState> {
       </Wrapper>);
   }
 
-  componentDidMount() {
-    this._unsubscribe && this._unsubscribe();
-    this._unsubscribe = this.props.context.subscribe(() => {
-      if (!this._unsubscribe) return;
-      this.setState({
-        viewmodel: this.props.context.viewmodel,
-        currentPage: this.props.context.currentPage
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    this._unsubscribe && this._unsubscribe();
-    this._unsubscribe = null;
-  }
-
-  private _unsubscribe:()=>void;
 }
 
 export class MetaPage extends React.Component<IPageProps, IPageState> {
@@ -463,7 +486,11 @@ export class MetaInput extends React.Component<IInputProps, IInputState> {
       Input = context.config.findBest(field, fieldName, flavor); 
       return <Wrapper {...props}><Input {...props} /></Wrapper>;
     } else {
-      let children = React.Children.map(this.props.children, (c) => React.cloneElement(c as JSX.Element, props));
+      let children = React.Children.map(this.props.children, (c) => {
+        // avoid providing our props to html elements
+        if (typeof((c as any).type) === 'string') return c;
+        return React.cloneElement(c as JSX.Element, props);
+      });
       return <Wrapper {...props}>{children}</Wrapper>;
     }
 

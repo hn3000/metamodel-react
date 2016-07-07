@@ -273,6 +273,34 @@ var MetaFormConfig = (function () {
     return MetaFormConfig;
 }());
 exports.MetaFormConfig = MetaFormConfig;
+var MetaFormBase = (function (_super) {
+    __extends(MetaFormBase, _super);
+    function MetaFormBase(props, state) {
+        _super.call(this, props, state);
+        this._unsubscribe = null;
+    }
+    MetaFormBase.prototype._updateState = function (context) {
+        var newState = {
+            currentPage: context.currentPage
+        };
+        this.setState(newState);
+    };
+    MetaFormBase.prototype.componentDidMount = function () {
+        var _this = this;
+        this._unsubscribe && this._unsubscribe();
+        this._unsubscribe = this.props.context.subscribe(function () {
+            if (!_this._unsubscribe)
+                return;
+            _this._updateState(_this.props.context);
+        });
+    };
+    MetaFormBase.prototype.componentWillUnmount = function () {
+        this._unsubscribe && this._unsubscribe();
+        this._unsubscribe = null;
+    };
+    return MetaFormBase;
+}(React.Component));
+exports.MetaFormBase = MetaFormBase;
 var MetaForm = (function (_super) {
     __extends(MetaForm, _super);
     //childContextTypes = {
@@ -287,7 +315,6 @@ var MetaForm = (function (_super) {
             viewmodel: this.props.context.viewmodel,
             currentPage: this.props.context.currentPage
         };
-        this._unsubscribe = null;
     }
     MetaForm.prototype.render = function () {
         var Wrapper = this.props.context.config.wrappers.form;
@@ -299,24 +326,8 @@ var MetaForm = (function (_super) {
             React.createElement("form", {id: this.props.context.metamodel.name}, this.props.children)
         ));
     };
-    MetaForm.prototype.componentDidMount = function () {
-        var _this = this;
-        this._unsubscribe && this._unsubscribe();
-        this._unsubscribe = this.props.context.subscribe(function () {
-            if (!_this._unsubscribe)
-                return;
-            _this.setState({
-                viewmodel: _this.props.context.viewmodel,
-                currentPage: _this.props.context.currentPage
-            });
-        });
-    };
-    MetaForm.prototype.componentWillUnmount = function () {
-        this._unsubscribe && this._unsubscribe();
-        this._unsubscribe = null;
-    };
     return MetaForm;
-}(React.Component));
+}(MetaFormBase));
 exports.MetaForm = MetaForm;
 var MetaPage = (function (_super) {
     __extends(MetaPage, _super);
@@ -399,7 +410,12 @@ var MetaInput = (function (_super) {
             );
         }
         else {
-            var children = React.Children.map(this.props.children, function (c) { return React.cloneElement(c, props); });
+            var children = React.Children.map(this.props.children, function (c) {
+                // avoid providing our props to html elements
+                if (typeof (c.type) === 'string')
+                    return c;
+                return React.cloneElement(c, props);
+            });
             return React.createElement(Wrapper, __assign({}, props), children);
         }
     };

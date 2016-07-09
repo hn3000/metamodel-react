@@ -7,6 +7,7 @@ import {
   IModelTypeComposite,
   IModelTypeItem,
   IModelView,
+  ValidationScope,
   ModelView,
   IValidationMessage
 } from '@hn3000/metamodel';
@@ -16,6 +17,7 @@ export {
   IModelTypeComposite,
   IModelTypeItem,
   IModelView,
+  ValidationScope,
   ModelView,
   IValidationMessage
 } from '@hn3000/metamodel';
@@ -118,8 +120,10 @@ export class MetaFormContext implements IFormContext {
   updateModel(field:string, value:any) {
     let newModel = this._viewmodel.withChangedField(field, value);
     this._updateViewModel(newModel);
-    let validated = newModel.validateDefault();
-    validated.then((x) => this._updateViewModel(x));
+    if (this._config.validateOnUpdate || newModel.validationScope() != ValidationScope.VISITED) {
+      let validated = newModel.validateDefault();
+      validated.then((x) => this._updateViewModel(x));
+    }
   }
 
   _updateViewModel(viewmodel:IModelView<any>) {

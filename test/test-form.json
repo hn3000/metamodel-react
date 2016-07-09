@@ -29,7 +29,7 @@
       "Country": {
         "type": "string", 
         "format": "countrycode",
-        "enum": [ "DE", "GB", "AT", "CH", "JP", "CN", "AB", "CD", "EF", "FG", "HI", "JK"  ]
+        "enum": [ "DE", "GB", "AT", "CH", "JP", "CN", "HN", "US", "FR", "AB", "CD", "EF", "FG", "HI", "JK"  ]
       }
     }
   }

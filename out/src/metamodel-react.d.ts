@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IModelType, IModelTypeComposite, IModelView, IValidationMessage } from '@hn3000/metamodel';
-export { IModelType, IModelTypeComposite, IModelTypeItem, IModelView, ModelView, IValidationMessage } from '@hn3000/metamodel';
+export { IModelType, IModelTypeComposite, IModelTypeItem, IModelView, ValidationScope, ModelView, IValidationMessage } from '@hn3000/metamodel';
 export { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IWrapperComponentProps, IInputComponentProps, IInputComponentState, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
 import { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
 import * as fields from './default-field-types';

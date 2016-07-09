@@ -16,6 +16,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 var React = require('react');
 var metamodel_1 = require('@hn3000/metamodel');
 var metamodel_2 = require('@hn3000/metamodel');
+exports.ValidationScope = metamodel_2.ValidationScope;
 exports.ModelView = metamodel_2.ModelView;
 var es6_promise_1 = require('es6-promise');
 var fields = require('./default-field-types');
@@ -82,8 +83,10 @@ var MetaFormContext = (function () {
         var _this = this;
         var newModel = this._viewmodel.withChangedField(field, value);
         this._updateViewModel(newModel);
-        var validated = newModel.validateDefault();
-        validated.then(function (x) { return _this._updateViewModel(x); });
+        if (this._config.validateOnUpdate || newModel.validationScope() != metamodel_1.ValidationScope.VISITED) {
+            var validated = newModel.validateDefault();
+            validated.then(function (x) { return _this._updateViewModel(x); });
+        }
     };
     MetaFormContext.prototype._updateViewModel = function (viewmodel) {
         this._viewmodel = viewmodel;

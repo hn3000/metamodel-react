@@ -20,10 +20,14 @@ var FieldWrapper = (function (_super) {
     }
     FieldWrapper.prototype.render = function () {
         var props = {};
+        var errors = [];
         if (this.props.hasErrors) {
             props['className'] = 'has-error';
         }
-        return React.createElement("div", __assign({}, props), this.props.children);
+        return React.createElement("div", __assign({}, props), 
+            this.props.children, 
+            React.createElement("div", {className: "errors"}, "There were errors:"), 
+            this.props.errors.map(function (e) { return React.createElement("div", {key: e, className: "errors"}, e.msg); }));
     };
     return FieldWrapper;
 }(React.Component));
@@ -99,7 +103,10 @@ var MetaFormInputEnumSelect = (function (_super) {
         if (null != itemType) {
             values = itemType.possibleValues();
         }
-        return (React.createElement("select", {onChange: props.onChange, value: props.value}, values.map(function (x) { return (React.createElement("option", {value: x}, "x")); })));
+        var hasValue = null != props.value;
+        return (React.createElement("select", {onChange: props.onChange, value: props.value}, 
+            React.createElement("option", {key: null, value: null, disabled: hasValue, hidden: hasValue}, "choose one"), 
+            values.map(function (x) { return (React.createElement("option", {key: x, value: x}, x)); })));
     };
     return MetaFormInputEnumSelect;
 }(React.Component));

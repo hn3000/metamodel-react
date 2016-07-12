@@ -40,6 +40,15 @@ var MetaFormContext = (function () {
             });
         }
     }
+    MetaFormContext.prototype.pageNextAllowed = function () {
+        var vm = this._viewmodel;
+        var hasNext = vm.currentPageIndex < vm.getPages().length;
+        return hasNext && vm.isPageValid(null);
+    };
+    MetaFormContext.prototype.pageBackAllowed = function () {
+        var vm = this._viewmodel;
+        return vm.currentPageIndex > 0;
+    };
     Object.defineProperty(MetaFormContext.prototype, "config", {
         get: function () {
             return this._config;
@@ -103,7 +112,7 @@ var MetaFormContext = (function () {
             nextModel = es6_promise_1.Promise.resolve(model);
         }
         else if (model.currentPageNo == model.getPages().length) {
-            nextModel = model.validateVisited(); //model.validateAll();
+            nextModel = model.validatePage(); //model.validateAll();
         }
         else {
             nextModel = model.validatePage();
@@ -328,6 +337,12 @@ var MetaForm = (function (_super) {
         return (React.createElement(Wrapper, null, 
             React.createElement("form", {id: this.props.context.metamodel.name}, this.props.children)
         ));
+    };
+    MetaForm.prototype._updateState = function (context) {
+        this.setState({
+            viewmodel: context.viewmodel,
+            currentPage: context.currentPage
+        });
     };
     return MetaForm;
 }(MetaFormBase));

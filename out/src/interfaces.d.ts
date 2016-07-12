@@ -83,4 +83,6 @@ export interface IFormContext {
     updatePage(step: number): void;
     pageNext: (event: UIEvent) => void;
     pageBack: (event: UIEvent) => void;
+    pageNextAllowed(): boolean;
+    pageBackAllowed(): boolean;
 }

@@ -8,6 +8,8 @@ export declare class MetaFormContext implements IFormContext {
     constructor(config: IFormConfig, metamodel: IModelTypeComposite<any>, data?: any);
     pageNext: (event: UIEvent) => void;
     pageBack: (event: UIEvent) => void;
+    pageNextAllowed(): boolean;
+    pageBackAllowed(): boolean;
     readonly config: IFormConfig;
     readonly metamodel: IModelTypeComposite<any>;
     readonly viewmodel: IModelView<any>;
@@ -58,6 +60,7 @@ export declare abstract class MetaFormBase<P extends IMetaFormBaseProps, S exten
 export declare class MetaForm extends MetaFormBase<IFormProps, IFormState> {
     constructor(props: IFormProps, context: any);
     render(): JSX.Element;
+    _updateState(context: IFormContext): void;
 }
 export declare class MetaPage extends React.Component<IPageProps, IPageState> {
     constructor(props: IPageProps, context: any);

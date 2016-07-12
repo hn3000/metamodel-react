@@ -8,20 +8,21 @@
         margin: auto;
       }
       #form-content * input {
-        width: 99%;
+        width: 95%;
+        width: calc(100% - 5px);
       }
       #form-content * input[type=radio],
       #form-content * input[type=checkbox] {
         width: initial;
       }
       .has-error {
-        border: 1px solid red;
+        border-right: 3px solid red;
       }
       .errors {
-        display:none;
+        display: none;
       }
-      .hasError .errors {
-        display:block;
+      .has-error .errors {
+        display: block;
       }
     </style>
   </head>
@@ -41,6 +42,7 @@
           "whatwg-fetch": "node_modules/whatwg-fetch/fetch.js",
           "@hn3000/metamodel-react": "out/src/metamodel-react.js",
           "@hn3000/metamodel": "node_modules/@hn3000/metamodel/out/src/model.js",
+          "@hn3000/json-ref": "node_modules/@hn3000/json-ref/out/src/index.js",
           "testform": "out/test/testform.js"
 
         },
@@ -48,11 +50,7 @@
           "out": {
             format: 'cjs',
           },
-          "@hn3000/metamodel": {
-            format: 'cjs',
-            defaultExtension: 'js'
-          },
-          "node_modules/@hn3000/metamodel/out": {
+          "node_modules/@hn3000/": {
             format: 'cjs',
             defaultExtension: 'js'
           }

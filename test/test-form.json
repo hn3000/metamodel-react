@@ -12,7 +12,10 @@
       "flag2":     { "type": "boolean" }
     },
     "constraints": [
-      { "kind": "equalFields", "fields": [ "email2", "email" ] }
+      {
+        "constraint": "equalProperties",
+        "properties": [ "email", "email2" ]
+      }      
     ],
     "required": ["firstname", "lastname", "username", "country", "email", "email2", "birth", "flag1", "flag2"],
     "pages": [

@@ -58,17 +58,24 @@ class TestForm extends React.Component<TestFormProps,any> {
 
     return (
       <MetaForm context={context}>
+        <div className={'page'+context.currentPage}> 
+          <button disabled={!context.pageBackAllowed()} onClick={context.pageBack}>back</button>
+          <button disabled={!context.pageNextAllowed()} onClick={context.pageNext}>next</button>
+        </div>
         <div>
           <MetaPage page={0} context={context}>
             <MetaInput field="firstname" context={context} />
             <MetaInput field="lastname"  context={context} />
             <MetaInput field="username"  context={context} />
             <MetaInput field="country"   context={context} flavor="select"/>
-            <button onClick={context.pageNext}>next</button>
           </MetaPage>
           <ContactFormPage2
             context={context}
           />
+        </div>
+        <div className={'page'+context.currentPage}>
+        <button disabled={!context.pageBackAllowed()} onClick={context.pageBack}>back</button>
+        <button disabled={!context.pageNextAllowed()} onClick={context.pageNext}>next</button>
         </div>
       </MetaForm>
     );

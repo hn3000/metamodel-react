@@ -92,6 +92,17 @@ export class MetaFormContext implements IFormContext {
   pageNext:(event:UIEvent)=>void;
   pageBack:(event:UIEvent)=>void;
 
+  pageNextAllowed():boolean {
+    let vm = this._viewmodel;
+    let hasNext = vm.currentPageIndex < vm.getPages().length;
+
+    return hasNext && vm.isPageValid(null); 
+  }
+  pageBackAllowed():boolean {
+    let vm = this._viewmodel;
+    return vm.currentPageIndex > 0;
+  }
+
   get config(): IFormConfig {
     return this._config;
   }
@@ -143,7 +154,7 @@ export class MetaFormContext implements IFormContext {
     if (step < 0) {
       nextModel = Promise.resolve(model);
     } else if (model.currentPageNo == model.getPages().length) {
-      nextModel = model.validateVisited(); //model.validateAll();
+      nextModel = model.validatePage(); //model.validateAll();
     } else {
       nextModel = model.validatePage();
     }
@@ -400,6 +411,13 @@ export class MetaForm extends MetaFormBase<IFormProps, IFormState> {
         {this.props.children}
       </form>
       </Wrapper>);
+  }
+
+  _updateState(context:IFormContext) {
+    this.setState({
+      viewmodel: context.viewmodel,
+      currentPage: context.currentPage
+    })
   }
 
 }

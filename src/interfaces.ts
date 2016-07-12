@@ -115,4 +115,7 @@ export interface IFormContext {
   
   pageNext:(event:UIEvent)=>void;
   pageBack:(event:UIEvent)=>void;
+
+  pageNextAllowed():boolean;
+  pageBackAllowed():boolean;
 }

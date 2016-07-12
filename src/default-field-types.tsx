@@ -14,10 +14,15 @@ import {
 export class FieldWrapper extends React.Component<IWrapperComponentProps,void> {
   render() {
     var props:any = {};
+    var errors:JSX.Element[] = [];
     if (this.props.hasErrors) {
       props['className'] = 'has-error'; 
     }
-    return <div {...props}>{this.props.children}</div>;
+    return <div {...props}>
+      {this.props.children}
+      <div className="errors">There were errors:</div>
+      {this.props.errors.map((e) => <div key={e} className="errors">{e.msg}</div>)}
+    </div>;
   }
 }
 export class PageWrapper extends React.Component<IWrapperComponentProps,void> {
@@ -62,9 +67,10 @@ export class MetaFormInputEnumSelect extends React.Component<IInputComponentProp
     if (null != itemType) {
       values = itemType.possibleValues();
     }
-
+    let hasValue = null != props.value;
     return (<select onChange={props.onChange} value={props.value}>
-      {values.map((x:string)=> (<option value={x}>x</option>))}
+      <option key={null} value={null} disabled={hasValue} hidden={hasValue}>choose one</option>
+      {values.map((x:string)=> (<option key={x} value={x}>{x}</option>))}
     </select>);
   }
 }

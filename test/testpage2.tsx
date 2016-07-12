@@ -26,7 +26,6 @@ export class ContactFormPage2 extends React.Component<IFormPage2Props, IFormPage
         <MetaInput field="birth" context={context} />
         <MetaInput field="flag1" context={context} />
         <MetaInput field="flag2" context={context} />
-        <button onClick={context.pageBack}>previous</button>
       </MetaPage>
     );
   }

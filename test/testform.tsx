@@ -73,7 +73,7 @@ class TestForm extends React.Component<TestFormProps,any> {
             context={context}
           />
         </div>
-        <div className={'page'+context.currentPage}>
+        <div className={'page'+context.currentPage+'b:'+context.pageBackAllowed()+'-n:'+context.pageNextAllowed()}>
         <button disabled={!context.pageBackAllowed()} onClick={context.pageBack}>back</button>
         <button disabled={!context.pageNextAllowed()} onClick={context.pageNext}>next</button>
         </div>

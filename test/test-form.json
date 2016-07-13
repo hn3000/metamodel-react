@@ -4,18 +4,21 @@
       "firstname": { "type": "string", "maxLength": 20 },
       "lastname":  { "type": "string", "maxLength": 20 },
       "username":  { "type": "string", "maxLength": 20, "format": "username", "pattern": "^[a-z][a-z0-9]+" },
-      "country":   { "$ref": "#/definitions/Country" },
-      "email":     { "type": "string", "maxLength": 20, "format": "email" },
-      "email2":    { "type": "string", "maxLength": 20, "format": "email" },
-      "birth":     { "type": "string", "pattern": "\\d{4}-\\d{2}-\\d{2}", "constraints":[ { "kind": "minAge", "value": "18years" }] },
-      "flag1":     { "type": "boolean", "enum": [ true ] },
-      "flag2":     { "type": "boolean" }
+      "country":   { "$ref": "#/definitions/Country" }
     },
+    "allOf": [
+      { "$ref": "#/pages/1/schema"}
+    ],
     "constraints": [
       {
         "constraint": "equalProperties",
         "properties": [ "email", "email2" ]
-      }      
+      },
+      {
+        "constraint": "minAge",
+        "property": "birth",
+        "years": 18
+      }
     ],
     "required": ["firstname", "lastname", "username", "country", "email", "email2", "birth", "flag1", "flag2"],
     "pages": [
@@ -25,7 +28,16 @@
       },
       { 
         "alias": "email-etc",
-        "fields": ["email", "email2", "birth", "flag1", "flag2" ]
+        "x-not-fields": ["email", "email2", "birth", "flag1", "flag2" ],
+        "schema": {
+          "properties": {
+            "email":     { "type": "string", "maxLength": 20, "format": "email" },
+            "email2":    { "type": "string", "maxLength": 20, "format": "email" },
+            "birth":     { "type": "string", "pattern": "\\d{4}-\\d{2}-\\d{2}", "constraints":[ { "kind": "minAge", "value": "18years" }] },
+            "flag1":     { "type": "boolean", "enum": [ true ] },
+            "flag2":     { "type": "boolean" }
+          }
+        }
       }
     ],
     "definitions": {

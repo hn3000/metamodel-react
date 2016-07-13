@@ -154,19 +154,22 @@ export class MetaFormContext implements IFormContext {
     if (step < 0) {
       nextModel = Promise.resolve(model);
     } else if (model.currentPageNo == model.getPages().length) {
-      nextModel = model.validatePage(); //model.validateAll();
+      nextModel = model.validateFull();
     } else {
       nextModel = model.validatePage();
     }
     
     nextModel
       .then((validatedModel) => {
-        if (validatedModel.isPageValid(null)) {
+        if (step < 0 || validatedModel.isPageValid(null)) {
           
           var promise:Promise<IModelView<any>>;
 
           if (this._config.onPageTransition) {
-            // this._viewmodel = validatedModel; ??
+
+            // replace model without notification 
+            // so onPageTransition starts with this one
+            this._viewmodel = validatedModel; 
 
             let moreValidation = this._config.onPageTransition(this, step);
             promise = moreValidation.then((messages) => {
@@ -368,7 +371,8 @@ export abstract class MetaFormBase<
     this._unsubscribe && this._unsubscribe();
     this._unsubscribe = this.props.context.subscribe(() => {
       if (!this._unsubscribe) return;
-      this._updateState(this.props.context);
+      //this._updateState(this.props.context);
+      this.forceUpdate();
     });
   }
 

@@ -112,17 +112,19 @@ var MetaFormContext = (function () {
             nextModel = es6_promise_1.Promise.resolve(model);
         }
         else if (model.currentPageNo == model.getPages().length) {
-            nextModel = model.validatePage(); //model.validateAll();
+            nextModel = model.validateFull();
         }
         else {
             nextModel = model.validatePage();
         }
         nextModel
             .then(function (validatedModel) {
-            if (validatedModel.isPageValid(null)) {
+            if (step < 0 || validatedModel.isPageValid(null)) {
                 var promise;
                 if (_this._config.onPageTransition) {
-                    // this._viewmodel = validatedModel; ??
+                    // replace model without notification 
+                    // so onPageTransition starts with this one
+                    _this._viewmodel = validatedModel;
                     var moreValidation = _this._config.onPageTransition(_this, step);
                     promise = moreValidation.then(function (messages) {
                         var result = validatedModel;
@@ -303,7 +305,8 @@ var MetaFormBase = (function (_super) {
         this._unsubscribe = this.props.context.subscribe(function () {
             if (!_this._unsubscribe)
                 return;
-            _this._updateState(_this.props.context);
+            //this._updateState(this.props.context);
+            _this.forceUpdate();
         });
     };
     MetaFormBase.prototype.componentWillUnmount = function () {

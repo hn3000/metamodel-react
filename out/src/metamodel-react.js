@@ -326,6 +326,8 @@ var MetaForm = (function (_super) {
     //}
     function MetaForm(props, context) {
         _super.call(this, props, context);
+        if (null == props.context)
+            console.log("no context found in context for MetaForm", props);
         this.state = {
             viewmodel: this.props.context.viewmodel,
             currentPage: this.props.context.currentPage
@@ -354,6 +356,8 @@ var MetaPage = (function (_super) {
     __extends(MetaPage, _super);
     function MetaPage(props, context) {
         _super.call(this, props, context);
+        if (null == props.context)
+            console.log("no context found in context for MetaPage", props);
         this.state = {
             currentPage: this.props.context.currentPage
         };
@@ -398,6 +402,8 @@ var MetaInput = (function (_super) {
     __extends(MetaInput, _super);
     function MetaInput(props, context) {
         _super.call(this, props, context);
+        if (null == props.context)
+            console.log("no context found in context for MetaInput", props);
         this.state = this._updatedState();
     }
     MetaInput.prototype.render = function () {

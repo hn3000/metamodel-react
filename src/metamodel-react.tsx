@@ -396,6 +396,7 @@ export class MetaForm extends MetaFormBase<IFormProps, IFormState> {
 
   constructor(props:IFormProps, context:any) {
     super(props, context);
+    if (null == props.context) console.log("no context found in context for MetaForm", props);
     this.state = {
       viewmodel: this.props.context.viewmodel,
       currentPage: this.props.context.currentPage
@@ -430,6 +431,7 @@ export class MetaPage extends React.Component<IPageProps, IPageState> {
 
   constructor(props:IPageProps, context:any) {
     super(props, context);
+    if (null == props.context) console.log("no context found in context for MetaPage", props);
 
     this.state = {
         currentPage: this.props.context.currentPage
@@ -476,6 +478,7 @@ function changeHandler(model:IFormContext, fieldName:string) {
 export class MetaInput extends React.Component<IInputProps, IInputState> {
   constructor(props:IInputProps, context:any) {
     super(props, context);
+    if (null == props.context) console.log("no context found in context for MetaInput", props);
     this.state = this._updatedState();
   }
 

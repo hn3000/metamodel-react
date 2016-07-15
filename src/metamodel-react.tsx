@@ -537,18 +537,30 @@ export class MetaInput extends MetaComponentBase<IInputProps, IInputState> {
 
     let flavor = this.props.flavor || this.props.flavour;
 
-    let Wrapper = context.config.wrappers.field;
+    var Wrapper = context.config.wrappers.field;
+
+    if (this.props.hasOwnProperty('wrapper')) {
+      Wrapper = this.props.wrapper; 
+    }
+
+    var children:any;
+
     var Input:InputComponent;
     if (0 === React.Children.count(this.props.children)) {
-      Input = context.config.findBest(field, fieldName, flavor); 
-      return <Wrapper {...props}><Input {...props} /></Wrapper>;
+      Input = context.config.findBest(field, fieldName, flavor);
+      children = [ <Input {...props} /> ];
     } else {
-      let children = React.Children.map(this.props.children, (c) => {
+      children = React.Children.map(this.props.children, (c) => {
         // avoid providing our props to html elements
         if (typeof((c as any).type) === 'string') return c;
         return React.cloneElement(c as JSX.Element, props);
       });
-      return <Wrapper {...props}>{children}</Wrapper>;
+    }
+
+    if (Wrapper) {
+        return <Wrapper {...props}>{children}</Wrapper>;
+    } else {
+      return <div>{children}</div>
     }
 
   }

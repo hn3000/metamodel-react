@@ -453,21 +453,28 @@ var MetaInput = (function (_super) {
         };
         var flavor = this.props.flavor || this.props.flavour;
         var Wrapper = context.config.wrappers.field;
+        if (this.props.hasOwnProperty('wrapper')) {
+            Wrapper = this.props.wrapper;
+        }
+        var children;
         var Input;
         if (0 === React.Children.count(this.props.children)) {
             Input = context.config.findBest(field, fieldName, flavor);
-            return React.createElement(Wrapper, __assign({}, props), 
-                React.createElement(Input, __assign({}, props))
-            );
+            children = [React.createElement(Input, __assign({}, props))];
         }
         else {
-            var children = React.Children.map(this.props.children, function (c) {
+            children = React.Children.map(this.props.children, function (c) {
                 // avoid providing our props to html elements
                 if (typeof (c.type) === 'string')
                     return c;
                 return React.cloneElement(c, props);
             });
+        }
+        if (Wrapper) {
             return React.createElement(Wrapper, __assign({}, props), children);
+        }
+        else {
+            return React.createElement("div", null, children);
         }
     };
     MetaInput.prototype._updatedState = function (context, initState) {

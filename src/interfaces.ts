@@ -34,6 +34,7 @@ export interface IInputProps {
     field: string;
     flavour?: string;
     flavor?: string;
+    wrapper?:React.ComponentClass<IWrapperComponentProps>;
 }
 export interface IInputState {
     fieldValue:any;

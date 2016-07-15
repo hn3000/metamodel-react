@@ -18,13 +18,16 @@ var metamodel_1 = require('@hn3000/metamodel');
 var metamodel_2 = require('@hn3000/metamodel');
 exports.ValidationScope = metamodel_2.ValidationScope;
 exports.ModelView = metamodel_2.ModelView;
+exports.ClientProps = metamodel_2.ClientProps;
 var es6_promise_1 = require('es6-promise');
 var fields = require('./default-field-types');
 var listenermanager_1 = require('./listenermanager');
-var MetaFormContext = (function () {
+var MetaFormContext = (function (_super) {
+    __extends(MetaFormContext, _super);
     function MetaFormContext(config, metamodel, data) {
         var _this = this;
         if (data === void 0) { data = {}; }
+        _super.call(this);
         this._config = config;
         this._metamodel = metamodel;
         this._viewmodel = new metamodel_1.ModelView(metamodel, data);
@@ -134,7 +137,7 @@ var MetaFormContext = (function () {
                         return result;
                     }, function () {
                         return validatedModel.withValidationMessages([
-                            { path: "", msg: "server communication failed", isError: true }
+                            { path: "", msg: "internal error (page transition handler)", code: 'transition-error', isError: true }
                         ]);
                     });
                 }
@@ -153,7 +156,7 @@ var MetaFormContext = (function () {
             .then(function (x) { return _this._updateViewModel(x); });
     };
     return MetaFormContext;
-}());
+}(metamodel_1.ClientProps));
 exports.MetaFormContext = MetaFormContext;
 function objMatcher(template) {
     var keys = Object.keys(template);
@@ -287,60 +290,83 @@ var MetaFormConfig = (function () {
     return MetaFormConfig;
 }());
 exports.MetaFormConfig = MetaFormConfig;
-var MetaFormBase = (function (_super) {
-    __extends(MetaFormBase, _super);
-    function MetaFormBase(props, state) {
-        _super.call(this, props, state);
+exports.MetaForm_ContextTypes = {
+    formContext: React.PropTypes.shape({
+        config: React.PropTypes.object,
+        metamodel: React.PropTypes.object,
+        viewmodel: React.PropTypes.object,
+        currentPage: React.PropTypes.number,
+        i18nData: React.PropTypes.object
+    })
+};
+var MetaComponentBase = (function (_super) {
+    __extends(MetaComponentBase, _super);
+    function MetaComponentBase(props, context) {
+        _super.call(this, props, context);
         this._unsubscribe = null;
     }
-    MetaFormBase.prototype._updateState = function (context) {
+    Object.defineProperty(MetaComponentBase.prototype, "formContext", {
+        get: function () {
+            return this.props.context || this.context.formContext;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MetaComponentBase.prototype._updatedState = function (context, initState) {
         var newState = {
             currentPage: context.currentPage
         };
-        this.setState(newState);
+        if (initState) {
+            this.state = newState;
+        }
+        else {
+            this.setState(newState);
+        }
     };
-    MetaFormBase.prototype.componentDidMount = function () {
+    MetaComponentBase.prototype.componentDidMount = function () {
         var _this = this;
         this._unsubscribe && this._unsubscribe();
-        this._unsubscribe = this.props.context.subscribe(function () {
+        this._unsubscribe = this.formContext.subscribe(function () {
             if (!_this._unsubscribe)
                 return;
-            //this._updateState(this.props.context);
+            _this._updatedState(_this.formContext);
             _this.forceUpdate();
         });
     };
-    MetaFormBase.prototype.componentWillUnmount = function () {
+    MetaComponentBase.prototype.componentWillUnmount = function () {
         this._unsubscribe && this._unsubscribe();
         this._unsubscribe = null;
     };
-    return MetaFormBase;
+    MetaComponentBase.contextTypes = exports.MetaForm_ContextTypes;
+    return MetaComponentBase;
 }(React.Component));
-exports.MetaFormBase = MetaFormBase;
+exports.MetaComponentBase = MetaComponentBase;
 var MetaForm = (function (_super) {
     __extends(MetaForm, _super);
-    //childContextTypes = {
-    //  formcontext: React.PropTypes.object
-    //}
-    //getChildContext() {
-    //  return { formcontext: this.props.context };
-    //}
     function MetaForm(props, context) {
         _super.call(this, props, context);
-        if (null == props.context)
-            console.log("no context found in context for MetaForm", props);
+        //if (null == props.context ) console.log("no context found in context for MetaForm", props);
+        if (null == this.formContext || null == this.formContext.metamodel) {
+            console.log("missing context info in MetaForm", props, context);
+        }
         this.state = {
-            viewmodel: this.props.context.viewmodel,
-            currentPage: this.props.context.currentPage
+            viewmodel: this.formContext.viewmodel,
+            currentPage: this.formContext.currentPage
         };
     }
+    MetaForm.prototype.getChildContext = function () {
+        return {
+            formContext: this.props.context
+        };
+    };
     MetaForm.prototype.render = function () {
-        var Wrapper = this.props.context.config.wrappers.form;
+        var Wrapper = this.formContext.config.wrappers.form;
         /*
         let adjustedChildren = React.Children.map(this.props.children,
           (c) => React.cloneElement(c, {context: this.props.context}));
         */
         return (React.createElement(Wrapper, null, 
-            React.createElement("form", {id: this.props.context.metamodel.name}, this.props.children)
+            React.createElement("form", {id: this.formContext.metamodel.name}, this.props.children)
         ));
     };
     MetaForm.prototype._updateState = function (context) {
@@ -349,52 +375,50 @@ var MetaForm = (function (_super) {
             currentPage: context.currentPage
         });
     };
+    MetaForm.childContextTypes = MetaComponentBase.contextTypes;
     return MetaForm;
-}(MetaFormBase));
+}(MetaComponentBase));
 exports.MetaForm = MetaForm;
 var MetaPage = (function (_super) {
     __extends(MetaPage, _super);
     function MetaPage(props, context) {
         _super.call(this, props, context);
-        if (null == props.context)
-            console.log("no context found in context for MetaPage", props);
-        this.state = {
-            currentPage: this.props.context.currentPage
-        };
+        if (null == this.formContext || null == this.formContext.metamodel) {
+            console.log("missing context info in MetaForm", props, context);
+        }
     }
     MetaPage.prototype.render = function () {
-        //let context = this.context.formcontext || this.props.context;
-        var context = this.props.context;
+        var context = this.formContext;
         if (this.props.page == context.currentPage) {
-            var Wrapper = this.props.context.config.wrappers.page;
+            var Wrapper = this.formContext.config.wrappers.page;
             return React.createElement(Wrapper, null, this.props.children);
         }
         return null;
     };
-    MetaPage.prototype.componentDidMount = function () {
-        var _this = this;
-        this._unsubscribe && this._unsubscribe();
-        this._unsubscribe = this.props.context.subscribe(function () {
-            _this.setState({
-                currentPage: _this.props.context.currentPage
-            });
-        });
-    };
-    MetaPage.prototype.componentWillUnmount = function () {
-        this._unsubscribe && this._unsubscribe();
-        this._unsubscribe = null;
-    };
-    return MetaPage;
-}(React.Component));
-exports.MetaPage = MetaPage;
-function changeHandler(model, fieldName) {
-    return function (event) {
-        var target = event.target;
-        if (target.type === "checkbox") {
-            model.updateModel(fieldName, target.checked);
+    MetaPage.prototype._updatedState = function (context, initState) {
+        var result = {
+            currentPage: this.formContext.currentPage
+        };
+        if (initState) {
+            this.state = result;
         }
         else {
-            model.updateModel(fieldName, target.value);
+            this.setState(result);
+        }
+        return result;
+    };
+    MetaPage.contextTypes = exports.MetaForm_ContextTypes;
+    return MetaPage;
+}(MetaComponentBase));
+exports.MetaPage = MetaPage;
+function changeHandler(context, fieldName) {
+    return function (evt) {
+        var target = evt.target;
+        if (target.type === "checkbox") {
+            context.updateModel(fieldName, target.checked);
+        }
+        else {
+            context.updateModel(fieldName, target.value);
         }
     };
 }
@@ -402,12 +426,12 @@ var MetaInput = (function (_super) {
     __extends(MetaInput, _super);
     function MetaInput(props, context) {
         _super.call(this, props, context);
-        if (null == props.context)
-            console.log("no context found in context for MetaInput", props);
-        this.state = this._updatedState();
+        if (null == this.formContext)
+            console.log("no context found for MetaInput", props);
+        this._updatedState(this.formContext, true);
     }
     MetaInput.prototype.render = function () {
-        var context = this.props.context;
+        var context = this.formContext;
         var fieldName = this.props.field;
         var fieldType = context.metamodel.subModel(fieldName);
         var field = fieldType && fieldType.asItemType();
@@ -415,7 +439,7 @@ var MetaInput = (function (_super) {
             console.log("field " + fieldName + " not found in " + context.metamodel.name);
             return null;
         }
-        var formid = this.props.context.metamodel.name;
+        var formid = this.formContext.metamodel.name;
         var props = {
             id: formid + '#' + this.props.field,
             field: this.props.field,
@@ -446,29 +470,20 @@ var MetaInput = (function (_super) {
             return React.createElement(Wrapper, __assign({}, props), children);
         }
     };
-    MetaInput.prototype.componentDidMount = function () {
-        var _this = this;
-        this._unsubscribe && this._unsubscribe();
-        this._unsubscribe = this.props.context.subscribe(function () {
-            if (!_this._unsubscribe)
-                return;
-            _this.setState(_this._updatedState());
-        });
-    };
-    MetaInput.prototype.componentWillUnmount = function () {
-        this._unsubscribe && this._unsubscribe();
-        this._unsubscribe = null;
-    };
-    MetaInput.prototype._updatedState = function () {
-        var context = this.props.context;
+    MetaInput.prototype._updatedState = function (context, initState) {
         var fieldName = this.props.field;
         var result = {
             fieldErrors: context.viewmodel.getFieldMessages(fieldName),
             fieldValue: context.viewmodel.getFieldValue(fieldName)
         };
-        return result;
+        if (initState) {
+            this.state = result;
+        }
+        else {
+            this.setState(result);
+        }
     };
     return MetaInput;
-}(React.Component));
+}(MetaComponentBase));
 exports.MetaInput = MetaInput;
 //# sourceMappingURL=metamodel-react.js.map

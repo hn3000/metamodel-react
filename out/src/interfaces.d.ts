@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IModelType, IModelTypeComposite, IModelView, IValidationMessage } from '@hn3000/metamodel';
+import { IModelType, IModelTypeComposite, IModelView, IValidationMessage, IClientProps } from '@hn3000/metamodel';
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
@@ -9,7 +9,7 @@ export interface IFormState {
     currentPage: number;
 }
 export interface IPageProps {
-    context: IFormContext;
+    context?: IFormContext;
     page: number;
 }
 export interface IPageState {
@@ -25,6 +25,10 @@ export interface IInputState {
     fieldValue: any;
     fieldErrors: IValidationMessage[];
 }
+export interface IWrapperComponentProps {
+    hasErrors?: boolean;
+    errors?: IValidationMessage[];
+}
 export interface IInputComponentProps extends IWrapperComponentProps {
     id?: string;
     context?: IFormContext;
@@ -38,10 +42,6 @@ export interface IInputComponentProps extends IWrapperComponentProps {
 }
 export interface IInputComponentState extends IInputProps {
     flavour: string;
-}
-export interface IWrapperComponentProps {
-    hasErrors?: boolean;
-    errors?: IValidationMessage[];
 }
 export declare type InputComponent = React.ComponentClass<IInputComponentProps>;
 export interface IComponentLookup {
@@ -73,7 +73,7 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
     usePageIndex: boolean;
     validateOnUpdate: boolean;
 }
-export interface IFormContext {
+export interface IFormContext extends IClientProps {
     config: IFormConfig;
     metamodel: IModelTypeComposite<any>;
     viewmodel: IModelView<any>;

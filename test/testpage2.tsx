@@ -11,21 +11,20 @@ import {
 import * as mm from '@hn3000/metamodel';
 
 export interface IFormPage2Props {
-  context: IFormContext;
+  context?: IFormContext;
 }
 
 
 export class ContactFormPage2 extends React.Component<IFormPage2Props, IFormPage2Props> {
   
   render() {
-    var context = this.props.context;
     return (
-      <MetaPage page={1} context={context}>
-        <MetaInput field="email" context={context} />
-        <MetaInput field="email2" context={context} />
-        <MetaInput field="birth" context={context} />
-        <MetaInput field="flag1" context={context} />
-        <MetaInput field="flag2" context={context} />
+      <MetaPage page={1}>
+        <MetaInput field="email" />
+        <MetaInput field="email2" />
+        <MetaInput field="birth" />
+        <MetaInput field="flag1" />
+        <MetaInput field="flag2" />
       </MetaPage>
     );
   }

@@ -6,7 +6,8 @@ import {
   IModelTypeItem,
   IModelView,
   IModelParseMessage,
-  IValidationMessage
+  IValidationMessage,
+  IClientProps
 } from '@hn3000/metamodel';
 
 import * as Promise from 'es6-promise';
@@ -22,7 +23,7 @@ export interface IFormState {
 }
 
 export interface IPageProps {
-    context: IFormContext;
+    context?: IFormContext;
     page: number;
 }
 export interface IPageState {
@@ -37,6 +38,11 @@ export interface IInputProps {
 export interface IInputState {
     fieldValue:any;
     fieldErrors: IValidationMessage[];
+}
+
+export interface IWrapperComponentProps {
+    hasErrors?: boolean;
+    errors?: IValidationMessage[];
 }
 
 export interface IInputComponentProps extends IWrapperComponentProps {
@@ -55,22 +61,19 @@ export interface IInputComponentState extends IInputProps {
     flavour: string;
 }
 
-export interface IWrapperComponentProps {
-    hasErrors?: boolean;
-    errors?: IValidationMessage[];
-}
-
 
 export type InputComponent = React.ComponentClass<IInputComponentProps>;// | React.StatelessComponent<IInputComponentProps>;
 
 export interface IComponentLookup {
     [key: string]: React.ReactType;
 }
+
 export interface IWrappers extends IComponentLookup {
     form: React.ComponentClass<IWrapperComponentProps>;  // </IWrapperComponentProps>
     page: React.ComponentClass<IWrapperComponentProps>;  // </IWrapperComponentProps>
     field: React.ComponentClass<IWrapperComponentProps>; // </IWrapperComponentProps>
 }
+
 export interface IComponentMatchFun {
     (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]): number;
 }
@@ -95,7 +98,7 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
   validateOnUpdate: boolean;
 }
 
-export interface IFormContext {
+export interface IFormContext extends IClientProps {
   config: IFormConfig;
   metamodel: IModelTypeComposite<any>;
   viewmodel: IModelView<any>;

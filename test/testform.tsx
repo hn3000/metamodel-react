@@ -9,7 +9,8 @@ import {
   IFormContext,
   MetaFormConfig,
   MetaFormContext,
-  IValidationMessage
+  IValidationMessage,
+  MetaComponentBase
 } from '../src/metamodel-react';
 import * as mm from '@hn3000/metamodel';
 
@@ -17,65 +18,33 @@ import { ContactFormPage2 } from './testpage2';
 
 var registry = new mm.ModelSchemaParser();
 
-/*
-registry.addSchemaObject(
-  "TestForm",
-  {
-    type: "object",
-    properties: {
-      firstname: { type: "string", maxLength: 20 },
-      lastname:  { type: "string", maxLength: 20 },
-      username:  { type: "string", maxLength: 20, format: "username" },
-      email:     { type: "string", maxLength: 20, format: "email" },
-      email2:    { type: "string", maxLength: 20, format: "email" },
-      country:   { type: "string", format: "countrycode" },
-      birth:     { type: "string", format: "date-time", constraints:[ { kind: "minAge", value: "18years" }] }
-    },
-    constraints: [
-      { kind: "equalFields", fields: [ "email2", "email" ] }
-    ],
-    pages: [
-      { fields: ["firstname", "lastname"] },
-      { fields: ["email", "email2", "blah"] }
-    ]
-  }
-);
-*/
-
-
 interface TestFormProps {
   context: MetaFormContext;
 }
-class TestForm extends React.Component<TestFormProps,any> {
-  constructor(props:TestFormProps) {
-    super(props);
-
+class TestForm extends MetaComponentBase<TestFormProps,any> {
+  constructor(props:TestFormProps, context:any) {
+    super(props, context);
   }
 
-
   render() {
-    let context = this.props.context;
-
     return (
-      <MetaForm context={context}>
-        <div className={'page'+context.currentPage}> 
-          <button disabled={!context.pageBackAllowed()} onClick={context.pageBack}>back</button>
-          <button disabled={!context.pageNextAllowed()} onClick={context.pageNext}>next</button>
+      <MetaForm context={this.props.context}>
+        <div className={'page'+this.props.context.currentPage}> 
+          <button disabled={!this.props.context.pageBackAllowed()} onClick={this.props.context.pageBack}>back</button>
+          <button disabled={!this.props.context.pageNextAllowed()} onClick={this.props.context.pageNext}>next</button>
         </div>
         <div>
-          <MetaPage page={0} context={context}>
-            <MetaInput field="firstname" context={context} />
-            <MetaInput field="lastname"  context={context} />
-            <MetaInput field="username"  context={context} />
-            <MetaInput field="country"   context={context} flavor="select"/>
+          <MetaPage page={0}>
+            <MetaInput field="firstname" />
+            <MetaInput field="lastname" />
+            <MetaInput field="username" />
+            <MetaInput field="country" flavor="select"/>
           </MetaPage>
-          <ContactFormPage2
-            context={context}
-          />
+          <ContactFormPage2 />
         </div>
-        <div className={'page'+context.currentPage+'b:'+context.pageBackAllowed()+'-n:'+context.pageNextAllowed()}>
-        <button disabled={!context.pageBackAllowed()} onClick={context.pageBack}>back</button>
-        <button disabled={!context.pageNextAllowed()} onClick={context.pageNext}>next</button>
+        <div className={'page'+this.props.context.currentPage+'b:'+this.props.context.pageBackAllowed()+'-n:'+this.props.context.pageNextAllowed()}>
+        <button disabled={!this.props.context.pageBackAllowed()} onClick={this.props.context.pageBack}>back</button>
+        <button disabled={!this.props.context.pageNextAllowed()} onClick={this.props.context.pageNext}>next</button>
         </div>
       </MetaForm>
     );
@@ -143,7 +112,7 @@ function validateFormData(context:IFormContext) {
   var messages: IValidationMessage[] = [];
 
   if (data.username === 'hn3000') {
-    messages = [ {path: 'username', msg:'username is already taken', isError: true } ];
+    messages = [ {path: 'username', msg:'username is already taken', code:'username-taken', isError: true } ];
   }
 
   return Promise.resolve(messages);

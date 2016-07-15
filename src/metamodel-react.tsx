@@ -9,7 +9,9 @@ import {
   IModelView,
   ValidationScope,
   ModelView,
-  IValidationMessage
+  IValidationMessage,
+  IClientProps,
+  ClientProps
 } from '@hn3000/metamodel';
 
 export {
@@ -19,7 +21,9 @@ export {
   IModelView,
   ValidationScope,
   ModelView,
-  IValidationMessage
+  IValidationMessage,
+  IClientProps,
+  ClientProps
 } from '@hn3000/metamodel';
 
 import { Promise } from 'es6-promise';
@@ -68,8 +72,9 @@ import {
   JsonPointer
 } from '@hn3000/metamodel';
 
-export class MetaFormContext implements IFormContext {
+export class MetaFormContext extends ClientProps implements IFormContext, IClientProps {
   constructor(config: IFormConfig, metamodel:IModelTypeComposite<any>, data:any={}) {
+    super();
     this._config = config;
     this._metamodel = metamodel;
     this._viewmodel = new ModelView(metamodel, data);
@@ -180,7 +185,7 @@ export class MetaFormContext implements IFormContext {
               return result;
             }, () => {
               return validatedModel.withValidationMessages([
-                { path:"", msg:"server communication failed", isError: true }
+                { path:"", msg:"internal error (page transition handler)", code:'transition-error', isError: true }
               ])
             });
           } else {
@@ -349,29 +354,51 @@ export interface IMetaFormBaseProps {
 export interface IMetaFormBaseState {
   currentPage?:number;
 }
-export abstract class MetaFormBase<
+
+export var MetaForm_ContextTypes = {
+  formContext: React.PropTypes.shape({
+    config: React.PropTypes.object,
+    metamodel: React.PropTypes.object,
+    viewmodel: React.PropTypes.object,
+    currentPage: React.PropTypes.number,
+    i18nData: React.PropTypes.object
+  })
+};
+
+export abstract class MetaComponentBase<
       P extends IMetaFormBaseProps, 
       S extends IMetaFormBaseState
     > 
     extends React.Component<P, S> 
 {
-  constructor(props:P, state:S) {
-    super(props, state);
+
+  static contextTypes = MetaForm_ContextTypes;
+
+  constructor(props:P, context?:MetaFormContext) {
+    super(props, context);
     this._unsubscribe = null;
   }
 
-  protected _updateState(context?:IFormContext) {
+  get formContext():IFormContext {
+    return this.props.context || (this.context as any).formContext;
+  } 
+
+  protected _updatedState(context?:IFormContext, initState?:boolean) {
     let newState:S = { 
       currentPage: context.currentPage 
     } as any;
-    this.setState(newState);
+    if (initState) {
+      this.state = newState;
+    } else {
+      this.setState(newState);
+    }
   }
 
   componentDidMount() {
     this._unsubscribe && this._unsubscribe();
-    this._unsubscribe = this.props.context.subscribe(() => {
+    this._unsubscribe = this.formContext.subscribe(() => {
       if (!this._unsubscribe) return;
-      //this._updateState(this.props.context);
+      this._updatedState(this.formContext);
       this.forceUpdate();
     });
   }
@@ -385,34 +412,37 @@ export abstract class MetaFormBase<
 
 }
 
-
-export class MetaForm extends MetaFormBase<IFormProps, IFormState> {
-  //childContextTypes = {
-  //  formcontext: React.PropTypes.object
-  //}
-  //getChildContext() {
-  //  return { formcontext: this.props.context };
-  //}
+export class MetaForm extends MetaComponentBase<IFormProps, IFormState> {
+	static childContextTypes = MetaComponentBase.contextTypes; 
+	
+  getChildContext() {
+	  return {
+      formContext: this.props.context
+    };
+	}
 
   constructor(props:IFormProps, context:any) {
     super(props, context);
-    if (null == props.context) console.log("no context found in context for MetaForm", props);
+    //if (null == props.context ) console.log("no context found in context for MetaForm", props);
+    if (null == this.formContext || null == this.formContext.metamodel) {
+      console.log("missing context info in MetaForm", props, context);
+    }
     this.state = {
-      viewmodel: this.props.context.viewmodel,
-      currentPage: this.props.context.currentPage
+      viewmodel: this.formContext.viewmodel,
+      currentPage: this.formContext.currentPage
     };
   }
 
 
   render() {
-    let Wrapper = this.props.context.config.wrappers.form;
+    let Wrapper = this.formContext.config.wrappers.form;
 
     /*
     let adjustedChildren = React.Children.map(this.props.children,
       (c) => React.cloneElement(c, {context: this.props.context}));
     */
     return (<Wrapper>
-      <form id={this.props.context.metamodel.name} >
+      <form id={this.formContext.metamodel.name} >
         {this.props.children}
       </form>
       </Wrapper>);
@@ -424,66 +454,64 @@ export class MetaForm extends MetaFormBase<IFormProps, IFormState> {
       currentPage: context.currentPage
     })
   }
-
 }
 
-export class MetaPage extends React.Component<IPageProps, IPageState> {
+
+
+export class MetaPage extends MetaComponentBase<IPageProps, IPageState> {
+
+  static contextTypes = MetaForm_ContextTypes;
 
   constructor(props:IPageProps, context:any) {
     super(props, context);
-    if (null == props.context) console.log("no context found in context for MetaPage", props);
+    if (null == this.formContext || null == this.formContext.metamodel) {
+      console.log("missing context info in MetaForm", props, context);
+    }
 
-    this.state = {
-        currentPage: this.props.context.currentPage
-    };
   }
   render() {
-    //let context = this.context.formcontext || this.props.context;
-    let context = this.props.context;
+    let context = this.formContext;
+
     if (this.props.page == context.currentPage) {
-      let Wrapper = this.props.context.config.wrappers.page;
+      let Wrapper = this.formContext.config.wrappers.page;
       return <Wrapper>{this.props.children}</Wrapper>;
     }
     return null;
   }
 
-  componentDidMount() {
-    this._unsubscribe && this._unsubscribe();
-    this._unsubscribe = this.props.context.subscribe(() => {
-      this.setState({
-        currentPage: this.props.context.currentPage
-      });
-    });
+  _updatedState(context:IFormContext, initState:boolean) {
+    var result = {
+        currentPage: this.formContext.currentPage
+    };
+    if (initState) {
+      this.state = result;
+    } else {
+      this.setState(result);
+    }
+    return result;
   }
-
-  componentWillUnmount() {
-    this._unsubscribe && this._unsubscribe();
-    this._unsubscribe = null;
-  }
-
-  private _unsubscribe:()=>void;
 }
 
-function changeHandler(model:IFormContext, fieldName:string) {
-  return (event:React.FormEvent) => {
-    let target = event.target as any;
+function changeHandler(context:IFormContext, fieldName:string) {
+  return (evt:React.FormEvent) => {
+    let target = evt.target as any;
     if (target.type === "checkbox") {
-      model.updateModel(fieldName, target.checked);
+      context.updateModel(fieldName, target.checked);
     } else {
-      model.updateModel(fieldName, target.value);
+      context.updateModel(fieldName, target.value);
     }
   }
 }
 
-export class MetaInput extends React.Component<IInputProps, IInputState> {
+export class MetaInput extends MetaComponentBase<IInputProps, IInputState> {
   constructor(props:IInputProps, context:any) {
     super(props, context);
-    if (null == props.context) console.log("no context found in context for MetaInput", props);
-    this.state = this._updatedState();
+    if (null == this.formContext) console.log("no context found for MetaInput", props);
+    this._updatedState(this.formContext, true);
   }
 
   render() {
-    var context = this.props.context;
+    let context = this.formContext;
     var fieldName = this.props.field;
     var fieldType = context.metamodel.subModel(fieldName);
     var field = fieldType && fieldType.asItemType();
@@ -493,7 +521,7 @@ export class MetaInput extends React.Component<IInputProps, IInputState> {
       return null;
     }
 
-    let formid = this.props.context.metamodel.name;
+    let formid = this.formContext.metamodel.name;
 
     let props:IInputComponentProps = { 
       id: formid+'#'+this.props.field,
@@ -525,30 +553,18 @@ export class MetaInput extends React.Component<IInputProps, IInputState> {
 
   }
 
-  componentDidMount() {
-    this._unsubscribe && this._unsubscribe();
-    this._unsubscribe = this.props.context.subscribe(
-      () => { 
-        if (!this._unsubscribe) return;
-        this.setState(this._updatedState()); 
-    });
-  }
-
-  componentWillUnmount() {
-    this._unsubscribe && this._unsubscribe();
-    this._unsubscribe = null;
-  }
-
-  _updatedState ():IInputState {
-      let context = this.props.context;
+  _updatedState (context:IFormContext, initState:boolean) {
       let fieldName = this.props.field;
       let result = {
     	  fieldErrors: context.viewmodel.getFieldMessages(fieldName),
     	  fieldValue: context.viewmodel.getFieldValue(fieldName)
-      }; 
-      return result; 
+      };
+      if (initState) {
+        this.state = result;
+      } else {
+        this.setState(result);
+      }
     }
 
-  private _unsubscribe:()=>void;
   private _context:any;
 }

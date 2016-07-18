@@ -444,6 +444,7 @@ var MetaInput = (function (_super) {
             id: formid + '#' + this.props.field,
             field: this.props.field,
             fieldType: fieldType,
+            editable: context.viewmodel.isFieldEditable(this.props.field),
             hasErrors: (0 < this.state.fieldErrors.length),
             errors: this.state.fieldErrors,
             value: this.state.fieldValue || "",

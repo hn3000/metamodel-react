@@ -51,6 +51,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     context?: IFormContext;
     field?: string;
     fieldType?: IModelType<any>;
+    editable?:boolean;
     flavour?: string;
     flavor?: string;
     value?: any;

@@ -41,6 +41,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     flavor?: string;
     value?: any;
     defaultValue?: any;
+    placeholder?: string;
     onChange?: (newValue: any) => void;
 }
 export interface IInputComponentState extends IInputProps {

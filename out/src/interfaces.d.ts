@@ -29,6 +29,7 @@ export interface IInputState {
 export interface IWrapperComponentProps {
     hasErrors?: boolean;
     errors?: IValidationMessage[];
+    field?: string;
 }
 export interface IInputComponentProps extends IWrapperComponentProps {
     id?: string;
@@ -67,7 +68,7 @@ export interface IComponentFinder {
     remove(matcher: IComponentMatcher): any;
 }
 export interface IFormEvents {
-    onFormInit?: (ctx: IFormContext) => Promise<any>;
+    onFormInit?: (ctx: IFormContext) => Promise<any | ((model: IModelView<any>) => IModelView<any>)>;
     onPageTransition?: (ctx: IFormContext, direction: number) => Promise<IValidationMessage[]>;
 }
 export interface IFormConfig extends IComponentFinder, IFormEvents {
@@ -82,6 +83,7 @@ export interface IFormContext extends IClientProps {
     currentPage: number;
     subscribe(listener: () => any): () => void;
     updateModel(field: string, value: any): void;
+    updateModelTransactional(updater: (model: IModelView<any>) => IModelView<any>): void;
     updatePage(step: number): void;
     pageNext: (event: UIEvent) => void;
     pageBack: (event: UIEvent) => void;

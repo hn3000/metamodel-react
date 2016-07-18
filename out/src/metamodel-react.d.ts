@@ -16,6 +16,7 @@ export declare class MetaFormContext extends ClientProps implements IFormContext
     readonly currentPage: number;
     subscribe(listener: () => any): () => void;
     updateModel(field: string, value: any): void;
+    updateModelTransactional(updater: (model: IModelView<any>) => IModelView<any>): void;
     _updateViewModel(viewmodel: IModelView<any>): void;
     _notifyAll(): void;
     updatePage(step: number): void;

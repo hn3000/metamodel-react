@@ -37,7 +37,11 @@ var MetaFormContext = (function (_super) {
         if (null != this._config.onFormInit) {
             var update = this._config.onFormInit(this);
             update.then(function (x) {
-                if (x) {
+                if (typeof x === 'function') {
+                    var updater = x;
+                    _this.updateModelTransactional(updater);
+                }
+                else if (null != x) {
                     _this._updateViewModel(_this._viewmodel.withAddedData(x));
                 }
             });
@@ -92,8 +96,11 @@ var MetaFormContext = (function (_super) {
         return this._listeners.subscribe(listener);
     };
     MetaFormContext.prototype.updateModel = function (field, value) {
+        this.updateModelTransactional(function (model) { return model.withChangedField(field, value); });
+    };
+    MetaFormContext.prototype.updateModelTransactional = function (updater) {
         var _this = this;
-        var newModel = this._viewmodel.withChangedField(field, value);
+        var newModel = updater(this._viewmodel);
         this._updateViewModel(newModel);
         if (this._config.validateOnUpdate || newModel.validationScope() != metamodel_1.ValidationScope.VISITED) {
             var validated = newModel.validateDefault();

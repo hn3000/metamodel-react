@@ -87,7 +87,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     if (null != this._config.onFormInit) {
       var update = this._config.onFormInit(this);
       update.then((x) => {
-        if (x) {
+        if (typeof x === 'function') {
+          let updater = x as ((model:IModelView<any>) => IModelView<any>);
+          this.updateModelTransactional(updater);
+        } else if (null != x) {
           this._updateViewModel(this._viewmodel.withAddedData(x));
         }
       });
@@ -134,7 +137,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   }
 
   updateModel(field:string, value:any) {
-    let newModel = this._viewmodel.withChangedField(field, value);
+    this.updateModelTransactional(model => model.withChangedField(field,value));
+  }
+  updateModelTransactional(updater:(model:IModelView<any>) => IModelView<any>) {
+    let newModel = updater(this._viewmodel);
     this._updateViewModel(newModel);
     if (this._config.validateOnUpdate || newModel.validationScope() != ValidationScope.VISITED) {
       let validated = newModel.validateDefault();

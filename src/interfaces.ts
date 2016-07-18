@@ -44,6 +44,7 @@ export interface IInputState {
 export interface IWrapperComponentProps {
     hasErrors?: boolean;
     errors?: IValidationMessage[];
+    field?:string;
 }
 
 export interface IInputComponentProps extends IWrapperComponentProps {
@@ -90,7 +91,7 @@ export interface IComponentFinder {
 }
 
 export interface IFormEvents {
-  onFormInit?: (ctx:IFormContext) => Promise<any>;
+  onFormInit?: (ctx:IFormContext) => Promise<any|((model:IModelView<any>)=>IModelView<any>)>;
   onPageTransition?: (ctx:IFormContext, direction:number) => Promise<IValidationMessage[]>;
 }
 
@@ -115,6 +116,7 @@ export interface IFormContext extends IClientProps {
 
   //updated in place, viewmodel will change, though
   updateModel(field:string, value:any):void;
+  updateModelTransactional(updater:(model:IModelView<any>)=>IModelView<any>):void;
 
   updatePage(step:number):void;
   

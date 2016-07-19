@@ -63,6 +63,9 @@ import {
 
 import * as fields from './default-field-types';
 
+import { propsDifferent } from './props-different';
+export { propsDifferent } from './props-different';
+
 import {
   ListenerManager,
   clickHandler
@@ -405,6 +408,13 @@ export abstract class MetaContextAware<
   } 
 }
 
+export class MetaContextAwarePure<P,S> extends MetaContextAware<P,S> {
+  shouldComponentUpdate(nextProps: P, nextState: S, nextContext: any): boolean {
+    return propsDifferent(this.props, nextProps);
+  }
+
+}
+
 export abstract class MetaContextFollower<
       P extends IMetaFormBaseProps, 
       S extends IMetaFormBaseState
@@ -528,23 +538,25 @@ export class MetaPage extends MetaContextAware<IPageProps, IPageState> {
   }
 }
 
-function changeHandler(context:IFormContext, fieldName:string) {
-  return (evt:React.FormEvent) => {
-    let target = evt.target as any;
-    if (target.type === "checkbox") {
-      context.updateModel(fieldName, target.checked);
-    } else {
-      context.updateModel(fieldName, target.value);
-    }
-  }
-}
-
 export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
   constructor(props:IInputProps, context:any) {
     super(props, context);
     if (null == this.formContext) console.log("no context found for MetaInput", props);
     this._updatedState(this.formContext, true);
 
+    this.changeHandler = this.changeHandler.bind(this);
+  }
+
+  changeHandler(evt:React.FormEvent) {
+    let target = evt.target as any;
+    let context = this.formContext;
+    let fieldName = this.props.field;
+
+    if (target.type === "checkbox") {
+      context.updateModel(fieldName, target.checked);
+    } else {
+      context.updateModel(fieldName, target.value);
+    }
   }
 
   render() {
@@ -571,7 +583,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
       errors: this.state.fieldErrors,
       value: theValue,
       defaultValue: theValue,
-      onChange: changeHandler(context, fieldName),
+      onChange: this.changeHandler,
       context: context
     };
 

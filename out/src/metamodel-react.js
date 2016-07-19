@@ -21,6 +21,9 @@ exports.ModelView = metamodel_2.ModelView;
 exports.ClientProps = metamodel_2.ClientProps;
 var es6_promise_1 = require('es6-promise');
 var fields = require('./default-field-types');
+var props_different_1 = require('./props-different');
+var props_different_2 = require('./props-different');
+exports.propsDifferent = props_different_2.propsDifferent;
 var listenermanager_1 = require('./listenermanager');
 var MetaFormContext = (function (_super) {
     __extends(MetaFormContext, _super);
@@ -334,6 +337,17 @@ var MetaContextAware = (function (_super) {
     return MetaContextAware;
 }(React.Component));
 exports.MetaContextAware = MetaContextAware;
+var MetaContextAwarePure = (function (_super) {
+    __extends(MetaContextAwarePure, _super);
+    function MetaContextAwarePure() {
+        _super.apply(this, arguments);
+    }
+    MetaContextAwarePure.prototype.shouldComponentUpdate = function (nextProps, nextState, nextContext) {
+        return props_different_1.propsDifferent(this.props, nextProps);
+    };
+    return MetaContextAwarePure;
+}(MetaContextAware));
+exports.MetaContextAwarePure = MetaContextAwarePure;
 var MetaContextFollower = (function (_super) {
     __extends(MetaContextFollower, _super);
     function MetaContextFollower(props, context) {
@@ -439,17 +453,6 @@ var MetaPage = (function (_super) {
     return MetaPage;
 }(MetaContextAware));
 exports.MetaPage = MetaPage;
-function changeHandler(context, fieldName) {
-    return function (evt) {
-        var target = evt.target;
-        if (target.type === "checkbox") {
-            context.updateModel(fieldName, target.checked);
-        }
-        else {
-            context.updateModel(fieldName, target.value);
-        }
-    };
-}
 var MetaInput = (function (_super) {
     __extends(MetaInput, _super);
     function MetaInput(props, context) {
@@ -457,7 +460,19 @@ var MetaInput = (function (_super) {
         if (null == this.formContext)
             console.log("no context found for MetaInput", props);
         this._updatedState(this.formContext, true);
+        this.changeHandler = this.changeHandler.bind(this);
     }
+    MetaInput.prototype.changeHandler = function (evt) {
+        var target = evt.target;
+        var context = this.formContext;
+        var fieldName = this.props.field;
+        if (target.type === "checkbox") {
+            context.updateModel(fieldName, target.checked);
+        }
+        else {
+            context.updateModel(fieldName, target.value);
+        }
+    };
     MetaInput.prototype.render = function () {
         var context = this.formContext;
         var fieldName = this.props.field;
@@ -478,7 +493,7 @@ var MetaInput = (function (_super) {
             errors: this.state.fieldErrors,
             value: theValue,
             defaultValue: theValue,
-            onChange: changeHandler(context, fieldName),
+            onChange: this.changeHandler,
             context: context
         };
         var flavor = this.props.flavor || this.props.flavour;

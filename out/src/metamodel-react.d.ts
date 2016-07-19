@@ -4,6 +4,7 @@ export { IModelType, IModelTypeComposite, IModelTypeItem, IModelView, Validation
 export { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IWrapperComponentProps, IInputComponentProps, IInputComponentState, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
 import { IFormProps, IFormState, IPageProps, IPageState, IInputProps, IInputState, IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './interfaces';
 import * as fields from './default-field-types';
+export { propsDifferent } from './props-different';
 export declare class MetaFormContext extends ClientProps implements IFormContext, IClientProps {
     constructor(config: IFormConfig, metamodel: IModelTypeComposite<any>, data?: any);
     pageNext: (event: UIEvent) => void;
@@ -64,6 +65,9 @@ export declare abstract class MetaContextAware<P extends IMetaFormBaseProps, S e
     constructor(props: P, context?: MetaFormContext);
     readonly formContext: IFormContext;
 }
+export declare class MetaContextAwarePure<P, S> extends MetaContextAware<P, S> {
+    shouldComponentUpdate(nextProps: P, nextState: S, nextContext: any): boolean;
+}
 export declare abstract class MetaContextFollower<P extends IMetaFormBaseProps, S extends IMetaFormBaseState> extends MetaContextAware<P, S> {
     static contextTypes: {
         formContext: React.Requireable<any>;
@@ -97,6 +101,7 @@ export declare class MetaPage extends MetaContextAware<IPageProps, IPageState> {
 }
 export declare class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
     constructor(props: IInputProps, context: any);
+    changeHandler(evt: React.FormEvent): void;
     render(): JSX.Element;
     shouldComponentUpdate(nextProps: IInputProps, nextState: IInputState, nextCtx: any): boolean;
     _updatedState(context: IFormContext, initState: boolean): void;

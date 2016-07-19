@@ -99,17 +99,25 @@ var MetaFormContext = (function (_super) {
         this.updateModelTransactional(function (model) { return model.withChangedField(field, value); });
     };
     MetaFormContext.prototype.updateModelTransactional = function (updater) {
-        var _this = this;
         var newModel = updater(this._viewmodel);
         this._updateViewModel(newModel);
-        if (this._config.validateOnUpdate || newModel.validationScope() != metamodel_1.ValidationScope.VISITED) {
-            var validated = newModel.validateDefault();
-            validated.then(function (x) { return _this._updateViewModel(x); });
-        }
     };
     MetaFormContext.prototype._updateViewModel = function (viewmodel) {
+        var _this = this;
         this._viewmodel = viewmodel;
         this._notifyAll();
+        var config = this._config;
+        if (config.validateOnUpdate || (config.validateOnUpdateIfInvalid && !viewmodel.isVisitedValid())) {
+            var validator = function () {
+                var validated = _this._viewmodel.validateDefault();
+                validated.then(function (x) { return _this._updateViewModel(x); });
+                _this._debounceValidationTimeout = null;
+            };
+            if (this._debounceValidationTimeout) {
+                clearTimeout(this._debounceValidationTimeout);
+            }
+            this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceTime);
+        }
     };
     MetaFormContext.prototype._notifyAll = function () {
         this._listeners.forEach(function (x) { return x(); });
@@ -207,6 +215,8 @@ var MetaFormConfig = (function () {
     function MetaFormConfig(wrappers, components) {
         this.usePageIndex = false;
         this.validateOnUpdate = false;
+        this.validateOnUpdateIfInvalid = false;
+        this.validateDebounceTime = 1000; //in ms
         this.onFormInit = null; // </any>
         this.onPageTransition = null; // </IValidationMessage>
         this._wrappers = wrappers || MetaFormConfig.defaultWrappers();
@@ -306,20 +316,29 @@ exports.MetaForm_ContextTypes = {
         i18nData: React.PropTypes.object
     })
 };
-var MetaComponentBase = (function (_super) {
-    __extends(MetaComponentBase, _super);
-    function MetaComponentBase(props, context) {
+var MetaContextAware = (function (_super) {
+    __extends(MetaContextAware, _super);
+    function MetaContextAware(props, context) {
         _super.call(this, props, context);
-        this._unsubscribe = null;
     }
-    Object.defineProperty(MetaComponentBase.prototype, "formContext", {
+    Object.defineProperty(MetaContextAware.prototype, "formContext", {
         get: function () {
             return this.props.context || this.context.formContext;
         },
         enumerable: true,
         configurable: true
     });
-    MetaComponentBase.prototype._updatedState = function (context, initState) {
+    MetaContextAware.contextTypes = exports.MetaForm_ContextTypes;
+    return MetaContextAware;
+}(React.Component));
+exports.MetaContextAware = MetaContextAware;
+var MetaContextFollower = (function (_super) {
+    __extends(MetaContextFollower, _super);
+    function MetaContextFollower(props, context) {
+        _super.call(this, props, context);
+        this._unsubscribe = null;
+    }
+    MetaContextFollower.prototype._updatedState = function (context, initState) {
         var newState = {
             currentPage: context.currentPage
         };
@@ -330,7 +349,7 @@ var MetaComponentBase = (function (_super) {
             this.setState(newState);
         }
     };
-    MetaComponentBase.prototype.componentDidMount = function () {
+    MetaContextFollower.prototype.componentDidMount = function () {
         var _this = this;
         this._unsubscribe && this._unsubscribe();
         this._unsubscribe = this.formContext.subscribe(function () {
@@ -340,14 +359,14 @@ var MetaComponentBase = (function (_super) {
             _this.forceUpdate();
         });
     };
-    MetaComponentBase.prototype.componentWillUnmount = function () {
+    MetaContextFollower.prototype.componentWillUnmount = function () {
         this._unsubscribe && this._unsubscribe();
         this._unsubscribe = null;
     };
-    MetaComponentBase.contextTypes = exports.MetaForm_ContextTypes;
-    return MetaComponentBase;
-}(React.Component));
-exports.MetaComponentBase = MetaComponentBase;
+    MetaContextFollower.contextTypes = exports.MetaForm_ContextTypes;
+    return MetaContextFollower;
+}(MetaContextAware));
+exports.MetaContextFollower = MetaContextFollower;
 var MetaForm = (function (_super) {
     __extends(MetaForm, _super);
     function MetaForm(props, context) {
@@ -382,9 +401,9 @@ var MetaForm = (function (_super) {
             currentPage: context.currentPage
         });
     };
-    MetaForm.childContextTypes = MetaComponentBase.contextTypes;
+    MetaForm.childContextTypes = MetaContextAware.contextTypes;
     return MetaForm;
-}(MetaComponentBase));
+}(MetaContextFollower));
 exports.MetaForm = MetaForm;
 var MetaPage = (function (_super) {
     __extends(MetaPage, _super);
@@ -416,7 +435,7 @@ var MetaPage = (function (_super) {
     };
     MetaPage.contextTypes = exports.MetaForm_ContextTypes;
     return MetaPage;
-}(MetaComponentBase));
+}(MetaContextAware));
 exports.MetaPage = MetaPage;
 function changeHandler(context, fieldName) {
     return function (evt) {
@@ -486,6 +505,17 @@ var MetaInput = (function (_super) {
             return React.createElement("div", null, children);
         }
     };
+    MetaInput.prototype.shouldComponentUpdate = function (nextProps, nextState, nextCtx) {
+        var nextContext = nextCtx.formContext;
+        var thisContext = this.formContext;
+        var field = this.props.field;
+        var state = this.state;
+        var newValue = nextContext.viewmodel.getFieldValue(field);
+        var oldValue = state.fieldValue;
+        var newErrors = nextContext.viewmodel.getFieldMessages(field);
+        var oldErrors = state.fieldErrors;
+        return newValue != oldValue || newErrors != oldErrors && newErrors.length > 0 && oldErrors.length > 0;
+    };
     MetaInput.prototype._updatedState = function (context, initState) {
         var fieldName = this.props.field;
         var result = {
@@ -496,10 +526,17 @@ var MetaInput = (function (_super) {
             this.state = result;
         }
         else {
-            this.setState(result);
+            var state = this.state;
+            var newValue = result.fieldValue;
+            var oldValue = state.fieldValue;
+            var newErrors = result.fieldErrors;
+            var oldErrors = state.fieldErrors;
+            if (newValue !== oldValue || newErrors !== oldErrors && (newErrors.length > 0 || oldErrors.length > 0)) {
+                this.setState(result);
+            }
         }
     };
     return MetaInput;
-}(MetaComponentBase));
+}(MetaContextFollower));
 exports.MetaInput = MetaInput;
 //# sourceMappingURL=metamodel-react.js.map

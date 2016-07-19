@@ -10,7 +10,7 @@ import {
   MetaFormConfig,
   MetaFormContext,
   IValidationMessage,
-  MetaComponentBase
+  MetaContextFollower
 } from '../src/metamodel-react';
 import * as mm from '@hn3000/metamodel';
 
@@ -21,7 +21,7 @@ var registry = new mm.ModelSchemaParser();
 interface TestFormProps {
   context: MetaFormContext;
 }
-class TestForm extends MetaComponentBase<TestFormProps,any> {
+class TestForm extends MetaContextFollower<TestFormProps,any> {
   constructor(props:TestFormProps, context:any) {
     super(props, context);
   }

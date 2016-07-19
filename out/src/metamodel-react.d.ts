@@ -17,6 +17,7 @@ export declare class MetaFormContext extends ClientProps implements IFormContext
     subscribe(listener: () => any): () => void;
     updateModel(field: string, value: any): void;
     updateModelTransactional(updater: (model: IModelView<any>) => IModelView<any>): void;
+    private _debounceValidationTimeout;
     _updateViewModel(viewmodel: IModelView<any>): void;
     _notifyAll(): void;
     updatePage(step: number): void;
@@ -35,6 +36,8 @@ export declare class MetaFormConfig implements IFormConfig {
     remove(cm: IComponentMatcher): void;
     usePageIndex: boolean;
     validateOnUpdate: boolean;
+    validateOnUpdateIfInvalid: boolean;
+    validateDebounceTime: number;
     onFormInit: (form: IFormContext) => Promise<any>;
     onPageTransition: (form: IFormContext, direction: number) => Promise<IValidationMessage[]>;
     private _wrappers;
@@ -54,18 +57,24 @@ export interface IMetaFormBaseState {
 export declare var MetaForm_ContextTypes: {
     formContext: React.Requireable<any>;
 };
-export declare abstract class MetaComponentBase<P extends IMetaFormBaseProps, S extends IMetaFormBaseState> extends React.Component<P, S> {
+export declare abstract class MetaContextAware<P extends IMetaFormBaseProps, S extends IMetaFormBaseState> extends React.Component<P, S> {
     static contextTypes: {
         formContext: React.Requireable<any>;
     };
     constructor(props: P, context?: MetaFormContext);
     readonly formContext: IFormContext;
+}
+export declare abstract class MetaContextFollower<P extends IMetaFormBaseProps, S extends IMetaFormBaseState> extends MetaContextAware<P, S> {
+    static contextTypes: {
+        formContext: React.Requireable<any>;
+    };
+    constructor(props: P, context?: MetaFormContext);
     protected _updatedState(context?: IFormContext, initState?: boolean): void;
     componentDidMount(): void;
     componentWillUnmount(): void;
     private _unsubscribe;
 }
-export declare class MetaForm extends MetaComponentBase<IFormProps, IFormState> {
+export declare class MetaForm extends MetaContextFollower<IFormProps, IFormState> {
     static childContextTypes: {
         formContext: React.Requireable<any>;
     };
@@ -76,7 +85,7 @@ export declare class MetaForm extends MetaComponentBase<IFormProps, IFormState> 
     render(): JSX.Element;
     _updateState(context: IFormContext): void;
 }
-export declare class MetaPage extends MetaComponentBase<IPageProps, IPageState> {
+export declare class MetaPage extends MetaContextAware<IPageProps, IPageState> {
     static contextTypes: {
         formContext: React.Requireable<any>;
     };
@@ -86,9 +95,10 @@ export declare class MetaPage extends MetaComponentBase<IPageProps, IPageState> 
         currentPage: number;
     };
 }
-export declare class MetaInput extends MetaComponentBase<IInputProps, IInputState> {
+export declare class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
     constructor(props: IInputProps, context: any);
     render(): JSX.Element;
+    shouldComponentUpdate(nextProps: IInputProps, nextState: IInputState, nextCtx: any): boolean;
     _updatedState(context: IFormContext, initState: boolean): void;
     private _context;
 }

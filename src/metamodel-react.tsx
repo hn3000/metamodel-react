@@ -142,15 +142,25 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   updateModelTransactional(updater:(model:IModelView<any>) => IModelView<any>) {
     let newModel = updater(this._viewmodel);
     this._updateViewModel(newModel);
-    if (this._config.validateOnUpdate || newModel.validationScope() != ValidationScope.VISITED) {
-      let validated = newModel.validateDefault();
-      validated.then((x) => this._updateViewModel(x));
-    }
   }
+  private _debounceValidationTimeout: number;
 
   _updateViewModel(viewmodel:IModelView<any>) {
     this._viewmodel = viewmodel;
     this._notifyAll();
+
+    let config = this._config;
+    if (config.validateOnUpdate || (config.validateOnUpdateIfInvalid && !viewmodel.isVisitedValid())) {
+      let validator = () => {
+        let validated = this._viewmodel.validateDefault();
+        validated.then((x) => this._updateViewModel(x));      
+        this._debounceValidationTimeout = null;
+      };
+      if (this._debounceValidationTimeout) {
+        clearTimeout(this._debounceValidationTimeout);
+      }
+      this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceTime);
+    }
   }
 
   _notifyAll() {
@@ -304,6 +314,8 @@ export class MetaFormConfig implements IFormConfig {
 
   public usePageIndex = false;
   public validateOnUpdate: boolean = false;
+  public validateOnUpdateIfInvalid: boolean = false;
+  public validateDebounceTime: number = 1000; //in ms
 
   public onFormInit:(form:IFormContext)=>Promise<any> = null; // </any>
   public onPageTransition:(form:IFormContext, direction:number)=>Promise<IValidationMessage[]> = null; // </IValidationMessage>
@@ -371,7 +383,7 @@ export var MetaForm_ContextTypes = {
   })
 };
 
-export abstract class MetaComponentBase<
+export abstract class MetaContextAware<
       P extends IMetaFormBaseProps, 
       S extends IMetaFormBaseState
     > 
@@ -382,12 +394,26 @@ export abstract class MetaComponentBase<
 
   constructor(props:P, context?:MetaFormContext) {
     super(props, context);
-    this._unsubscribe = null;
   }
 
   get formContext():IFormContext {
     return this.props.context || (this.context as any).formContext;
   } 
+}
+
+export abstract class MetaContextFollower<
+      P extends IMetaFormBaseProps, 
+      S extends IMetaFormBaseState
+    > 
+    extends MetaContextAware<P, S> 
+{
+
+  static contextTypes = MetaForm_ContextTypes;
+
+  constructor(props:P, context?:MetaFormContext) {
+    super(props, context);
+    this._unsubscribe = null;
+  }
 
   protected _updatedState(context?:IFormContext, initState?:boolean) {
     let newState:S = { 
@@ -418,8 +444,8 @@ export abstract class MetaComponentBase<
 
 }
 
-export class MetaForm extends MetaComponentBase<IFormProps, IFormState> {
-	static childContextTypes = MetaComponentBase.contextTypes; 
+export class MetaForm extends MetaContextFollower<IFormProps, IFormState> {
+	static childContextTypes = MetaContextAware.contextTypes; 
 	
   getChildContext() {
 	  return {
@@ -464,7 +490,7 @@ export class MetaForm extends MetaComponentBase<IFormProps, IFormState> {
 
 
 
-export class MetaPage extends MetaComponentBase<IPageProps, IPageState> {
+export class MetaPage extends MetaContextAware<IPageProps, IPageState> {
 
   static contextTypes = MetaForm_ContextTypes;
 
@@ -509,11 +535,12 @@ function changeHandler(context:IFormContext, fieldName:string) {
   }
 }
 
-export class MetaInput extends MetaComponentBase<IInputProps, IInputState> {
+export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
   constructor(props:IInputProps, context:any) {
     super(props, context);
     if (null == this.formContext) console.log("no context found for MetaInput", props);
     this._updatedState(this.formContext, true);
+
   }
 
   render() {
@@ -574,16 +601,39 @@ export class MetaInput extends MetaComponentBase<IInputProps, IInputState> {
 
   }
 
+  shouldComponentUpdate(nextProps: IInputProps, nextState: IInputState, nextCtx: any) {
+    let nextContext = nextCtx.formContext as IFormContext;
+    let thisContext = this.formContext;
+
+    let field = this.props.field;
+    let state = this.state;
+    let newValue = nextContext.viewmodel.getFieldValue(field);
+    let oldValue = state.fieldValue;
+    let newErrors = nextContext.viewmodel.getFieldMessages(field);
+    let oldErrors = state.fieldErrors; 
+
+    return newValue != oldValue || newErrors != oldErrors && newErrors.length > 0 && oldErrors.length > 0; 
+  }
+
   _updatedState (context:IFormContext, initState:boolean) {
       let fieldName = this.props.field;
       let result = {
     	  fieldErrors: context.viewmodel.getFieldMessages(fieldName),
     	  fieldValue: context.viewmodel.getFieldValue(fieldName)
       };
+
       if (initState) {
         this.state = result;
       } else {
-        this.setState(result);
+        let state = this.state;
+        let newValue = result.fieldValue;
+        let oldValue = state.fieldValue;
+        let newErrors = result.fieldErrors;
+        let oldErrors = state.fieldErrors; 
+
+        if (newValue !== oldValue || newErrors !== oldErrors && (newErrors.length > 0 || oldErrors.length > 0)) {
+          this.setState(result);
+        }
       }
     }
 

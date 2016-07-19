@@ -98,8 +98,11 @@ export interface IFormEvents {
 
 export interface IFormConfig extends IComponentFinder, IFormEvents {
   wrappers: IWrappers;
+
   usePageIndex: boolean;
-  validateOnUpdate: boolean;
+  validateOnUpdate: boolean;           // default false
+  validateOnUpdateIfInvalid: boolean;  // default false
+  validateDebounceTime: number;        // default 1000ms
 }
 
 export interface IFormContext extends IClientProps {

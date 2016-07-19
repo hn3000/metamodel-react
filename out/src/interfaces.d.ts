@@ -76,6 +76,8 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
     wrappers: IWrappers;
     usePageIndex: boolean;
     validateOnUpdate: boolean;
+    validateOnUpdateIfInvalid: boolean;
+    validateDebounceTime: number;
 }
 export interface IFormContext extends IClientProps {
     config: IFormConfig;

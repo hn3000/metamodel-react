@@ -104,7 +104,11 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     let vm = this._viewmodel;
     let hasNext = vm.currentPageIndex < vm.getPages().length;
 
-    return hasNext && vm.isPageValid(null); 
+    let config = this._config;
+
+    let validating = config.validateOnUpdateIfInvalid || config.validateOnUpdateIfInvalid; 
+
+    return hasNext && (vm.isPageValid(null) || !validating); 
   }
   pageBackAllowed():boolean {
     let vm = this._viewmodel;

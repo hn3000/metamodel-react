@@ -50,7 +50,9 @@ var MetaFormContext = (function (_super) {
     MetaFormContext.prototype.pageNextAllowed = function () {
         var vm = this._viewmodel;
         var hasNext = vm.currentPageIndex < vm.getPages().length;
-        return hasNext && vm.isPageValid(null);
+        var config = this._config;
+        var validating = config.validateOnUpdateIfInvalid || config.validateOnUpdateIfInvalid;
+        return hasNext && (vm.isPageValid(null) || !validating);
     };
     MetaFormContext.prototype.pageBackAllowed = function () {
         var vm = this._viewmodel;

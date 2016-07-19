@@ -447,6 +447,7 @@ var MetaInput = (function (_super) {
             return null;
         }
         var formid = this.formContext.metamodel.name;
+        var theValue = (undefined !== this.state.fieldValue) ? this.state.fieldValue : '';
         var props = {
             id: formid + '#' + this.props.field,
             field: this.props.field,
@@ -454,8 +455,8 @@ var MetaInput = (function (_super) {
             editable: context.viewmodel.isFieldEditable(this.props.field),
             hasErrors: (0 < this.state.fieldErrors.length),
             errors: this.state.fieldErrors,
-            value: this.state.fieldValue || "",
-            defaultValue: this.state.fieldValue || "",
+            value: theValue,
+            defaultValue: theValue,
             onChange: changeHandler(context, fieldName),
             context: context
         };

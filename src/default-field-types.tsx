@@ -1,5 +1,6 @@
 
 import * as React from 'react';
+
 import {
   IModelType,
   IModelTypeComposite
@@ -8,8 +9,12 @@ import {
 import {
   IInputComponentProps,
   IInputComponentState,
-  IWrapperComponentProps
-} from './interfaces';
+  IWrapperComponentProps 
+} from './api';
+
+import {
+  MetaContextAwarePure
+} from './base-components'
 
 export class FieldWrapper extends React.Component<IWrapperComponentProps,void> {
   render() {

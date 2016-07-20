@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IInputComponentProps, IInputComponentState, IWrapperComponentProps } from './interfaces';
+import { IInputComponentProps, IInputComponentState, IWrapperComponentProps } from './api';
 export declare class FieldWrapper extends React.Component<IWrapperComponentProps, void> {
     render(): JSX.Element;
 }

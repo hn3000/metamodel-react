@@ -23,14 +23,12 @@ export interface IFormState {
 }
 
 export interface IPageProps {
-    context?: IFormContext;
     page: number;
 }
 export interface IPageState {
     currentPage: number;
 }
 export interface IInputProps {
-    context?: IFormContext;
     field: string;
     flavour?: string;
     flavor?: string;
@@ -49,7 +47,6 @@ export interface IWrapperComponentProps {
 
 export interface IInputComponentProps extends IWrapperComponentProps {
     id?: string;
-    context?: IFormContext;
     field?: string;
     fieldType?: IModelType<any>;
     editable?:boolean;
@@ -59,6 +56,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     defaultValue?: any;
     placeholder?:string;
     onChange?: (newValue: any) => void;
+    context:IFormContext
 }
 
 export interface IInputComponentState extends IInputProps {

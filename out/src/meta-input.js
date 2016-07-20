@@ -22,6 +22,7 @@ var MetaInput = (function (_super) {
             console.log("no context found for MetaInput", props);
         this._updatedState(this.formContext, true);
         this.changeHandler = this.changeHandler.bind(this);
+        this.nochangeHandler = this.nochangeHandler.bind(this);
     }
     MetaInput.prototype.changeHandler = function (evt) {
         var target = evt.target;
@@ -40,6 +41,9 @@ var MetaInput = (function (_super) {
             }
         }
     };
+    MetaInput.prototype.nochangeHandler = function () {
+        // just a dummy to provide to the input
+    };
     MetaInput.prototype.render = function () {
         var context = this.formContext;
         var fieldName = this.props.field;
@@ -55,16 +59,17 @@ var MetaInput = (function (_super) {
         var fieldErrors = viewmodel.getFieldMessages(fieldName);
         var modelValue = viewmodel.getFieldValue(fieldName);
         var fieldValue = (null != modelValue) ? modelValue : '';
+        var isEditable = context.viewmodel.isFieldEditable(this.props.field);
         var props = {
             id: formid + '#' + this.props.field,
             field: this.props.field,
             fieldType: fieldType,
-            editable: context.viewmodel.isFieldEditable(this.props.field),
+            editable: isEditable,
             hasErrors: (0 < this.state.fieldErrors.length),
             errors: fieldErrors,
             value: fieldValue,
             defaultValue: fieldValue,
-            onChange: this.changeHandler,
+            onChange: isEditable ? this.changeHandler : this.nochangeHandler,
             context: this.formContext
         };
         var flavor = this.props.flavor || this.props.flavour;

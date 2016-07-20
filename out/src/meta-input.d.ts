@@ -7,6 +7,7 @@ export declare class MetaInput extends MetaContextFollower<IInputProps, IInputSt
     };
     constructor(props: IInputProps, context: any);
     changeHandler(evt: React.FormEvent): void;
+    nochangeHandler(): void;
     render(): JSX.Element;
     shouldComponentUpdate(nextProps: IInputProps, nextState: IInputState, nextCtx: any): boolean;
     _updatedState(context: IFormContext, initState: boolean): void;

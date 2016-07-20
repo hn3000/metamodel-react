@@ -21,6 +21,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
     this._updatedState(this.formContext, true);
 
     this.changeHandler = this.changeHandler.bind(this);
+    this.nochangeHandler = this.nochangeHandler.bind(this);
   }
 
   changeHandler(evt:React.FormEvent) {
@@ -38,6 +39,10 @@ export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
         context.updateModel(fieldName, target.value);
       }
     }
+  }
+
+  nochangeHandler() {
+    // just a dummy to provide to the input
   }
 
   render() {
@@ -59,16 +64,18 @@ export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
     let modelValue = viewmodel.getFieldValue(fieldName);
     let fieldValue = (null != modelValue) ? modelValue : '';
 
+    let isEditable = context.viewmodel.isFieldEditable(this.props.field);
+
     let props:IInputComponentProps = { 
       id: formid+'#'+this.props.field,
       field: this.props.field,
       fieldType: fieldType,
-      editable: context.viewmodel.isFieldEditable(this.props.field),
+      editable: isEditable,
       hasErrors: (0 < this.state.fieldErrors.length),
       errors: fieldErrors,
       value: fieldValue,
       defaultValue: fieldValue,
-      onChange: this.changeHandler,
+      onChange: isEditable ? this.changeHandler : this.nochangeHandler,
       context: this.formContext
     };
 

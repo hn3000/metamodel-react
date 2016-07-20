@@ -92,7 +92,11 @@ var MetaFormContext = (function (_super) {
         var newModel = updater(this._viewmodel);
         this._updateViewModel(newModel);
         var config = this._config;
-        if (config.validateOnUpdate || (config.validateOnUpdateIfInvalid && !newModel.isVisitedValid())) {
+        var needsValidation = config.validateOnUpdate;
+        if (!needsValidation && config.validateOnUpdateIfInvalid) {
+            needsValidation = !newModel.isValid();
+        }
+        if (needsValidation) {
             var validator = function () {
                 var validated = _this._viewmodel.validateDefault();
                 validated.then(function (x) { return _this._updateViewModel(x); });

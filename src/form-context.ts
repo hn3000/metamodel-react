@@ -96,7 +96,12 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     this._updateViewModel(newModel);
 
     let config = this._config;
-    if (config.validateOnUpdate || (config.validateOnUpdateIfInvalid && !newModel.isVisitedValid())) {
+
+    var needsValidation = config.validateOnUpdate;
+    if (!needsValidation && config.validateOnUpdateIfInvalid) {
+      needsValidation = !newModel.isValid();
+    }
+    if (needsValidation) {
       let validator = () => {
         let validated = this._viewmodel.validateDefault();
         validated.then((x) => this._updateViewModel(x));      

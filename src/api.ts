@@ -56,7 +56,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     defaultValue?: any;
     placeholder?:string;
     onChange?: (newValue: any) => void;
-    context:IFormContext
+    context?:IFormContext
 }
 
 export interface IInputComponentState extends IInputProps {

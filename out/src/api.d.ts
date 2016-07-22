@@ -3,6 +3,8 @@ import { IModelType, IModelTypeComposite, IModelView, IValidationMessage, IClien
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
+    action?: string;
+    method?: string;
 }
 export interface IFormState {
     viewmodel: IModelView<any>;
@@ -29,6 +31,13 @@ export interface IWrapperComponentProps {
     errors?: IValidationMessage[];
     field?: string;
 }
+export interface IFormWrapperProps extends IWrapperComponentProps {
+    id: string;
+    action?: string;
+    method?: string;
+}
+export interface IPageWrapperProps extends IWrapperComponentProps {
+}
 export interface IInputComponentProps extends IWrapperComponentProps {
     id?: string;
     field?: string;
@@ -42,6 +51,8 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     onChange?: (newValue: any) => void;
     context?: IFormContext;
 }
+export interface IFieldWrapperProps extends IInputComponentProps {
+}
 export interface IInputComponentState extends IInputProps {
     flavour: string;
 }
@@ -50,7 +61,7 @@ export interface IComponentLookup {
     [key: string]: React.ReactType;
 }
 export interface IWrappers extends IComponentLookup {
-    form: React.ComponentClass<IWrapperComponentProps>;
+    form: React.ComponentClass<IFormWrapperProps>;
     page: React.ComponentClass<IWrapperComponentProps>;
     field: React.ComponentClass<IWrapperComponentProps>;
 }

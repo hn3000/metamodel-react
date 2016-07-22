@@ -16,6 +16,8 @@ import * as Promise from 'es6-promise';
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
+    action?:string;
+    method?:string;
 }
 export interface IFormState {
     viewmodel:IModelView<any>;
@@ -45,6 +47,16 @@ export interface IWrapperComponentProps {
     field?:string;
 }
 
+export interface IFormWrapperProps extends IWrapperComponentProps {
+    id: string;
+    action?: string;
+    method?: string;
+}
+
+export interface IPageWrapperProps extends IWrapperComponentProps { 
+
+}
+
 export interface IInputComponentProps extends IWrapperComponentProps {
     id?: string;
     field?: string;
@@ -59,6 +71,10 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     context?:IFormContext
 }
 
+export interface IFieldWrapperProps extends IInputComponentProps { 
+
+}
+
 export interface IInputComponentState extends IInputProps {
     flavour: string;
 }
@@ -71,7 +87,7 @@ export interface IComponentLookup {
 }
 
 export interface IWrappers extends IComponentLookup {
-    form: React.ComponentClass<IWrapperComponentProps>;  // </IWrapperComponentProps>
+    form: React.ComponentClass<IFormWrapperProps>;  // </IWrapperComponentProps>
     page: React.ComponentClass<IWrapperComponentProps>;  // </IWrapperComponentProps>
     field: React.ComponentClass<IWrapperComponentProps>; // </IWrapperComponentProps>
 }

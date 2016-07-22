@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { IInputComponentProps, IInputComponentState, IWrapperComponentProps } from './api';
-export declare class FieldWrapper extends React.Component<IWrapperComponentProps, void> {
+import { IInputComponentProps, IInputComponentState, IFormWrapperProps, IPageWrapperProps, IFieldWrapperProps } from './api';
+export declare class FieldWrapper extends React.Component<IFieldWrapperProps, void> {
     render(): JSX.Element;
 }
-export declare class PageWrapper extends React.Component<IWrapperComponentProps, void> {
+export declare class PageWrapper extends React.Component<IPageWrapperProps, void> {
     render(): JSX.Element;
 }
-export declare class FormWrapper extends React.Component<IWrapperComponentProps, void> {
+export declare class FormWrapper extends React.Component<IFormWrapperProps, void> {
     render(): JSX.Element;
 }
 export declare class MetaFormInputString extends React.Component<IInputComponentProps, IInputComponentState> {

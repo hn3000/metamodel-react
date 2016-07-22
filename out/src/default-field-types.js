@@ -49,7 +49,7 @@ var FormWrapper = (function (_super) {
         _super.apply(this, arguments);
     }
     FormWrapper.prototype.render = function () {
-        return React.createElement("div", null, this.props.children);
+        return React.createElement("form", {method: "POST", action: "#"}, this.props.children);
     };
     return FormWrapper;
 }(React.Component));

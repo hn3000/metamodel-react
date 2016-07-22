@@ -39,10 +39,12 @@ export class MetaForm extends MetaContextFollower<IFormProps, IFormState> {
     let adjustedChildren = React.Children.map(this.props.children,
       (c) => React.cloneElement(c, {context: this.props.context}));
     */
-    return (<Wrapper>
-      <form id={this.formContext.metamodel.name} >
+
+    let metamodel = this.formContext.metamodel;
+    let modelId = metamodel.propGet('schema').modelId || metamodel.name;
+
+    return (<Wrapper id={modelId}>
         {this.props.children}
-      </form>
       </Wrapper>);
   }
 

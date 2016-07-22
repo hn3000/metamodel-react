@@ -9,14 +9,16 @@ import {
 import {
   IInputComponentProps,
   IInputComponentState,
-  IWrapperComponentProps 
+  IFormWrapperProps, 
+  IPageWrapperProps,
+  IFieldWrapperProps 
 } from './api';
 
 import {
   MetaContextAwarePure
 } from './base-components'
 
-export class FieldWrapper extends React.Component<IWrapperComponentProps,void> {
+export class FieldWrapper extends React.Component<IFieldWrapperProps,void> {
   render() {
     var props:any = {};
     var errors:JSX.Element[] = [];
@@ -30,14 +32,14 @@ export class FieldWrapper extends React.Component<IWrapperComponentProps,void> {
     </div>;
   }
 }
-export class PageWrapper extends React.Component<IWrapperComponentProps,void> {
+export class PageWrapper extends React.Component<IPageWrapperProps,void> {
   render() {
     return <div>{this.props.children}</div>;
   }
 }
-export class FormWrapper extends React.Component<IWrapperComponentProps,void> {
+export class FormWrapper extends React.Component<IFormWrapperProps,void> {
   render() {
-    return <div>{this.props.children}</div>;
+    return <form method="POST" action="#">{this.props.children}</form>;
   }
 }
 

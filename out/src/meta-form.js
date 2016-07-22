@@ -27,9 +27,9 @@ var MetaForm = (function (_super) {
         let adjustedChildren = React.Children.map(this.props.children,
           (c) => React.cloneElement(c, {context: this.props.context}));
         */
-        return (React.createElement(Wrapper, null, 
-            React.createElement("form", {id: this.formContext.metamodel.name}, this.props.children)
-        ));
+        var metamodel = this.formContext.metamodel;
+        var modelId = metamodel.propGet('schema').modelId || metamodel.name;
+        return (React.createElement(Wrapper, {id: modelId}, this.props.children));
     };
     MetaForm.prototype._updateState = function (context) {
         this.setState({

@@ -21,6 +21,8 @@ export {
   IInputState,
   IWrappers,
   IFormWrapperProps,
+  IPageWrapperProps,
+  IFieldWrapperProps,
   IWrapperComponentProps,
   IInputComponentProps,
   IInputComponentState,

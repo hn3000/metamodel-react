@@ -79,7 +79,6 @@ export interface IInputComponentState extends IInputProps {
     flavour: string;
 }
 
-
 export type InputComponent = React.ComponentClass<IInputComponentProps>;// | React.StatelessComponent<IInputComponentProps>;
 
 export interface IComponentLookup {

@@ -44,6 +44,7 @@ var MetaFormConfig = (function () {
         this.validateOnUpdate = false;
         this.validateOnUpdateIfInvalid = false;
         this.validateDebounceTime = 1000; //in ms
+        this.allowNextWhenInvalid = false;
         this.onFormInit = null; // </any>
         this.onPageTransition = null; // </IValidationMessage>
         this._wrappers = wrappers || MetaFormConfig.defaultWrappers();

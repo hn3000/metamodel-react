@@ -107,6 +107,7 @@ export class MetaFormConfig implements IFormConfig {
   public validateOnUpdate: boolean = false;
   public validateOnUpdateIfInvalid: boolean = false;
   public validateDebounceTime: number = 1000; //in ms
+  public allowNextWhenInvalid: boolean = false;
 
   public onFormInit:(form:IFormContext)=>Promise<any> = null; // </any>
   public onPageTransition:(form:IFormContext, direction:number)=>Promise<IValidationMessage[]> = null; // </IValidationMessage>

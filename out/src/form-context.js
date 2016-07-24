@@ -6,6 +6,10 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var metamodel_1 = require('@hn3000/metamodel');
 var listener_manager_1 = require('./listener-manager');
+var search_params_1 = require('./search-params');
+var props_different_1 = require('./props-different');
+var requestParams = search_params_1.parseSearchParams(location.search);
+var overridePage = requestParams.page != null ? +(requestParams.page) : null;
 var MetaFormContext = (function (_super) {
     __extends(MetaFormContext, _super);
     function MetaFormContext(config, metamodel, data) {
@@ -13,8 +17,11 @@ var MetaFormContext = (function (_super) {
         if (data === void 0) { data = {}; }
         _super.call(this);
         this._config = config;
+        if (null != overridePage) {
+            config.allowNextWhenInvalid = true;
+        }
         this._metamodel = metamodel;
-        this._viewmodel = new metamodel_1.ModelView(metamodel, data, -1);
+        this._viewmodel = new metamodel_1.ModelView(metamodel, data, null != overridePage ? overridePage : -1);
         this.pageBack = listener_manager_1.clickHandler(this.updatePage, this, -1);
         this.pageNext = listener_manager_1.clickHandler(this.updatePage, this, +1);
         this._listeners = new listener_manager_1.ListenerManager();
@@ -29,7 +36,9 @@ var MetaFormContext = (function (_super) {
                 else if (null != x) {
                     model = model.withAddedData(x);
                 }
-                model = model.changePage(1);
+                if (null == overridePage) {
+                    model = model.changePage(1);
+                }
                 _this._updateViewModel(model);
             });
         }
@@ -38,8 +47,9 @@ var MetaFormContext = (function (_super) {
         var vm = this._viewmodel;
         var hasNext = vm.currentPageIndex < vm.getPages().length;
         var config = this._config;
-        var validating = config.validateOnUpdateIfInvalid || config.validateOnUpdateIfInvalid;
-        return hasNext && (vm.isPageValid(null) || !validating);
+        var validating = (config.validateOnUpdateIfInvalid
+            || config.validateOnUpdateIfInvalid) && !config.allowNextWhenInvalid;
+        return hasNext && (!validating || vm.isPageValid(null));
     };
     MetaFormContext.prototype.pageBackAllowed = function () {
         var vm = this._viewmodel;
@@ -130,7 +140,13 @@ var MetaFormContext = (function (_super) {
         }
         nextModel
             .then(function (validatedModel) {
-            if (step < 0 || validatedModel.isPageValid(null)) {
+            var override = false;
+            if (_this._config.allowNextWhenInvalid) {
+                if (!props_different_1.arraysDifferent(model.getPageMessages(), validatedModel.getPageMessages())) {
+                    override = true;
+                }
+            }
+            if (step < 0 || validatedModel.isPageValid(null) || override) {
                 var promise;
                 if (_this._config.onPageTransition) {
                     // replace model without notification 

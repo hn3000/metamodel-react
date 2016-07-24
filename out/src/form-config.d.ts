@@ -13,6 +13,7 @@ export declare class MetaFormConfig implements IFormConfig {
     validateOnUpdate: boolean;
     validateOnUpdateIfInvalid: boolean;
     validateDebounceTime: number;
+    allowNextWhenInvalid: boolean;
     onFormInit: (form: IFormContext) => Promise<any>;
     onPageTransition: (form: IFormContext, direction: number) => Promise<IValidationMessage[]>;
     private _wrappers;

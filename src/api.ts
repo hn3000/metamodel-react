@@ -116,6 +116,8 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
   validateOnUpdate: boolean;           // default false
   validateOnUpdateIfInvalid: boolean;  // default false
   validateDebounceTime: number;        // default 1000ms
+
+  allowNextWhenInvalid: boolean // default false
 }
 
 export interface IFormContext extends IClientProps {

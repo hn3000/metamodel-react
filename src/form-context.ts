@@ -17,12 +17,22 @@ import {
   clickHandler
 } from './listener-manager';
 
+import { parseSearchParams } from './search-params';
+import { arraysDifferent } from './props-different'
+
+var requestParams = parseSearchParams(location.search);
+
+var overridePage = requestParams.page!=null ? +(requestParams.page) : null;
+
 export class MetaFormContext extends ClientProps implements IFormContext, IClientProps {
   constructor(config: IFormConfig, metamodel:IModelTypeComposite<any>, data:any={}) {
     super();
     this._config = config;
+    if (null != overridePage) {
+      config.allowNextWhenInvalid = true;
+    }
     this._metamodel = metamodel;
-    this._viewmodel = new ModelView(metamodel, data, -1);
+    this._viewmodel = new ModelView(metamodel, data, null != overridePage ? overridePage : -1);
 
     this.pageBack = clickHandler(this.updatePage, this, -1);
     this.pageNext = clickHandler(this.updatePage, this, +1);
@@ -39,7 +49,9 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         } else if (null != x) {
           model = model.withAddedData(x);
         }
-        model = model.changePage(1);
+        if (null == overridePage) {
+          model = model.changePage(1);
+        }
         this._updateViewModel(model);
       });
     }
@@ -54,9 +66,12 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
 
     let config = this._config;
 
-    let validating = config.validateOnUpdateIfInvalid || config.validateOnUpdateIfInvalid; 
+    let validating = (
+      config.validateOnUpdateIfInvalid 
+      || config.validateOnUpdateIfInvalid) && !config.allowNextWhenInvalid;
+ 
 
-    return hasNext && (vm.isPageValid(null) || !validating); 
+    return hasNext && (!validating || vm.isPageValid(null)); 
   }
   pageBackAllowed():boolean {
     let vm = this._viewmodel;
@@ -139,7 +154,13 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     
     nextModel
       .then((validatedModel) => {
-        if (step < 0 || validatedModel.isPageValid(null)) {
+        var override = false;
+        if (this._config.allowNextWhenInvalid) {
+          if (!arraysDifferent(model.getPageMessages(), validatedModel.getPageMessages())) {
+            override = true;
+          }
+        }
+        if (step < 0 || validatedModel.isPageValid(null) || override) {
           
           var promise:Promise<IModelView<any>>;
 

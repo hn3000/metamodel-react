@@ -87,6 +87,7 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
     validateOnUpdate: boolean;
     validateOnUpdateIfInvalid: boolean;
     validateDebounceTime: number;
+    allowNextWhenInvalid: boolean;
 }
 export interface IFormContext extends IClientProps {
     config: IFormConfig;

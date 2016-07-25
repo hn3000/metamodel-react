@@ -21,7 +21,8 @@ var MetaFormContext = (function (_super) {
             config.allowNextWhenInvalid = true;
         }
         this._metamodel = metamodel;
-        this._viewmodel = new metamodel_1.ModelView(metamodel, data, null != overridePage ? overridePage : -1);
+        var page = null != overridePage ? overridePage - (config.usePageIndex ? 0 : 1) : -1;
+        this._viewmodel = new metamodel_1.ModelView(metamodel, data, page);
         this.pageBack = listener_manager_1.clickHandler(this.updatePage, this, -1);
         this.pageNext = listener_manager_1.clickHandler(this.updatePage, this, +1);
         this._listeners = new listener_manager_1.ListenerManager();

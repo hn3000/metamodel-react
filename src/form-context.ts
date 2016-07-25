@@ -32,7 +32,9 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       config.allowNextWhenInvalid = true;
     }
     this._metamodel = metamodel;
-    this._viewmodel = new ModelView(metamodel, data, null != overridePage ? overridePage : -1);
+
+    let page = null != overridePage ? overridePage-(config.usePageIndex?0:1) : -1;
+    this._viewmodel = new ModelView(metamodel, data, page);
 
     this.pageBack = clickHandler(this.updatePage, this, -1);
     this.pageNext = clickHandler(this.updatePage, this, +1);

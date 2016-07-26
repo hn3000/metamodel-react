@@ -101,23 +101,31 @@ var MetaFormContext = (function (_super) {
     MetaFormContext.prototype.updateModelTransactional = function (updater) {
         var _this = this;
         var newModel = updater(this._viewmodel);
-        this._updateViewModel(newModel);
         var config = this._config;
-        var needsValidation = config.validateOnUpdate;
-        if (!needsValidation && config.validateOnUpdateIfInvalid) {
-            needsValidation = !newModel.isValid();
+        var nextUpdate = Promise.resolve(function (x) { return x; });
+        if (config.onModelUpdate) {
+            this._viewmodel = newModel;
+            nextUpdate = config.onModelUpdate(this);
         }
-        if (needsValidation) {
-            var validator = function () {
-                var validated = _this._viewmodel.validateDefault();
-                validated.then(function (x) { return _this._updateViewModel(x); });
-                _this._debounceValidationTimeout = null;
-            };
-            if (this._debounceValidationTimeout) {
-                clearTimeout(this._debounceValidationTimeout);
+        nextUpdate.then(function (updater) {
+            var updatedModel = updater(newModel);
+            _this._updateViewModel(updatedModel);
+            var needsValidation = config.validateOnUpdate;
+            if (!needsValidation && config.validateOnUpdateIfInvalid) {
+                needsValidation = !newModel.isValid();
             }
-            this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceTime);
-        }
+            if (needsValidation) {
+                var validator = function () {
+                    var validated = _this._viewmodel.validateDefault();
+                    validated.then(function (x) { return _this._updateViewModel(x); });
+                    _this._debounceValidationTimeout = null;
+                };
+                if (_this._debounceValidationTimeout) {
+                    clearTimeout(_this._debounceValidationTimeout);
+                }
+                _this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceTime);
+            }
+        });
     };
     MetaFormContext.prototype._updateViewModel = function (viewmodel) {
         this._viewmodel = viewmodel;

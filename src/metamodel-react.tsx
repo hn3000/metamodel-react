@@ -46,3 +46,12 @@ export {
   MetaContextFollower, 
   MetaContextAwarePure 
 } from './base-components';
+
+import { IModelView } from '@hn3000/metamodel';
+import { IModelUpdater } from './api'; 
+
+export function chainUpdaters(...updaters:IModelUpdater[]):IModelUpdater {
+    return (model:IModelView<any>) => {
+        return updaters.reduce((m,u) => u(m), model);
+    }
+}

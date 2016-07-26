@@ -1,5 +1,5 @@
 import { IClientProps, ClientProps, IModelTypeComposite, IModelView } from '@hn3000/metamodel';
-import { IFormContext, IFormConfig } from './api';
+import { IFormContext, IFormConfig, IModelUpdater } from './api';
 export declare class MetaFormContext extends ClientProps implements IFormContext, IClientProps {
     constructor(config: IFormConfig, metamodel: IModelTypeComposite<any>, data?: any);
     pageNext: (event: UIEvent) => void;
@@ -12,7 +12,7 @@ export declare class MetaFormContext extends ClientProps implements IFormContext
     readonly currentPage: number;
     subscribe(listener: () => any): () => void;
     updateModel(field: string, value: any): void;
-    updateModelTransactional(updater: (model: IModelView<any>) => IModelView<any>): void;
+    updateModelTransactional(updater: IModelUpdater): void;
     private _debounceValidationTimeout;
     _updateViewModel(viewmodel: IModelView<any>): void;
     _notifyAll(): void;

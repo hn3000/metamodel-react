@@ -77,9 +77,13 @@ export interface IComponentFinder {
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;
 }
+export interface IModelUpdater {
+    (model: IModelView<any>): IModelView<any>;
+}
 export interface IFormEvents {
-    onFormInit?: (ctx: IFormContext) => Promise<any | ((model: IModelView<any>) => IModelView<any>)>;
+    onFormInit?: (ctx: IFormContext) => Promise<IModelUpdater>;
     onPageTransition?: (ctx: IFormContext, direction: number) => Promise<IValidationMessage[]>;
+    onModelUpdate?: (ctx: IFormContext) => Promise<IModelUpdater>;
 }
 export interface IFormConfig extends IComponentFinder, IFormEvents {
     wrappers: IWrappers;

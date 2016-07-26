@@ -20,4 +20,14 @@ var base_components_1 = require('./base-components');
 exports.MetaContextAware = base_components_1.MetaContextAware;
 exports.MetaContextFollower = base_components_1.MetaContextFollower;
 exports.MetaContextAwarePure = base_components_1.MetaContextAwarePure;
+function chainUpdaters() {
+    var updaters = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        updaters[_i - 0] = arguments[_i];
+    }
+    return function (model) {
+        return updaters.reduce(function (m, u) { return u(m); }, model);
+    };
+}
+exports.chainUpdaters = chainUpdaters;
 //# sourceMappingURL=metamodel-react.js.map

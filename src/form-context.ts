@@ -9,7 +9,8 @@ import {
 
 import {
   IFormContext,
-  IFormConfig
+  IFormConfig,
+  IModelUpdater
 } from './api';
 
 import {
@@ -18,7 +19,7 @@ import {
 } from './listener-manager';
 
 import { parseSearchParams } from './search-params';
-import { arraysDifferent } from './props-different'
+import { arraysDifferent }   from './props-different'
 
 var requestParams = parseSearchParams(location.search);
 
@@ -108,27 +109,36 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   updateModel(field:string, value:any) {
     this.updateModelTransactional(model => model.withChangedField(field,value));
   }
-  updateModelTransactional(updater:(model:IModelView<any>) => IModelView<any>) {
+  updateModelTransactional(updater:IModelUpdater) {
     let newModel = updater(this._viewmodel);
-    this._updateViewModel(newModel);
-
     let config = this._config;
-
-    var needsValidation = config.validateOnUpdate;
-    if (!needsValidation && config.validateOnUpdateIfInvalid) {
-      needsValidation = !newModel.isValid();
+    let nextUpdate = Promise.resolve((x:IModelView<any>) => x);
+    if (config.onModelUpdate) {
+      this._viewmodel = newModel;
+      nextUpdate = config.onModelUpdate(this);
     }
-    if (needsValidation) {
-      let validator = () => {
-        let validated = this._viewmodel.validateDefault();
-        validated.then((x) => this._updateViewModel(x));      
-        this._debounceValidationTimeout = null;
-      };
-      if (this._debounceValidationTimeout) {
-        clearTimeout(this._debounceValidationTimeout);
+    nextUpdate.then(
+      (updater) => {
+        let updatedModel = updater(newModel);
+        this._updateViewModel(updatedModel);
+        var needsValidation = config.validateOnUpdate;
+        if (!needsValidation && config.validateOnUpdateIfInvalid) {
+          needsValidation = !newModel.isValid();
+        }
+        if (needsValidation) {
+          let validator = () => {
+            let validated = this._viewmodel.validateDefault();
+            validated.then((x) => this._updateViewModel(x));      
+            this._debounceValidationTimeout = null;
+          };
+          if (this._debounceValidationTimeout) {
+            clearTimeout(this._debounceValidationTimeout);
+          }
+          this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceTime);
+        }
       }
-      this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceTime);
-    }
+    );
+
   }
   private _debounceValidationTimeout: number;
 

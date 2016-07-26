@@ -7,3 +7,5 @@ export { MetaForm } from './meta-form';
 export { MetaPage } from './meta-page';
 export { MetaInput } from './meta-input';
 export { MetaContextAware, MetaContextFollower, MetaContextAwarePure } from './base-components';
+import { IModelUpdater } from './api';
+export declare function chainUpdaters(...updaters: IModelUpdater[]): IModelUpdater;

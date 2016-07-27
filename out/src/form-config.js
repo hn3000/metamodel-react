@@ -47,6 +47,7 @@ var MetaFormConfig = (function () {
         this.allowNextWhenInvalid = false;
         this.onFormInit = null; // </any>
         this.onPageTransition = null; // </IValidationMessage>
+        this.onAfterPageTransition = null;
         this._wrappers = wrappers || MetaFormConfig.defaultWrappers();
         this._components = components || MetaFormConfig.defaultComponents();
     }

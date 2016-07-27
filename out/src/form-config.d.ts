@@ -16,6 +16,7 @@ export declare class MetaFormConfig implements IFormConfig {
     allowNextWhenInvalid: boolean;
     onFormInit: (form: IFormContext) => Promise<any>;
     onPageTransition: (form: IFormContext, direction: number) => Promise<IValidationMessage[]>;
+    onAfterPageTransition: (form: IFormContext) => void;
     private _wrappers;
     private _components;
     static defaultWrappers(): IWrappers;

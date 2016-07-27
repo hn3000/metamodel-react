@@ -179,14 +179,20 @@ var MetaFormContext = (function (_super) {
                 }
                 return promise.then(function (serverValidatedModel) {
                     if (step < 0 || serverValidatedModel.isPageValid(null)) {
-                        return serverValidatedModel.changePage(step);
+                        var nextPageModel = serverValidatedModel.changePage(step);
+                        return nextPageModel;
                     }
                     return serverValidatedModel;
                 });
             }
             return validatedModel;
         })
-            .then(function (x) { return _this._updateViewModel(x); });
+            .then(function (x) { return _this._updateViewModel(x); })
+            .then(function () {
+            if (_this._config.onAfterPageTransition) {
+                _this._config.onAfterPageTransition(_this);
+            }
+        });
     };
     return MetaFormContext;
 }(metamodel_1.ClientProps));

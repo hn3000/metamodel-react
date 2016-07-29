@@ -78,7 +78,7 @@ export interface IComponentFinder {
     remove(matcher: IComponentMatcher): any;
 }
 export interface IModelUpdater {
-    (model: IModelView<any>): IModelView<any>;
+    (model: IModelView<any>, ctx: IFormContext): IModelView<any>;
 }
 export interface IFormEvents {
     onFormInit?: (ctx: IFormContext) => Promise<IModelUpdater>;

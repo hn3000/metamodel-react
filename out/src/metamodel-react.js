@@ -25,8 +25,8 @@ function chainUpdaters() {
     for (var _i = 0; _i < arguments.length; _i++) {
         updaters[_i - 0] = arguments[_i];
     }
-    return function (model) {
-        return updaters.reduce(function (m, u) { return u(m); }, model);
+    return function (model, c) {
+        return updaters.reduce(function (m, u) { return u(m, c); }, model);
     };
 }
 exports.chainUpdaters = chainUpdaters;

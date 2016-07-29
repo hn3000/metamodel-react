@@ -10,7 +10,8 @@ import {
   IComponentMatcher,
   IFormConfig,
   IFormContext,
-  InputComponent
+  InputComponent,
+  IModelUpdater
 } from './api';
 
 import * as fields from './default-field-types';
@@ -109,9 +110,10 @@ export class MetaFormConfig implements IFormConfig {
   public validateDebounceTime: number = 1000; //in ms
   public allowNextWhenInvalid: boolean = false;
 
-  public onFormInit:(form:IFormContext)=>Promise<any> = null; // </any>
+  public onFormInit:(form:IFormContext)=>Promise<IModelUpdater> = null; // </any>
   public onPageTransition:(form:IFormContext, direction:number)=>Promise<IValidationMessage[]> = null; // </IValidationMessage>
   public onAfterPageTransition:(form:IFormContext)=>void = null;
+  public onModelUpdate: (ctx:IFormContext) => Promise<IModelUpdater> = null;
 
   private _wrappers:IWrappers;
   private _components: IComponentMatcher[];

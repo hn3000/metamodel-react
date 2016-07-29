@@ -10,6 +10,7 @@ var search_params_1 = require('./search-params');
 var props_different_1 = require('./props-different');
 var requestParams = search_params_1.parseSearchParams(location.search);
 var overridePage = requestParams.page != null ? +(requestParams.page) : null;
+var PAGE_INIT = -1;
 var MetaFormContext = (function (_super) {
     __extends(MetaFormContext, _super);
     function MetaFormContext(config, metamodel, data) {
@@ -21,7 +22,7 @@ var MetaFormContext = (function (_super) {
             config.allowNextWhenInvalid = true;
         }
         this._metamodel = metamodel;
-        var page = null != overridePage ? overridePage - (config.usePageIndex ? 0 : 1) : -1;
+        var page = null != overridePage ? overridePage - (config.usePageIndex ? 0 : 1) : PAGE_INIT;
         this._viewmodel = new metamodel_1.ModelView(metamodel, data, page);
         this.pageBack = listener_manager_1.clickHandler(this.updatePage, this, -1);
         this.pageNext = listener_manager_1.clickHandler(this.updatePage, this, +1);
@@ -37,7 +38,7 @@ var MetaFormContext = (function (_super) {
                 else if (null != x) {
                     model = model.withAddedData(x);
                 }
-                if (null == overridePage) {
+                if (null == overridePage && model.currentPageIndex == PAGE_INIT) {
                     model = model.changePage(1);
                 }
                 _this._updateViewModel(model);
@@ -100,7 +101,7 @@ var MetaFormContext = (function (_super) {
     };
     MetaFormContext.prototype.updateModelTransactional = function (updater) {
         var _this = this;
-        var newModel = updater(this._viewmodel);
+        var newModel = updater(this._viewmodel, this);
         var config = this._config;
         var nextUpdate = Promise.resolve(function (x) { return x; });
         if (config.onModelUpdate) {
@@ -108,7 +109,7 @@ var MetaFormContext = (function (_super) {
             nextUpdate = config.onModelUpdate(this);
         }
         nextUpdate.then(function (updater) {
-            var updatedModel = updater(newModel);
+            var updatedModel = updater(newModel, _this);
             _this._updateViewModel(updatedModel);
             var needsValidation = config.validateOnUpdate;
             if (!needsValidation && config.validateOnUpdateIfInvalid) {

@@ -25,6 +25,8 @@ var requestParams = parseSearchParams(location.search);
 
 var overridePage = requestParams.page!=null ? +(requestParams.page) : null;
 
+const PAGE_INIT = -1;
+
 export class MetaFormContext extends ClientProps implements IFormContext, IClientProps {
   constructor(config: IFormConfig, metamodel:IModelTypeComposite<any>, data:any={}) {
     super();
@@ -34,7 +36,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     }
     this._metamodel = metamodel;
 
-    let page = null != overridePage ? overridePage-(config.usePageIndex?0:1) : -1;
+    let page = null != overridePage ? overridePage-(config.usePageIndex?0:1) : PAGE_INIT;
     this._viewmodel = new ModelView(metamodel, data, page);
 
     this.pageBack = clickHandler(this.updatePage, this, -1);
@@ -52,7 +54,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         } else if (null != x) {
           model = model.withAddedData(x);
         }
-        if (null == overridePage) {
+        if (null == overridePage && model.currentPageIndex == PAGE_INIT) {
           model = model.changePage(1);
         }
         this._updateViewModel(model);
@@ -110,16 +112,16 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     this.updateModelTransactional(model => model.withChangedField(field,value));
   }
   updateModelTransactional(updater:IModelUpdater) {
-    let newModel = updater(this._viewmodel);
+    let newModel = updater(this._viewmodel, this);
     let config = this._config;
-    let nextUpdate = Promise.resolve((x:IModelView<any>) => x);
+    let nextUpdate:Promise<IModelUpdater> = Promise.resolve((x:IModelView<any>) => x);
     if (config.onModelUpdate) {
       this._viewmodel = newModel;
       nextUpdate = config.onModelUpdate(this);
     }
     nextUpdate.then(
       (updater) => {
-        let updatedModel = updater(newModel);
+        let updatedModel = updater(newModel, this);
         this._updateViewModel(updatedModel);
         var needsValidation = config.validateOnUpdate;
         if (!needsValidation && config.validateOnUpdateIfInvalid) {

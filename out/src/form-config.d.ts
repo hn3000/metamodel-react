@@ -1,5 +1,5 @@
 import { IModelType, IValidationMessage } from '@hn3000/metamodel';
-import { IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent } from './api';
+import { IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent, IModelUpdater } from './api';
 import * as fields from './default-field-types';
 export declare class MetaFormConfig implements IFormConfig {
     constructor(wrappers?: IWrappers, components?: IComponentMatcher[]);
@@ -14,9 +14,10 @@ export declare class MetaFormConfig implements IFormConfig {
     validateOnUpdateIfInvalid: boolean;
     validateDebounceTime: number;
     allowNextWhenInvalid: boolean;
-    onFormInit: (form: IFormContext) => Promise<any>;
+    onFormInit: (form: IFormContext) => Promise<IModelUpdater>;
     onPageTransition: (form: IFormContext, direction: number) => Promise<IValidationMessage[]>;
     onAfterPageTransition: (form: IFormContext) => void;
+    onModelUpdate: (ctx: IFormContext) => Promise<IModelUpdater>;
     private _wrappers;
     private _components;
     static defaultWrappers(): IWrappers;

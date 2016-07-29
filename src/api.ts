@@ -105,7 +105,7 @@ export interface IComponentFinder {
 }
 
 export interface IModelUpdater {
-    (model:IModelView<any>):IModelView<any>;
+    (model:IModelView<any>, ctx:IFormContext):IModelView<any>;
 }
 
 export interface IFormEvents {

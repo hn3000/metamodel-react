@@ -113,6 +113,7 @@ export class MetaFormConfig implements IFormConfig {
   public onFormInit:(form:IFormContext)=>Promise<IModelUpdater> = null; // </any>
   public onPageTransition:(form:IFormContext, direction:number)=>Promise<IValidationMessage[]> = null; // </IValidationMessage>
   public onAfterPageTransition:(form:IFormContext)=>void = null;
+  public onFailedPageTransition: (ctx:IFormContext) => void = null;
   public onModelUpdate: (ctx:IFormContext) => Promise<IModelUpdater> = null;
 
   private _wrappers:IWrappers;

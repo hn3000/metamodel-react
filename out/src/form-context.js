@@ -183,6 +183,12 @@ var MetaFormContext = (function (_super) {
                         var nextPageModel = serverValidatedModel.changePage(step);
                         return nextPageModel;
                     }
+                    else {
+                        console.log("failed page transition", _this);
+                        if (_this._config.onFailedPageTransition) {
+                            _this._config.onFailedPageTransition(_this);
+                        }
+                    }
                     return serverValidatedModel;
                 });
             }

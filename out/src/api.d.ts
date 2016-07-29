@@ -84,6 +84,7 @@ export interface IFormEvents {
     onFormInit?: (ctx: IFormContext) => Promise<IModelUpdater>;
     onPageTransition?: (ctx: IFormContext, direction: number) => Promise<IValidationMessage[]>;
     onAfterPageTransition?: (ctx: IFormContext) => void;
+    onFailedPageTransition?: (ctx: IFormContext) => void;
     onModelUpdate?: (ctx: IFormContext) => Promise<IModelUpdater>;
 }
 export interface IFormConfig extends IComponentFinder, IFormEvents {

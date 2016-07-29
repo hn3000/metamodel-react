@@ -17,6 +17,7 @@ export declare class MetaFormConfig implements IFormConfig {
     onFormInit: (form: IFormContext) => Promise<IModelUpdater>;
     onPageTransition: (form: IFormContext, direction: number) => Promise<IValidationMessage[]>;
     onAfterPageTransition: (form: IFormContext) => void;
+    onFailedPageTransition: (ctx: IFormContext) => void;
     onModelUpdate: (ctx: IFormContext) => Promise<IModelUpdater>;
     private _wrappers;
     private _components;

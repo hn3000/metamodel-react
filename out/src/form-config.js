@@ -48,6 +48,7 @@ var MetaFormConfig = (function () {
         this.onFormInit = null; // </any>
         this.onPageTransition = null; // </IValidationMessage>
         this.onAfterPageTransition = null;
+        this.onFailedPageTransition = null;
         this.onModelUpdate = null;
         this._wrappers = wrappers || MetaFormConfig.defaultWrappers();
         this._components = components || MetaFormConfig.defaultComponents();

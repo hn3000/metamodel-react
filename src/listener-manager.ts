@@ -21,17 +21,9 @@ export class ListenerManager<T> {
     };
   }
 
-  currentList():T[] {
+  get all():T[] {
     this._current = this._next;
     return this._current;
-  }
-
-  forEach(fun:(x:T)=>void) {
-    this.currentList().forEach(fun);
-  }
-
-  map<X>(fun:(x:T)=>X):X[] {
-    return this.currentList().map(fun);
   }
 
   _ensureWritable() {

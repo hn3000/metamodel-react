@@ -133,7 +133,7 @@ var MetaFormContext = (function (_super) {
         this._notifyAll();
     };
     MetaFormContext.prototype._notifyAll = function () {
-        this._listeners.forEach(function (x) { return x(); });
+        this._listeners.all.forEach(function (x) { return x(); });
     };
     MetaFormContext.prototype.updatePage = function (step) {
         var _this = this;
@@ -164,9 +164,9 @@ var MetaFormContext = (function (_super) {
                     _this._viewmodel = validatedModel;
                     var moreValidation = _this._config.onPageTransition(_this, step);
                     promise = moreValidation.then(function (messages) {
-                        var result = validatedModel;
+                        var result = _this._viewmodel;
                         if (messages && messages.length) {
-                            result = validatedModel.withValidationMessages(messages);
+                            result = result.withValidationMessages(messages);
                         }
                         return result;
                     }, function () {

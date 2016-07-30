@@ -1,9 +1,7 @@
 export declare class ListenerManager<T> {
     constructor();
     subscribe(listener: T): () => void;
-    currentList(): T[];
-    forEach(fun: (x: T) => void): void;
-    map<X>(fun: (x: T) => X): X[];
+    readonly all: T[];
     _ensureWritable(): void;
     private _current;
     private _next;

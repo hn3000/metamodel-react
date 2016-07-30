@@ -20,16 +20,14 @@ var ListenerManager = (function () {
             }
         };
     };
-    ListenerManager.prototype.currentList = function () {
-        this._current = this._next;
-        return this._current;
-    };
-    ListenerManager.prototype.forEach = function (fun) {
-        this.currentList().forEach(fun);
-    };
-    ListenerManager.prototype.map = function (fun) {
-        return this.currentList().map(fun);
-    };
+    Object.defineProperty(ListenerManager.prototype, "all", {
+        get: function () {
+            this._current = this._next;
+            return this._current;
+        },
+        enumerable: true,
+        configurable: true
+    });
     ListenerManager.prototype._ensureWritable = function () {
         if (this._current === this._next) {
             this._next = this._current.slice();

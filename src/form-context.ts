@@ -150,7 +150,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   }
 
   _notifyAll() {
-    this._listeners.forEach((x) => x());
+    this._listeners.all.forEach((x) => x());
   }
 
   updatePage(step:number) {
@@ -186,9 +186,9 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
 
             let moreValidation = this._config.onPageTransition(this, step);
             promise = moreValidation.then((messages) => {
-              var result = validatedModel
+              var result = this._viewmodel;
               if (messages && messages.length) {
-                result = validatedModel.withValidationMessages(messages);
+                result = result.withValidationMessages(messages);
               }
               return result;
             }, () => {

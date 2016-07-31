@@ -47,7 +47,7 @@ var MetaInput = (function (_super) {
     MetaInput.prototype.render = function () {
         var context = this.formContext;
         var fieldName = this.props.field;
-        var fieldType = context.metamodel.subModel(fieldName);
+        var fieldType = context.metamodel.itemType(fieldName);
         var field = fieldType && fieldType.asItemType();
         if (!field) {
             console.log("field " + fieldName + " not found in " + context.metamodel.name);

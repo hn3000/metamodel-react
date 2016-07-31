@@ -48,7 +48,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
   render() {
     let context = this.formContext;
     var fieldName = this.props.field;
-    var fieldType = context.metamodel.subModel(fieldName);
+    var fieldType = context.metamodel.itemType(fieldName);
     var field = fieldType && fieldType.asItemType();
 
     if (!field) {

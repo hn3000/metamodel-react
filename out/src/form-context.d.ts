@@ -12,7 +12,7 @@ export declare class MetaFormContext extends ClientProps implements IFormContext
     readonly currentPage: number;
     subscribe(listener: () => any): () => void;
     updateModel(field: string, value: any): void;
-    updateModelTransactional(updater: IModelUpdater): void;
+    updateModelTransactional(updater: IModelUpdater, skipValidation?: boolean): void;
     private _debounceValidationTimeout;
     _updateViewModel(viewmodel: IModelView<any>): void;
     _notifyAll(): void;

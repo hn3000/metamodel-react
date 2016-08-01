@@ -99,7 +99,7 @@ var MetaFormContext = (function (_super) {
     MetaFormContext.prototype.updateModel = function (field, value) {
         this.updateModelTransactional(function (model) { return model.withChangedField(field, value); });
     };
-    MetaFormContext.prototype.updateModelTransactional = function (updater) {
+    MetaFormContext.prototype.updateModelTransactional = function (updater, skipValidation) {
         var _this = this;
         var newModel = updater(this._viewmodel, this);
         var config = this._config;
@@ -115,7 +115,7 @@ var MetaFormContext = (function (_super) {
             if (!needsValidation && config.validateOnUpdateIfInvalid) {
                 needsValidation = !newModel.isValid();
             }
-            if (needsValidation) {
+            if (!skipValidation && needsValidation) {
                 var validator = function () {
                     var validated = _this._viewmodel.validateDefault();
                     validated.then(function (x) { return _this._updateViewModel(x); });

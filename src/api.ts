@@ -142,7 +142,7 @@ export interface IFormContext extends IClientProps {
 
   //updated in place, viewmodel will change, though
   updateModel(field:string, value:any):void;
-  updateModelTransactional(updater:(model:IModelView<any>)=>IModelView<any>, skipValidation?:boolean):void;
+  updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean):void;
 
   updatePage(step:number):void;
   

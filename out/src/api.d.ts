@@ -102,7 +102,7 @@ export interface IFormContext extends IClientProps {
     currentPage: number;
     subscribe(listener: () => any): () => void;
     updateModel(field: string, value: any): void;
-    updateModelTransactional(updater: (model: IModelView<any>) => IModelView<any>, skipValidation?: boolean): void;
+    updateModelTransactional(updater: IModelUpdater, skipValidation?: boolean): void;
     updatePage(step: number): void;
     pageNext: (event: UIEvent) => void;
     pageBack: (event: UIEvent) => void;

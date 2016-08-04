@@ -49,8 +49,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       update.then((x) => {
         var model = this._viewmodel;
         if (typeof x === 'function') {
-          let clientUpdate = x as ((model:IModelView<any>) => IModelView<any>);
-          model = clientUpdate(model);
+          let clientUpdate = x as IModelUpdater;
+          model = clientUpdate(model, this);
         } else if (null != x) {
           model = model.withAddedData(x);
         }

@@ -33,7 +33,7 @@ var MetaFormContext = (function (_super) {
                 var model = _this._viewmodel;
                 if (typeof x === 'function') {
                     var clientUpdate = x;
-                    model = clientUpdate(model);
+                    model = clientUpdate(model, _this);
                 }
                 else if (null != x) {
                     model = model.withAddedData(x);

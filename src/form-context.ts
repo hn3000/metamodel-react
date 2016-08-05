@@ -185,6 +185,9 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
             this._viewmodel = validatedModel; 
 
             let moreValidation = this._config.onPageTransition(this, step);
+            if (null == moreValidation) {
+              moreValidation = Promise.resolve([]);
+            }
             promise = moreValidation.then((messages) => {
               var result = this._viewmodel;
               if (messages && messages.length) {

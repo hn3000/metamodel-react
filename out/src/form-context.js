@@ -163,6 +163,9 @@ var MetaFormContext = (function (_super) {
                     // so onPageTransition starts with this one
                     _this._viewmodel = validatedModel;
                     var moreValidation = _this._config.onPageTransition(_this, step);
+                    if (null == moreValidation) {
+                        moreValidation = Promise.resolve([]);
+                    }
                     promise = moreValidation.then(function (messages) {
                         var result = _this._viewmodel;
                         if (messages && messages.length) {

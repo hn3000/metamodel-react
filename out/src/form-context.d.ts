@@ -1,5 +1,5 @@
 import { IClientProps, ClientProps, IModelTypeComposite, IModelView } from '@hn3000/metamodel';
-import { IFormContext, IFormConfig, IModelUpdater } from './api';
+import { IConclusionMessage, IFormContext, IFormConfig, IModelUpdater } from './api';
 export declare class MetaFormContext extends ClientProps implements IFormContext, IClientProps {
     constructor(config: IFormConfig, metamodel: IModelTypeComposite<any>, data?: any);
     pageNext: (event: UIEvent) => void;
@@ -10,6 +10,8 @@ export declare class MetaFormContext extends ClientProps implements IFormContext
     readonly metamodel: IModelTypeComposite<any>;
     readonly viewmodel: IModelView<any>;
     readonly currentPage: number;
+    getConclusion(): IConclusionMessage;
+    setConclusion(conclusion: IConclusionMessage): void;
     subscribe(listener: () => any): () => void;
     updateModel(field: string, value: any): void;
     updateModelTransactional(updater: IModelUpdater, skipValidation?: boolean): void;
@@ -27,4 +29,5 @@ export declare class MetaFormContext extends ClientProps implements IFormContext
     private _promises;
     private _promisesBusyTime;
     private _promisesTimeout;
+    private _conclusion;
 }

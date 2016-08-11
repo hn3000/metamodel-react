@@ -45,7 +45,7 @@ export interface IFormWrapperProps extends IWrapperComponentProps {
 }
 
 export interface IPageWrapperProps extends IWrapperComponentProps { 
-
+    busy?:boolean;
 }
 
 export interface IInputComponentProps extends IWrapperComponentProps {
@@ -81,9 +81,9 @@ export interface IComponentLookup {
 }
 
 export interface IWrappers extends IComponentLookup {
-    form: React.ComponentClass<IFormWrapperProps>;  // </IWrapperComponentProps>
-    page: React.ComponentClass<IWrapperComponentProps>;  // </IWrapperComponentProps>
-    field: React.ComponentClass<IWrapperComponentProps>; // </IWrapperComponentProps>
+    form:  React.ComponentClass<IFormWrapperProps>;  // </IFormWrapperProps>
+    page:  React.ComponentClass<IPageWrapperProps>;  // </IPageWrapperProps>
+    field: React.ComponentClass<IFieldWrapperProps>; // </IFieldWrapperProps>
 }
 
 export interface IComponentMatchFun {
@@ -124,6 +124,10 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
   busyDelayMS: number;                 // default 100ms
 }
 
+export interface IConclusionMessage extends IStatusMessage {
+
+}
+
 export interface IFormContext extends IClientProps {
   config: IFormConfig;
   metamodel: IModelTypeComposite<any>;
@@ -142,6 +146,9 @@ export interface IFormContext extends IClientProps {
   updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean):void;
 
   updatePage(step:number):void;
+
+  setConclusion(conclusion:IConclusionMessage):void;
+  getConclusion():IConclusionMessage|null;
   
   pageNext:(event:UIEvent)=>void;
   pageBack:(event:UIEvent)=>void;

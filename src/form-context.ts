@@ -9,6 +9,7 @@ import {
 } from '@hn3000/metamodel';
 
 import {
+  IConclusionMessage,
   IFormContext,
   IFormConfig,
   IModelUpdater
@@ -69,6 +70,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   pageBack:(event:UIEvent)=>void;
 
   pageNextAllowed():boolean {
+    if (this.isBusy()) {
+      return false;
+    }
+
     let vm = this._viewmodel;
     let hasNext = vm.currentPageIndex < vm.getPages().length;
 
@@ -82,6 +87,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     return hasNext && (!validating || vm.isPageValid(null)); 
   }
   pageBackAllowed():boolean {
+    if (this.isBusy()) {
+      return false;
+    }
+
     let vm = this._viewmodel;
     return vm.currentPageIndex > 0;
   }
@@ -100,6 +109,18 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       return this._viewmodel.currentPageNo;
     }
     return this._viewmodel.currentPageIndex;
+  }
+
+  getConclusion() {
+    return this._conclusion;
+  }
+
+  setConclusion(conclusion:IConclusionMessage) {
+    if (null != this._conclusion && this._conclusion !== conclusion) {
+      throw new Error(`form already has a conclusion: ${this._conclusion} ${conclusion}`);
+    }
+    this._conclusion = conclusion; 
+    this._updateViewModel(this._viewmodel.gotoPage(this._viewmodel.getPages().length));
   }
 
   /* 
@@ -271,5 +292,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   private _promises: Promise<any>[]; // </any>
   private _promisesBusyTime:number;
   private _promisesTimeout:number;
+
+  private _conclusion:IConclusionMessage;
 }
 

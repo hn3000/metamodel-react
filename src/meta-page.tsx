@@ -18,8 +18,9 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
     let context = this.formContext;
 
     if (this.props.page == context.currentPage) {
+      let formContext = this.formContext;
       let Wrapper = this.formContext.config.wrappers.page;
-      return <Wrapper>{this.props.children}</Wrapper>;
+      return <Wrapper busy={formContext.isBusy()}>{this.props.children}</Wrapper>;
     }
     return null;
   }

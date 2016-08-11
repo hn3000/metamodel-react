@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IModelType, IModelTypeComposite, IModelView, IPropertyStatusMessage, IClientProps } from '@hn3000/metamodel';
+import { IModelType, IModelTypeComposite, IModelView, IStatusMessage, IPropertyStatusMessage, IClientProps } from '@hn3000/metamodel';
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
@@ -27,6 +27,7 @@ export interface IFormWrapperProps extends IWrapperComponentProps {
     busy?: boolean;
 }
 export interface IPageWrapperProps extends IWrapperComponentProps {
+    busy?: boolean;
 }
 export interface IInputComponentProps extends IWrapperComponentProps {
     id?: string;
@@ -54,8 +55,8 @@ export interface IComponentLookup {
 }
 export interface IWrappers extends IComponentLookup {
     form: React.ComponentClass<IFormWrapperProps>;
-    page: React.ComponentClass<IWrapperComponentProps>;
-    field: React.ComponentClass<IWrapperComponentProps>;
+    page: React.ComponentClass<IPageWrapperProps>;
+    field: React.ComponentClass<IFieldWrapperProps>;
 }
 export interface IComponentMatchFun {
     (type: IModelType<any>, fieldName: string, flavor: string, ...matchArgs: any[]): number;
@@ -88,6 +89,8 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
     allowNextWhenInvalid: boolean;
     busyDelayMS: number;
 }
+export interface IConclusionMessage extends IStatusMessage {
+}
 export interface IFormContext extends IClientProps {
     config: IFormConfig;
     metamodel: IModelTypeComposite<any>;
@@ -97,6 +100,8 @@ export interface IFormContext extends IClientProps {
     updateModel(field: string, value: any): void;
     updateModelTransactional(updater: IModelUpdater, skipValidation?: boolean): void;
     updatePage(step: number): void;
+    setConclusion(conclusion: IConclusionMessage): void;
+    getConclusion(): IConclusionMessage | null;
     pageNext: (event: UIEvent) => void;
     pageBack: (event: UIEvent) => void;
     pageNextAllowed(): boolean;

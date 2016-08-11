@@ -48,6 +48,9 @@ var MetaFormContext = (function (_super) {
         }
     }
     MetaFormContext.prototype.pageNextAllowed = function () {
+        if (this.isBusy()) {
+            return false;
+        }
         var vm = this._viewmodel;
         var hasNext = vm.currentPageIndex < vm.getPages().length;
         var config = this._config;
@@ -56,6 +59,9 @@ var MetaFormContext = (function (_super) {
         return hasNext && (!validating || vm.isPageValid(null));
     };
     MetaFormContext.prototype.pageBackAllowed = function () {
+        if (this.isBusy()) {
+            return false;
+        }
         var vm = this._viewmodel;
         return vm.currentPageIndex > 0;
     };
@@ -90,6 +96,16 @@ var MetaFormContext = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    MetaFormContext.prototype.getConclusion = function () {
+        return this._conclusion;
+    };
+    MetaFormContext.prototype.setConclusion = function (conclusion) {
+        if (null != this._conclusion && this._conclusion !== conclusion) {
+            throw new Error("form already has a conclusion: " + this._conclusion + " " + conclusion);
+        }
+        this._conclusion = conclusion;
+        this._updateViewModel(this._viewmodel.gotoPage(this._viewmodel.getPages().length));
+    };
     /*
      * similar to redux: returns the unsubscribe function
      * listeners always called asynchronously: validation runs before

@@ -15,8 +15,9 @@ var MetaPage = (function (_super) {
     MetaPage.prototype.render = function () {
         var context = this.formContext;
         if (this.props.page == context.currentPage) {
+            var formContext = this.formContext;
             var Wrapper = this.formContext.config.wrappers.page;
-            return React.createElement(Wrapper, null, this.props.children);
+            return React.createElement(Wrapper, {busy: formContext.isBusy()}, this.props.children);
         }
         return null;
     };

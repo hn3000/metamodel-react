@@ -49,7 +49,11 @@ var FormWrapper = (function (_super) {
         _super.apply(this, arguments);
     }
     FormWrapper.prototype.render = function () {
-        return React.createElement("form", {method: "POST", action: "#"}, this.props.children);
+        var wrapperProps = {};
+        if (this.props.busy) {
+            wrapperProps.className = 'form-busy';
+        }
+        return React.createElement("form", __assign({method: "POST", action: "#"}, wrapperProps), this.props.children);
     };
     return FormWrapper;
 }(React.Component));

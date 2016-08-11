@@ -39,7 +39,11 @@ export class PageWrapper extends React.Component<IPageWrapperProps,void> {
 }
 export class FormWrapper extends React.Component<IFormWrapperProps,void> {
   render() {
-    return <form method="POST" action="#">{this.props.children}</form>;
+    let wrapperProps:any = {};
+    if (this.props.busy) {
+      wrapperProps.className = 'form-busy';
+    }
+    return <form method="POST" action="#" {...wrapperProps}>{this.props.children}</form>;
   }
 }
 

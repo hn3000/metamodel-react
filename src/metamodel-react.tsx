@@ -7,18 +7,17 @@ export {
   IModelView,
   ValidationScope,
   ModelView,
-  IValidationMessage,
+  MessageSeverity,
+  IStatusMessage,
+  IPropertyStatusMessage,
   IClientProps,
   ClientProps
 } from '@hn3000/metamodel';
 
 export {
   IFormProps,
-  IFormState,
   IPageProps,
-  IPageState,
   IInputProps,
-  IInputState,
   IWrappers,
   IFormWrapperProps,
   IPageWrapperProps,

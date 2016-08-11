@@ -9,8 +9,9 @@ import {
   IFormContext,
   MetaFormConfig,
   MetaFormContext,
-  IValidationMessage,
-  MetaContextFollower
+  MessageSeverity,
+  MetaContextFollower,
+  IPropertyStatusMessage
 } from '../src/metamodel-react';
 import * as mm from '@hn3000/metamodel';
 
@@ -90,6 +91,15 @@ function choose(values:string[], pEmpty:number) {
   return null;
 }
 
+function delayValue<T>(t:T, d:number):Promise<T> {
+
+  let callback = (resolve:(v:T)=>void, reject:(e:any)=>void) => {
+    let finish = () => { resolve(t); };
+    setTimeout(finish, d);
+  };
+
+  return new Promise<T>(callback);
+} 
 
 function fetchFormData() {
   return Promise.resolve().then(() => {
@@ -101,7 +111,7 @@ function fetchFormData() {
       result.lastname = choose(Lastnames, 0.0);
     }
 
-    return result;
+    return delayValue(result, 2000);
   });
 }
 
@@ -109,13 +119,15 @@ function validateFormData(context:IFormContext) {
   let viewmodel = context.viewmodel;
   let page = viewmodel.getPage(null);  
   let data = viewmodel.getModel();
-  var messages: IValidationMessage[] = [];
+  var messages: IPropertyStatusMessage[] = [];
 
-  if (data.username === 'hn3000') {
-    messages = [ {path: 'username', msg:'username is already taken', code:'username-taken', isError: true } ];
+  if (0 === data.username.indexOf('hn30')) {
+    messages = [ { property: 'username', msg:'username is already taken', code:'username-taken', severity: MessageSeverity.ERROR } ];
+
+    return delayValue(messages, 500*parseInt(data.username.substr(4)));
   }
 
-  return Promise.resolve(messages);
+  return delayValue(messages, 100);
 }
 
 export function run() {
@@ -132,11 +144,14 @@ export function run() {
     config.validateOnUpdate = true;
     config.onFormInit = fetchFormData;
     config.onPageTransition = validateFormData;
+    config.validateDebounceMS = 100;
+    config.busyDelayMS = 200;
 
     let context = new MetaFormContext (config, model, {});
 
-    ReactDom.render(<TestForm context={context} />, formElem);
+    (window as any).formContext = context;
 
+    ReactDom.render(<TestForm context={context} />, formElem);
   }
 } 
 

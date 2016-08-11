@@ -3,6 +3,7 @@
 var metamodel_1 = require('@hn3000/metamodel');
 exports.ValidationScope = metamodel_1.ValidationScope;
 exports.ModelView = metamodel_1.ModelView;
+exports.MessageSeverity = metamodel_1.MessageSeverity;
 exports.ClientProps = metamodel_1.ClientProps;
 var props_different_1 = require('./props-different');
 exports.propsDifferent = props_different_1.propsDifferent;

@@ -10,11 +10,9 @@ var MetaForm = (function (_super) {
     __extends(MetaForm, _super);
     function MetaForm(props, context) {
         _super.call(this, props, context);
-        //if (null == props.context ) console.log("no context found in context for MetaForm", props);
-        this.state = {
-            viewmodel: this.formContext.viewmodel,
-            currentPage: this.formContext.currentPage
-        };
+        if (null == props.context) {
+            console.log("no context found in context for MetaForm", props);
+        }
     }
     MetaForm.prototype.getChildContext = function () {
         return {
@@ -22,14 +20,15 @@ var MetaForm = (function (_super) {
         };
     };
     MetaForm.prototype.render = function () {
-        var Wrapper = this.formContext.config.wrappers.form;
+        var formContext = this.formContext;
+        var Wrapper = formContext.config.wrappers.form;
         /*
         let adjustedChildren = React.Children.map(this.props.children,
           (c) => React.cloneElement(c, {context: this.props.context}));
         */
-        var metamodel = this.formContext.metamodel;
+        var metamodel = formContext.metamodel;
         var modelId = metamodel.propGet('schema').modelId || metamodel.name;
-        return (React.createElement(Wrapper, {id: modelId}, this.props.children));
+        return (React.createElement(Wrapper, {id: modelId, busy: formContext.isBusy()}, this.props.children));
     };
     MetaForm.prototype._updateState = function (context) {
         this.setState({

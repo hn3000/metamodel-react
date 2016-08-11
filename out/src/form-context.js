@@ -27,6 +27,7 @@ var MetaFormContext = (function (_super) {
         this.pageBack = listener_manager_1.clickHandler(this.updatePage, this, -1);
         this.pageNext = listener_manager_1.clickHandler(this.updatePage, this, +1);
         this._listeners = new listener_manager_1.ListenerManager();
+        this._promises = [];
         if (null != this._config.onFormInit) {
             var update = this._config.onFormInit(this);
             update.then(function (x) {
@@ -43,6 +44,7 @@ var MetaFormContext = (function (_super) {
                 }
                 _this._updateViewModel(model);
             });
+            this._promiseInFlight(update);
         }
     }
     MetaFormContext.prototype.pageNextAllowed = function () {
@@ -124,9 +126,10 @@ var MetaFormContext = (function (_super) {
                 if (_this._debounceValidationTimeout) {
                     clearTimeout(_this._debounceValidationTimeout);
                 }
-                _this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceTime);
+                _this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceMS);
             }
         });
+        this._promiseInFlight(nextUpdate);
     };
     MetaFormContext.prototype._updateViewModel = function (viewmodel) {
         this._viewmodel = viewmodel;
@@ -148,7 +151,7 @@ var MetaFormContext = (function (_super) {
         else {
             nextModel = model.validatePage();
         }
-        nextModel
+        var promise = nextModel
             .then(function (validatedModel) {
             var override = false;
             if (_this._config.allowNextWhenInvalid) {
@@ -160,21 +163,25 @@ var MetaFormContext = (function (_super) {
                 var promise;
                 if (_this._config.onPageTransition) {
                     // replace model without notification 
-                    // so onPageTransition starts with this one
+                    // so onPageTransition handler starts with this one
                     _this._viewmodel = validatedModel;
                     var moreValidation = _this._config.onPageTransition(_this, step);
                     if (null == moreValidation) {
                         moreValidation = Promise.resolve([]);
                     }
-                    promise = moreValidation.then(function (messages) {
-                        var result = _this._viewmodel;
-                        if (messages && messages.length) {
-                            result = result.withValidationMessages(messages);
+                    promise = moreValidation.then(function (update) {
+                        // clear out status messages first
+                        var result = _this._viewmodel.withStatusMessages([]);
+                        if (Array.isArray(update)) {
+                            result = result.withValidationMessages(update);
+                        }
+                        else if (typeof update === 'function') {
+                            result = update(result, _this);
                         }
                         return result;
                     }, function () {
                         return validatedModel.withValidationMessages([
-                            { path: "", msg: "internal error (page transition handler)", code: 'transition-error', isError: true }
+                            { property: "", msg: "internal error (page transition handler)", code: 'transition-error', severity: metamodel_1.MessageSeverity.ERROR }
                         ]);
                     });
                 }
@@ -203,6 +210,33 @@ var MetaFormContext = (function (_super) {
                 _this._config.onAfterPageTransition(_this);
             }
         });
+        this._promiseInFlight(promise);
+    };
+    MetaFormContext.prototype.isBusy = function () {
+        return this._promises.length > 0 && Date.now() > this._promisesBusyTime;
+    };
+    MetaFormContext.prototype._promiseInFlight = function (promise) {
+        var _this = this;
+        var index = this._promises.indexOf(promise);
+        if (-1 == index) {
+            this._promises.push(promise);
+            var remove = function (x) { return (_this._promiseResolved(promise), x); };
+            promise.then(remove, remove);
+            if (this._promises.length == 1) {
+                var delay = this._config.busyDelayMS;
+                this._promisesBusyTime = Date.now() + delay;
+                this._promisesTimeout = setTimeout(this._notifyAll.bind(this), delay);
+            }
+        }
+    };
+    MetaFormContext.prototype._promiseResolved = function (promise) {
+        var index = this._promises.indexOf(promise);
+        if (-1 != index) {
+            this._promises.splice(index, 1);
+            if (this._promises.length === 0) {
+                this._notifyAll(); // should have notified, anyway?
+            }
+        }
     };
     return MetaFormContext;
 }(metamodel_1.ClientProps));

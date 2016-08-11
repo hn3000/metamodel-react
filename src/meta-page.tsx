@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { IPageProps, IPageState } from './api';
+import { IPageProps } from './api';
 import { MetaContextFollower } from './base-components';
 import { MetaForm } from './meta-form';
 

@@ -1,7 +1,6 @@
 
 import {
   IFormProps, 
-  IFormState,
   IFormContext
 } from './api';
 
@@ -13,7 +12,7 @@ import {
 
 import * as React from 'react';
 
-export class MetaForm extends MetaContextFollower<IFormProps, IFormState> {
+export class MetaForm extends MetaContextFollower<IFormProps, any> {
 	static childContextTypes = MetaContextAware.contextTypes; 
 	
   getChildContext() {
@@ -24,26 +23,25 @@ export class MetaForm extends MetaContextFollower<IFormProps, IFormState> {
 
   constructor(props:IFormProps, context:any) {
     super(props, context);
-    //if (null == props.context ) console.log("no context found in context for MetaForm", props);
-    this.state = {
-      viewmodel: this.formContext.viewmodel,
-      currentPage: this.formContext.currentPage
-    };
+    if (null == props.context) {
+      console.log("no context found in context for MetaForm", props);
+    }
   }
 
 
   render() {
-    let Wrapper = this.formContext.config.wrappers.form;
+    let formContext = this.formContext;
+    let Wrapper = formContext.config.wrappers.form;
 
     /*
     let adjustedChildren = React.Children.map(this.props.children,
       (c) => React.cloneElement(c, {context: this.props.context}));
     */
 
-    let metamodel = this.formContext.metamodel;
+    let metamodel = formContext.metamodel;
     let modelId = metamodel.propGet('schema').modelId || metamodel.name;
 
-    return (<Wrapper id={modelId}>
+    return (<Wrapper id={modelId} busy={formContext.isBusy()}>
         {this.props.children}
       </Wrapper>);
   }

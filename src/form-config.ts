@@ -2,7 +2,7 @@
 
 import {
   IModelType,
-  IValidationMessage
+  IPropertyStatusMessage
 } from  '@hn3000/metamodel';
 
 import {
@@ -107,11 +107,13 @@ export class MetaFormConfig implements IFormConfig {
   public usePageIndex = false;
   public validateOnUpdate: boolean = false;
   public validateOnUpdateIfInvalid: boolean = false;
-  public validateDebounceTime: number = 1000; //in ms
+  public validateDebounceMS: number = 1000; //in ms
   public allowNextWhenInvalid: boolean = false;
 
+  public busyDelayMS:number = 200;
+
   public onFormInit:(form:IFormContext)=>Promise<IModelUpdater> = null; // </any>
-  public onPageTransition:(form:IFormContext, direction:number)=>Promise<IValidationMessage[]> = null; // </IValidationMessage>
+  public onPageTransition:(form:IFormContext, direction:number)=>Promise<IPropertyStatusMessage[]|IModelUpdater> = null; // </IValidationMessage>
   public onAfterPageTransition:(form:IFormContext)=>void = null;
   public onFailedPageTransition: (ctx:IFormContext) => void = null;
   public onModelUpdate: (ctx:IFormContext) => Promise<IModelUpdater> = null;

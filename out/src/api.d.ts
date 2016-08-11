@@ -1,20 +1,13 @@
 import * as React from 'react';
-import { IModelType, IModelTypeComposite, IModelView, IValidationMessage, IClientProps } from '@hn3000/metamodel';
+import { IModelType, IModelTypeComposite, IModelView, IPropertyStatusMessage, IClientProps } from '@hn3000/metamodel';
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
     action?: string;
     method?: string;
 }
-export interface IFormState {
-    viewmodel: IModelView<any>;
-    currentPage: number;
-}
 export interface IPageProps {
     page: number;
-}
-export interface IPageState {
-    currentPage: number;
 }
 export interface IInputProps {
     field: string;
@@ -22,19 +15,16 @@ export interface IInputProps {
     flavor?: string;
     wrapper?: React.ComponentClass<IWrapperComponentProps>;
 }
-export interface IInputState {
-    fieldValue: any;
-    fieldErrors: IValidationMessage[];
-}
 export interface IWrapperComponentProps {
     hasErrors?: boolean;
-    errors?: IValidationMessage[];
+    errors?: IPropertyStatusMessage[];
     field?: string;
 }
 export interface IFormWrapperProps extends IWrapperComponentProps {
     id: string;
     action?: string;
     method?: string;
+    busy?: boolean;
 }
 export interface IPageWrapperProps extends IWrapperComponentProps {
 }
@@ -50,6 +40,8 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     placeholder?: string;
     onChange?: (newValue: any) => void;
     context?: IFormContext;
+}
+export interface IInputComponentContext {
 }
 export interface IFieldWrapperProps extends IInputComponentProps {
 }
@@ -82,7 +74,7 @@ export interface IModelUpdater {
 }
 export interface IFormEvents {
     onFormInit?: (ctx: IFormContext) => Promise<IModelUpdater>;
-    onPageTransition?: (ctx: IFormContext, direction: number) => Promise<IValidationMessage[]>;
+    onPageTransition?: (ctx: IFormContext, direction: number) => Promise<IPropertyStatusMessage[] | IModelUpdater>;
     onAfterPageTransition?: (ctx: IFormContext) => void;
     onFailedPageTransition?: (ctx: IFormContext) => void;
     onModelUpdate?: (ctx: IFormContext) => Promise<IModelUpdater>;
@@ -92,8 +84,9 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
     usePageIndex: boolean;
     validateOnUpdate: boolean;
     validateOnUpdateIfInvalid: boolean;
-    validateDebounceTime: number;
+    validateDebounceMS: number;
     allowNextWhenInvalid: boolean;
+    busyDelayMS: number;
 }
 export interface IFormContext extends IClientProps {
     config: IFormConfig;
@@ -108,4 +101,5 @@ export interface IFormContext extends IClientProps {
     pageBack: (event: UIEvent) => void;
     pageNextAllowed(): boolean;
     pageBackAllowed(): boolean;
+    isBusy(): boolean;
 }

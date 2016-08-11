@@ -4,8 +4,9 @@ import {
   ClientProps,
   IModelTypeComposite,
   IModelView,
-  ModelView
- } from '@hn3000/metamodel';
+  ModelView,
+  MessageSeverity
+} from '@hn3000/metamodel';
 
 import {
   IFormContext,
@@ -43,6 +44,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     this.pageNext = clickHandler(this.updatePage, this, +1);
 
     this._listeners = new ListenerManager<()=>void>();
+    this._promises = [];
 
     if (null != this._config.onFormInit) {
       var update = this._config.onFormInit(this);
@@ -59,6 +61,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         }
         this._updateViewModel(model);
       });
+      this._promiseInFlight(update);
     }
   }
 
@@ -136,10 +139,11 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
           if (this._debounceValidationTimeout) {
             clearTimeout(this._debounceValidationTimeout);
           }
-          this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceTime);
+          this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceMS);
         }
       }
     );
+    this._promiseInFlight(nextUpdate);
 
   }
   private _debounceValidationTimeout: number;
@@ -166,7 +170,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       nextModel = model.validatePage();
     }
     
-    nextModel
+    let promise = nextModel
       .then((validatedModel) => {
         var override = false;
         if (this._config.allowNextWhenInvalid) {
@@ -181,22 +185,25 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
           if (this._config.onPageTransition) {
 
             // replace model without notification 
-            // so onPageTransition starts with this one
+            // so onPageTransition handler starts with this one
             this._viewmodel = validatedModel; 
 
             let moreValidation = this._config.onPageTransition(this, step);
             if (null == moreValidation) {
               moreValidation = Promise.resolve([]);
             }
-            promise = moreValidation.then((messages) => {
-              var result = this._viewmodel;
-              if (messages && messages.length) {
-                result = result.withValidationMessages(messages);
+            promise = moreValidation.then((update) => {
+              // clear out status messages first
+              var result = this._viewmodel.withStatusMessages([]);
+              if (Array.isArray(update)) {
+                result = result.withValidationMessages(update);
+              } else if (typeof update === 'function') {
+                result = update(result, this);
               }
               return result;
             }, () => {
               return validatedModel.withValidationMessages([
-                { path:"", msg:"internal error (page transition handler)", code:'transition-error', isError: true }
+                { property:"", msg:"internal error (page transition handler)", code:'transition-error', severity: MessageSeverity.ERROR }
               ])
             });
           } else {
@@ -225,11 +232,44 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
           }
       });
 
+    this._promiseInFlight(promise);
+  }
+
+  public isBusy() {
+    return this._promises.length > 0 && Date.now() > this._promisesBusyTime;
+  }
+
+  private _promiseInFlight(promise: Promise<any>) {
+    let index = this._promises.indexOf(promise);
+    if (-1 == index) {
+      this._promises.push(promise);
+      let remove = (x:any) => (this._promiseResolved(promise),x);
+      promise.then(remove,remove);
+      if (this._promises.length == 1) {
+        let delay = this._config.busyDelayMS;
+        this._promisesBusyTime = Date.now() + delay;
+        this._promisesTimeout = setTimeout(this._notifyAll.bind(this), delay);
+      }
+    }
+  }
+
+  private _promiseResolved(promise: Promise<any>) {
+    let index = this._promises.indexOf(promise);
+    if (-1 != index) {
+      this._promises.splice(index,1);
+      if (this._promises.length === 0) {
+        this._notifyAll(); // should have notified, anyway?
+      }
+    }
   }
 
   private _listeners:ListenerManager<()=>void>;
   private _config:IFormConfig;
   private _metamodel: IModelTypeComposite<any>;   //</any>
   private _viewmodel: IModelView<any>;            //</any>
+
+  private _promises: Promise<any>[]; // </any>
+  private _promisesBusyTime:number;
+  private _promisesTimeout:number;
 }
 

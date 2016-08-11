@@ -1,7 +1,7 @@
-import { IFormProps, IFormState, IFormContext } from './api';
+import { IFormProps, IFormContext } from './api';
 import { MetaContextFollower } from './base-components';
 import * as React from 'react';
-export declare class MetaForm extends MetaContextFollower<IFormProps, IFormState> {
+export declare class MetaForm extends MetaContextFollower<IFormProps, any> {
     static childContextTypes: {
         formContext: React.Requireable<any>;
     };

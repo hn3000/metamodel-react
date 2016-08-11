@@ -1,7 +1,7 @@
-import { IInputProps, IInputState, IFormContext } from './api';
+import { IInputProps, IFormContext } from './api';
 import { MetaContextFollower } from './base-components';
 import * as React from 'react';
-export declare class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
+export declare class MetaInput extends MetaContextFollower<IInputProps, any> {
     static contextTypes: {
         formContext: React.Requireable<any>;
     };
@@ -9,7 +9,7 @@ export declare class MetaInput extends MetaContextFollower<IInputProps, IInputSt
     changeHandler(evt: React.FormEvent): void;
     nochangeHandler(): void;
     render(): JSX.Element;
-    shouldComponentUpdate(nextProps: IInputProps, nextState: IInputState, nextCtx: any): boolean;
+    shouldComponentUpdate(nextProps: IInputProps, nextState: any, nextCtx: any): boolean;
     _updatedState(context: IFormContext, initState: boolean): void;
     private _context;
 }

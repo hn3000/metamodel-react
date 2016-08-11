@@ -1,7 +1,6 @@
 
 import { 
-  IInputProps, 
-  IInputState,
+  IInputProps,
   IInputComponentProps,
   InputComponent,
   IFormContext,
@@ -11,7 +10,7 @@ import { MetaContextFollower, MetaContextAware } from './base-components';
 
 import * as React from 'react'; 
 
-export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
+export class MetaInput extends MetaContextFollower<IInputProps, any> {
 
   static contextTypes = MetaContextFollower.contextTypes;
 
@@ -109,7 +108,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, IInputState> {
 
   }
 
-  shouldComponentUpdate(nextProps: IInputProps, nextState: IInputState, nextCtx: any) {
+  shouldComponentUpdate(nextProps: IInputProps, nextState: any, nextCtx: any) {
     let nextContext = nextCtx.formContext as IFormContext;
     let thisContext = this.formContext;
 

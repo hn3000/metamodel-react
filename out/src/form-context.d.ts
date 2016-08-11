@@ -17,8 +17,14 @@ export declare class MetaFormContext extends ClientProps implements IFormContext
     _updateViewModel(viewmodel: IModelView<any>): void;
     _notifyAll(): void;
     updatePage(step: number): void;
+    isBusy(): boolean;
+    private _promiseInFlight(promise);
+    private _promiseResolved(promise);
     private _listeners;
     private _config;
     private _metamodel;
     private _viewmodel;
+    private _promises;
+    private _promisesBusyTime;
+    private _promisesTimeout;
 }

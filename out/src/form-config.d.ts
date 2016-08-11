@@ -1,4 +1,4 @@
-import { IModelType, IValidationMessage } from '@hn3000/metamodel';
+import { IModelType, IPropertyStatusMessage } from '@hn3000/metamodel';
 import { IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent, IModelUpdater } from './api';
 import * as fields from './default-field-types';
 export declare class MetaFormConfig implements IFormConfig {
@@ -12,10 +12,11 @@ export declare class MetaFormConfig implements IFormConfig {
     usePageIndex: boolean;
     validateOnUpdate: boolean;
     validateOnUpdateIfInvalid: boolean;
-    validateDebounceTime: number;
+    validateDebounceMS: number;
     allowNextWhenInvalid: boolean;
+    busyDelayMS: number;
     onFormInit: (form: IFormContext) => Promise<IModelUpdater>;
-    onPageTransition: (form: IFormContext, direction: number) => Promise<IValidationMessage[]>;
+    onPageTransition: (form: IFormContext, direction: number) => Promise<IPropertyStatusMessage[] | IModelUpdater>;
     onAfterPageTransition: (form: IFormContext) => void;
     onFailedPageTransition: (ctx: IFormContext) => void;
     onModelUpdate: (ctx: IFormContext) => Promise<IModelUpdater>;

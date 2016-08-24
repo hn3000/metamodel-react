@@ -47,9 +47,8 @@ var MetaInput = (function (_super) {
     MetaInput.prototype.render = function () {
         var context = this.formContext;
         var fieldName = this.props.field;
-        var fieldType = context.metamodel.itemType(fieldName);
-        var field = fieldType && fieldType.asItemType();
-        if (!field) {
+        var fieldType = context.viewmodel.getFieldType(fieldName);
+        if (!fieldType) {
             console.log("field " + fieldName + " not found in " + context.metamodel.name);
             return null;
         }
@@ -80,7 +79,7 @@ var MetaInput = (function (_super) {
         var children;
         var Input;
         if (0 === React.Children.count(this.props.children)) {
-            Input = context.config.findBest(field, fieldName, flavor);
+            Input = context.config.findBest(fieldType, fieldName, flavor);
             children = [React.createElement(Input, __assign({}, props))];
         }
         else {

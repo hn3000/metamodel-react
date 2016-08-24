@@ -134,6 +134,58 @@ export class MetaFormInputEnumCheckbox extends React.Component<IInputComponentPr
   }
 }
 
+export interface IFileInputState {
+  dataurl:string;
+  error?:string;
+}
+
+export class MetaFormInputFile extends React.Component<IInputComponentProps, IFileInputState> {
+  constructor(props:IInputComponentProps, reactContext:any) {
+    super(props, reactContext);
+
+    this.state = { dataurl: null };
+    this.handleFile = this.handleFile.bind(this);
+    this.handleContents = this.handleContents.bind(this);
+    this.handleError = this.handleError.bind(this);
+  }
+
+  handleContents(evt:ProgressEvent) {
+    console.log('loaded: ', evt.target);
+    this.setState({ dataurl: ''+(evt.target as FileReader).result });
+  }
+  handleError(evt:ErrorEvent) {
+    console.log('error: ', evt);
+    this.setState({ error: ''+evt.error, dataurl: null });
+  }
+
+  handleFile(evt:UIEvent) {
+    let files = (evt.target as HTMLInputElement).files; 
+    if (files && files.length) {
+      let first = files[0];
+      let reader = new FileReader();
+      reader.onloadend = this.handleContents;
+      reader.onerror = this.handleError;
+      reader.readAsDataURL(first);
+      this.props.context.updateModel(this.props.field, {
+        file: first,
+        name: first.name
+      });
+    }
+  }
+
+  render() {
+    let props = this.props;
+    let state = this.state;
+    return <div>
+      <input type="file" onChange={this.handleFile} defaultValue={this.props.defaultValue.file}></input>
+      { state.dataurl && <img src={state.dataurl} height="50" /> }
+      { state.error && <span className="error">{state.dataurl}</span> }
+    </div>;
+  }
+}
+
+
+
 export class MetaFormUnknownFieldType extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     return <input type="text" placeholder={this.props.field+": unknown kind"}></input>;

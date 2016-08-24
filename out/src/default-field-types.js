@@ -159,6 +159,48 @@ var MetaFormInputEnumCheckbox = (function (_super) {
     return MetaFormInputEnumCheckbox;
 }(React.Component));
 exports.MetaFormInputEnumCheckbox = MetaFormInputEnumCheckbox;
+var MetaFormInputFile = (function (_super) {
+    __extends(MetaFormInputFile, _super);
+    function MetaFormInputFile(props, reactContext) {
+        _super.call(this, props, reactContext);
+        this.state = { dataurl: null };
+        this.handleFile = this.handleFile.bind(this);
+        this.handleContents = this.handleContents.bind(this);
+        this.handleError = this.handleError.bind(this);
+    }
+    MetaFormInputFile.prototype.handleContents = function (evt) {
+        console.log('loaded: ', evt.target);
+        this.setState({ dataurl: '' + evt.target.result });
+    };
+    MetaFormInputFile.prototype.handleError = function (evt) {
+        console.log('error: ', evt);
+        this.setState({ error: '' + evt.error, dataurl: null });
+    };
+    MetaFormInputFile.prototype.handleFile = function (evt) {
+        var files = evt.target.files;
+        if (files && files.length) {
+            var first = files[0];
+            var reader = new FileReader();
+            reader.onloadend = this.handleContents;
+            reader.onerror = this.handleError;
+            reader.readAsDataURL(first);
+            this.props.context.updateModel(this.props.field, {
+                file: first,
+                name: first.name
+            });
+        }
+    };
+    MetaFormInputFile.prototype.render = function () {
+        var props = this.props;
+        var state = this.state;
+        return React.createElement("div", null, 
+            React.createElement("input", {type: "file", onChange: this.handleFile, defaultValue: this.props.defaultValue.file}), 
+            state.dataurl && React.createElement("img", {src: state.dataurl, height: "50"}), 
+            state.error && React.createElement("span", {className: "error"}, state.dataurl));
+    };
+    return MetaFormInputFile;
+}(React.Component));
+exports.MetaFormInputFile = MetaFormInputFile;
 var MetaFormUnknownFieldType = (function (_super) {
     __extends(MetaFormUnknownFieldType, _super);
     function MetaFormUnknownFieldType() {

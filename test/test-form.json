@@ -4,7 +4,8 @@
       "firstname": { "type": "string", "maxLength": 20 },
       "lastname":  { "type": "string", "maxLength": 20 },
       "username":  { "type": "string", "maxLength": 20, "format": "username", "pattern": "^[a-z][a-z0-9]+" },
-      "country":   { "$ref": "#/definitions/Country" }
+      "country":   { "$ref": "#/definitions/Country" },
+      "file":      { "type": "object", "format": "file" }
     },
     "allOf": [
       { "$ref": "#/pages/1/schema"}
@@ -24,7 +25,7 @@
     "pages": [
       { 
         "alias": "names-and-country",
-        "fields": ["firstname", "lastname", "username", "country"] 
+        "fields": ["firstname", "lastname", "username", "country", "file"] 
       },
       { 
         "alias": "email-etc",

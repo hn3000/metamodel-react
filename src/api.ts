@@ -1,5 +1,6 @@
 
 import * as React from 'react';
+
 import {
   IModelType,
   IModelTypeComposite,
@@ -58,7 +59,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     value?: any;
     defaultValue?: any;
     placeholder?:string;
-    onChange?: (newValue: any) => void;
+    onChange?: (evt: React.FormEvent) => void;
     context?:IFormContext
 }
 

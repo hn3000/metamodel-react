@@ -28,10 +28,14 @@ function objMatcher(template:any):matchQFun { //</any>
   return ((field:IModelType<any> /*</any>*/) => { 
     var result = 0;
     var fieldObj = field as any;
+    let schema = fieldObj && fieldObj.propGet && fieldObj.propGet('schema');
     for (var i = 0; i < n; i++) {
       let k = keys[i];
-      if (fieldObj[k] == template[k]) {
+      let t = template[k];
+      if (t == fieldObj[k] || t == schema[k]) {
         ++result;
+      } else {
+        return 0;
       }
     }
     return result;
@@ -146,6 +150,10 @@ export class MetaFormConfig implements IFormConfig {
       {
         matchQuality: objMatcher({kind:'bool'}),
         component: fields.MetaFormInputBool
+      },
+      {
+        matchQuality: objMatcher({kind:'object', format: 'file'}),
+        component: fields.MetaFormInputFile
       },
       {
         matchQuality: andMatcher(kindMatcher('string'), hasPVC(10)),

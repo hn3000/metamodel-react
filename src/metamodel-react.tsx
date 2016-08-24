@@ -28,10 +28,12 @@ export {
   IComponentMatcher,
   IFormConfig,
   IFormContext,
-  InputComponent
+  InputComponent,
+  IModelUpdater
 } from './api';
 
 export { propsDifferent } from './props-different';
+export { parseSearchParams } from './search-params';
 
 export { MetaFormConfig } from './form-config';
 export { MetaFormContext } from './form-context';

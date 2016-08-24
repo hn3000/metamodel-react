@@ -47,10 +47,9 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
   render() {
     let context = this.formContext;
     var fieldName = this.props.field;
-    var fieldType = context.metamodel.itemType(fieldName);
-    var field = fieldType && fieldType.asItemType();
+    var fieldType = context.viewmodel.getFieldType(fieldName);
 
-    if (!field) {
+    if (!fieldType) {
       console.log(`field ${fieldName} not found in ${context.metamodel.name}`);
       return null;
     }
@@ -90,7 +89,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
 
     var Input:InputComponent;
     if (0 === React.Children.count(this.props.children)) {
-      Input = context.config.findBest(field, fieldName, flavor);
+      Input = context.config.findBest(fieldType, fieldName, flavor);
       children = [ <Input {...props} /> ];
     } else {
       children = React.Children.map(this.props.children, (c) => {

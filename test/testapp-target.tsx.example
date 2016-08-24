@@ -1,0 +1,81 @@
+
+import * as React from 'react';
+import * as ReactDom from 'react-dom';
+
+import {
+  MetaForm,
+  MetaFormConfig,
+  MetaFormContext,
+  MetaPage,
+  MetaInput
+} from '../src/metamodel-react';
+
+import {
+  ModelTypeObject,
+  ModelSchemaParser
+} from '@hn3000/metamodel'
+
+var registry = new ModelSchemaParser();
+
+/*
+registry.addSchemaObject(
+  "ContactForm",
+  {
+    type: "object",
+    properties: {
+      firstname: { type: "string", maxLength: 20 },
+      lastname:  { type: "string", maxLength: 20 },
+      username:  { type: "string", maxLength: 20, format: "username" },
+      email:     { type: "string", maxLength: 20, format: "email" },
+      email2:    { type: "string", maxLength: 20, format: "email" },
+      blah:      { type: "number" },
+    },
+    constraints: [
+      { kind: "equalFields", fields: [ "email2", "email" ] }
+    ],
+    pages: [
+      { fields: ["firstname", "lastname"] },
+      { fields: ["email", "email2", "blah"] }
+    ]
+  }
+);
+*/
+registry.addSchemaFromURL('./contact-form.json').then((model) => {
+
+  class ContactFormApp extends React.Component<any,any> {
+
+    render() {
+      const config = new MetaFormConfig();
+      
+      const context = new MetaFormContext(config, model, {}); 
+      return (
+        <MetaForm context={context}>
+          <div>
+            <MetaPage page={1}>
+              <Label>Full name</Label>
+              <MetaInput field="firstname"  flavour="nolabel" />
+              <MetaInput field="lastname"  flavour="nolabel" />
+              <MetaFormNavigation>
+                <button onClick={this.next}>next</button>
+              </MetaFormNavigation>
+            </MetaPage>
+            <MetaPage page={1}>
+              <MetaInput field="email" />
+              <MetaInput field="blah" />
+              <MetaFormNavigation>
+                <button onClick={this.previous}>previous</button>
+              </MetaFormNavigation>
+            </MetaPage>
+          </div>
+        </MetaForm>
+      );
+    }
+  }
+
+  ReactDom.render(
+    <ContactFormApp />, 
+    document.getElementById('form-content')
+  );
+
+});
+

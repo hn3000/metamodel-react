@@ -6,10 +6,15 @@ function objMatcher(template) {
     return (function (field /*</any>*/) {
         var result = 0;
         var fieldObj = field;
+        var schema = fieldObj && fieldObj.propGet && fieldObj.propGet('schema');
         for (var i = 0; i < n; i++) {
             var k = keys[i];
-            if (fieldObj[k] == template[k]) {
+            var t = template[k];
+            if (t == fieldObj[k] || t == schema[k]) {
                 ++result;
+            }
+            else {
+                return 0;
             }
         }
         return result;
@@ -121,6 +126,10 @@ var MetaFormConfig = (function () {
             {
                 matchQuality: objMatcher({ kind: 'bool' }),
                 component: fields.MetaFormInputBool
+            },
+            {
+                matchQuality: objMatcher({ kind: 'object', format: 'file' }),
+                component: fields.MetaFormInputFile
             },
             {
                 matchQuality: andMatcher(kindMatcher('string'), hasPVC(10)),

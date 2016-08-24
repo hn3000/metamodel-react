@@ -23,8 +23,11 @@ export declare class MetaFormConfig implements IFormConfig {
     private _wrappers;
     private _components;
     static defaultWrappers(): IWrappers;
-    static defaultComponents(): {
+    static defaultComponents(): ({
         matchQuality: (field: IModelType<any>) => number;
         component: typeof fields.MetaFormInputString;
-    }[];
+    } | {
+        matchQuality: (field: IModelType<any>) => number;
+        component: typeof fields.MetaFormInputFile;
+    })[];
 }

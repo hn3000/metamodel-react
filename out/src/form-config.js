@@ -50,6 +50,7 @@ var MetaFormConfig = (function () {
         this.validateOnUpdateIfInvalid = false;
         this.validateDebounceMS = 1000; //in ms
         this.allowNextWhenInvalid = false;
+        this.allowSubmitWhenInvalid = false;
         this.busyDelayMS = 200;
         this.onFormInit = null; // </any>
         this.onPageTransition = null; // </IValidationMessage>

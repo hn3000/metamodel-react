@@ -113,6 +113,7 @@ export class MetaFormConfig implements IFormConfig {
   public validateOnUpdateIfInvalid: boolean = false;
   public validateDebounceMS: number = 1000; //in ms
   public allowNextWhenInvalid: boolean = false;
+  public allowSubmitWhenInvalid: boolean = false;
 
   public busyDelayMS:number = 200;
 

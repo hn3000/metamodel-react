@@ -170,12 +170,13 @@ var MetaFormContext = (function (_super) {
         var promise = nextModel
             .then(function (validatedModel) {
             var override = false;
-            if (_this._config.allowNextWhenInvalid) {
-                if (!props_different_1.arraysDifferent(model.getPageMessages(), validatedModel.getPageMessages())) {
-                    override = true;
-                }
+            var isSubmit = model.currentPageNo == model.getPages().length;
+            var allowNext = !isSubmit && _this._config.allowNextWhenInvalid
+                || isSubmit && _this._config.allowSubmitWhenInvalid;
+            if (allowNext && !props_different_1.arraysDifferent(model.getPageMessages(), validatedModel.getPageMessages())) {
+                override = true;
             }
-            if (step < 0 || validatedModel.isPageValid(null) || override) {
+            if (step < 0 || override || validatedModel.isPageValid(null)) {
                 var promise;
                 if (_this._config.onPageTransition) {
                     // replace model without notification 

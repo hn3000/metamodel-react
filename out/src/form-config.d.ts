@@ -14,6 +14,7 @@ export declare class MetaFormConfig implements IFormConfig {
     validateOnUpdateIfInvalid: boolean;
     validateDebounceMS: number;
     allowNextWhenInvalid: boolean;
+    allowSubmitWhenInvalid: boolean;
     busyDelayMS: number;
     onFormInit: (form: IFormContext) => Promise<IModelUpdater>;
     onPageTransition: (form: IFormContext, direction: number) => Promise<IPropertyStatusMessage[] | IModelUpdater>;

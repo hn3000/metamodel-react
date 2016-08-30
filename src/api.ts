@@ -121,6 +121,7 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
   validateDebounceMS: number;          // default 100ms
 
   allowNextWhenInvalid: boolean;       // default false
+  allowSubmitWhenInvalid: boolean;       // default false
 
   busyDelayMS: number;                 // default 100ms
 }

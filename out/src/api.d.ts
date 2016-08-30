@@ -87,6 +87,7 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
     validateOnUpdateIfInvalid: boolean;
     validateDebounceMS: number;
     allowNextWhenInvalid: boolean;
+    allowSubmitWhenInvalid: boolean;
     busyDelayMS: number;
 }
 export interface IConclusionMessage extends IStatusMessage {

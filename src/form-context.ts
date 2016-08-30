@@ -193,13 +193,15 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     
     let promise = nextModel
       .then((validatedModel) => {
-        var override = false;
-        if (this._config.allowNextWhenInvalid) {
-          if (!arraysDifferent(model.getPageMessages(), validatedModel.getPageMessages())) {
-            override = true;
-          }
+        let override = false;
+        let isSubmit = model.currentPageNo == model.getPages().length;
+        let allowNext = !isSubmit && this._config.allowNextWhenInvalid
+                      || isSubmit && this._config.allowSubmitWhenInvalid;
+
+        if (allowNext && !arraysDifferent(model.getPageMessages(), validatedModel.getPageMessages())) {
+          override = true;
         }
-        if (step < 0 || validatedModel.isPageValid(null) || override) {
+        if (step < 0 || override || validatedModel.isPageValid(null)) {
           
           var promise:Promise<IModelView<any>>;
 

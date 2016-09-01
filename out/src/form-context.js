@@ -206,7 +206,8 @@ var MetaFormContext = (function (_super) {
                     promise = Promise.resolve(validatedModel);
                 }
                 return promise.then(function (serverValidatedModel) {
-                    if (step < 0 || serverValidatedModel.isPageValid(null)) {
+                    if (step < 0 || (serverValidatedModel.isPageValid(null)
+                        && 0 == serverValidatedModel.getStatusMessages().length)) {
                         var nextPageModel = serverValidatedModel.changePage(step);
                         return nextPageModel;
                     }

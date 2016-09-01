@@ -234,7 +234,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
           }
 
           return promise.then((serverValidatedModel) => {
-            if (step < 0 || serverValidatedModel.isPageValid(null)) {
+            if (step < 0 || (
+              serverValidatedModel.isPageValid(null) 
+              && 0 == serverValidatedModel.getStatusMessages().length
+            )) {
               var nextPageModel = serverValidatedModel.changePage(step);
               return nextPageModel;
             } else {

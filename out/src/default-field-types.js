@@ -101,11 +101,10 @@ var MetaFormInputEnumSelect = (function (_super) {
     }
     MetaFormInputEnumSelect.prototype.render = function () {
         var props = this.props;
-        var fieldType = props.fieldType;
-        var itemType = fieldType.asItemType();
-        var values = [];
-        if (null != itemType) {
-            values = itemType.possibleValues();
+        var vm = props.context.viewmodel;
+        var values = vm.getPossibleFieldValues(props.field);
+        if (null == values) {
+            values = [];
         }
         var hasValue = null != props.value;
         return (React.createElement("select", {onChange: props.onChange, value: props.value}, 
@@ -123,11 +122,10 @@ var MetaFormInputEnumRadios = (function (_super) {
     }
     MetaFormInputEnumRadios.prototype.render = function () {
         var props = this.props;
-        var fieldType = props.fieldType;
-        var itemType = fieldType.asItemType();
-        var values = [];
-        if (null != itemType) {
-            values = itemType.possibleValues();
+        var vm = props.context.viewmodel;
+        var values = vm.getPossibleFieldValues(props.field);
+        if (null == values) {
+            values = [];
         }
         var group = this._group;
         var radios = values.map(function (x) { return (React.createElement("label", {key: x + '_' + group}, 

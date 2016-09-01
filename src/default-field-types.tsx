@@ -71,12 +71,11 @@ export class MetaFormInputBool extends React.Component<IInputComponentProps, IIn
 export class MetaFormInputEnumSelect extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
-    let fieldType = props.fieldType;
+    let vm = props.context.viewmodel;
     
-    let itemType = fieldType.asItemType();
-    var values:any[] = [  ];
-    if (null != itemType) {
-      values = itemType.possibleValues();
+    let values:any[] = vm.getPossibleFieldValues(props.field);
+    if (null == values) {
+      values = [];
     }
     let hasValue = null != props.value;
     return (<select onChange={props.onChange} value={props.value}>
@@ -93,12 +92,11 @@ export class MetaFormInputEnumRadios extends React.Component<IInputComponentProp
   }
   render() {
     let props = this.props;
-    let fieldType = props.fieldType;
+    let vm = props.context.viewmodel;
     
-    let itemType = fieldType.asItemType();
-    var values:any[] = [  ];
-    if (null != itemType) {
-      values = itemType.possibleValues();
+    let values:any[] = vm.getPossibleFieldValues(props.field);
+    if (null == values) {
+      values = [];
     }
     let group = this._group;
     let radios = values.map((x:string)=> (

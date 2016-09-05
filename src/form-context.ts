@@ -138,10 +138,12 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean) {
     let newModel = updater(this._viewmodel, this);
     let config = this._config;
-    let nextUpdate:Promise<IModelUpdater> = Promise.resolve((x:IModelView<any>) => x);
+    this._viewmodel = newModel;
+    let nextUpdate:Promise<IModelUpdater>;
     if (config.onModelUpdate) {
-      this._viewmodel = newModel;
       nextUpdate = config.onModelUpdate(this);
+    } else {
+      nextUpdate = Promise.resolve((x:IModelView<any>) => x);
     }
     nextUpdate.then(
       (updater) => {

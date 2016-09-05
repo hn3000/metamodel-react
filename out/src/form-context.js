@@ -121,10 +121,13 @@ var MetaFormContext = (function (_super) {
         var _this = this;
         var newModel = updater(this._viewmodel, this);
         var config = this._config;
-        var nextUpdate = Promise.resolve(function (x) { return x; });
+        this._viewmodel = newModel;
+        var nextUpdate;
         if (config.onModelUpdate) {
-            this._viewmodel = newModel;
             nextUpdate = config.onModelUpdate(this);
+        }
+        else {
+            nextUpdate = Promise.resolve(function (x) { return x; });
         }
         nextUpdate.then(function (updater) {
             var updatedModel = updater(newModel, _this);

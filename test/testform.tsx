@@ -145,6 +145,8 @@ export function run() {
     config.validateOnUpdate = true;
     config.onFormInit = fetchFormData;
     config.onPageTransition = validateFormData;
+    config.onAfterPageTransition = (ctx) => { console.log('after transition', ctx); }
+    config.onFailedPageTransition = (ctx) => { console.log('failed transition', ctx); }
     config.validateDebounceMS = 100;
     config.busyDelayMS = 200;
 

@@ -90,7 +90,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     var Input:InputComponent;
     if (0 === React.Children.count(this.props.children)) {
       Input = context.config.findBest(fieldType, fieldName, flavor);
-      children = [ <Input {...props} /> ];
+      children = [ <Input key={0} {...props} /> ];
     } else {
       children = React.Children.map(this.props.children, (c) => {
         // avoid providing our props to html elements

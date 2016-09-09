@@ -80,7 +80,7 @@ var MetaInput = (function (_super) {
         var Input;
         if (0 === React.Children.count(this.props.children)) {
             Input = context.config.findBest(fieldType, fieldName, flavor);
-            children = [React.createElement(Input, __assign({}, props))];
+            children = [React.createElement(Input, __assign({key: 0}, props))];
         }
         else {
             children = React.Children.map(this.props.children, function (c) {

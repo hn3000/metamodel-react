@@ -181,26 +181,26 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   }
 
   updatePage(step:number) {
-    let model = this._viewmodel;
+    let originalModel = this._viewmodel;
 
     let nextModel:Promise<IModelView<any>>;
     
     if (step < 0) {
-      nextModel = Promise.resolve(model);
-    } else if (model.currentPageNo == model.getPages().length) {
-      nextModel = model.validateFull();
+      nextModel = Promise.resolve(originalModel);
+    } else if (originalModel.currentPageNo == originalModel.getPages().length) {
+      nextModel = originalModel.validateFull();
     } else {
-      nextModel = model.validatePage();
+      nextModel = originalModel.validatePage();
     }
     
     let promise = nextModel
       .then((validatedModel) => {
         let override = false;
-        let isSubmit = model.currentPageNo == model.getPages().length;
+        let isSubmit = originalModel.currentPageNo == originalModel.getPages().length;
         let allowNext = !isSubmit && this._config.allowNextWhenInvalid
                       || isSubmit && this._config.allowSubmitWhenInvalid;
 
-        if (allowNext && !arraysDifferent(model.getPageMessages(), validatedModel.getPageMessages())) {
+        if (allowNext && !arraysDifferent(originalModel.getPageMessages(), validatedModel.getPageMessages())) {
           override = true;
         }
         if (step < 0 || override || validatedModel.isPageValid(null)) {
@@ -244,9 +244,6 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
               return nextPageModel;
             } else {
               console.log("failed page transition", this);
-              if (this._config.onFailedPageTransition) {
-                this._config.onFailedPageTransition(this);
-              }
             }
             return serverValidatedModel;
           });
@@ -255,9 +252,15 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       })
       .then((x) => this._updateViewModel(x))
       .then(() => {
+        if (originalModel.currentPageIndex == this._viewmodel.currentPageIndex) {
+          if (this._config.onFailedPageTransition) {
+            this._config.onFailedPageTransition(this);
+          }
+        } else {
           if (this._config.onAfterPageTransition) {
             this._config.onAfterPageTransition(this);
           }
+        }
       });
 
     this._promiseInFlight(promise);

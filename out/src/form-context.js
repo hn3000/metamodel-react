@@ -159,24 +159,24 @@ var MetaFormContext = (function (_super) {
     };
     MetaFormContext.prototype.updatePage = function (step) {
         var _this = this;
-        var model = this._viewmodel;
+        var originalModel = this._viewmodel;
         var nextModel;
         if (step < 0) {
-            nextModel = Promise.resolve(model);
+            nextModel = Promise.resolve(originalModel);
         }
-        else if (model.currentPageNo == model.getPages().length) {
-            nextModel = model.validateFull();
+        else if (originalModel.currentPageNo == originalModel.getPages().length) {
+            nextModel = originalModel.validateFull();
         }
         else {
-            nextModel = model.validatePage();
+            nextModel = originalModel.validatePage();
         }
         var promise = nextModel
             .then(function (validatedModel) {
             var override = false;
-            var isSubmit = model.currentPageNo == model.getPages().length;
+            var isSubmit = originalModel.currentPageNo == originalModel.getPages().length;
             var allowNext = !isSubmit && _this._config.allowNextWhenInvalid
                 || isSubmit && _this._config.allowSubmitWhenInvalid;
-            if (allowNext && !props_different_1.arraysDifferent(model.getPageMessages(), validatedModel.getPageMessages())) {
+            if (allowNext && !props_different_1.arraysDifferent(originalModel.getPageMessages(), validatedModel.getPageMessages())) {
                 override = true;
             }
             if (step < 0 || override || validatedModel.isPageValid(null)) {
@@ -216,9 +216,6 @@ var MetaFormContext = (function (_super) {
                     }
                     else {
                         console.log("failed page transition", _this);
-                        if (_this._config.onFailedPageTransition) {
-                            _this._config.onFailedPageTransition(_this);
-                        }
                     }
                     return serverValidatedModel;
                 });
@@ -227,8 +224,15 @@ var MetaFormContext = (function (_super) {
         })
             .then(function (x) { return _this._updateViewModel(x); })
             .then(function () {
-            if (_this._config.onAfterPageTransition) {
-                _this._config.onAfterPageTransition(_this);
+            if (originalModel.currentPageIndex == _this._viewmodel.currentPageIndex) {
+                if (_this._config.onFailedPageTransition) {
+                    _this._config.onFailedPageTransition(_this);
+                }
+            }
+            else {
+                if (_this._config.onAfterPageTransition) {
+                    _this._config.onAfterPageTransition(_this);
+                }
             }
         });
         this._promiseInFlight(promise);

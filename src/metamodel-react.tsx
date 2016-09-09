@@ -29,7 +29,8 @@ export {
   IFormConfig,
   IFormContext,
   InputComponent,
-  IModelUpdater
+  IModelUpdater,
+  IConclusionMessage
 } from './api';
 
 export { propsDifferent } from './props-different';

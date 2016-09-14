@@ -100,9 +100,9 @@ var MetaFormContext = (function (_super) {
         return this._conclusion;
     };
     MetaFormContext.prototype.setConclusion = function (conclusion) {
-        if (null != this._conclusion && this._conclusion !== conclusion) {
-            throw new Error("form already has a conclusion: " + this._conclusion + " " + conclusion);
-        }
+        /*if (null != this._conclusion && this._conclusion !== conclusion) {
+          throw new Error(`form already has a conclusion: ${this._conclusion} ${conclusion}`);
+        }*/
         this._conclusion = conclusion;
         this._updateViewModel(this._viewmodel.gotoPage(this._viewmodel.getPages().length));
     };
@@ -214,7 +214,7 @@ var MetaFormContext = (function (_super) {
                         var nextPageModel = serverValidatedModel.changePage(step);
                         return nextPageModel;
                     }
-                    else {
+                    if (serverValidatedModel.currentPageIndex == originalModel.currentPageIndex) {
                         console.log("failed page transition", _this);
                     }
                     return serverValidatedModel;
@@ -231,15 +231,8 @@ var MetaFormContext = (function (_super) {
                 }
             }
             else {
-                if (currentIndex == _this._viewmodel.getPages().length) {
-                    if (_this._config.onFormConcluded) {
-                        _this._config.onFormConcluded(_this);
-                    }
-                }
-                else {
-                    if (_this._config.onAfterPageTransition) {
-                        _this._config.onAfterPageTransition(_this);
-                    }
+                if (_this._config.onAfterPageTransition) {
+                    _this._config.onAfterPageTransition(_this);
                 }
             }
         });

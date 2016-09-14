@@ -242,7 +242,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
             )) {
               var nextPageModel = serverValidatedModel.changePage(step);
               return nextPageModel;
-            } else {
+            }
+            if (serverValidatedModel.currentPageIndex == originalModel.currentPageIndex) {
               console.log("failed page transition", this);
             }
             return serverValidatedModel;
@@ -258,14 +259,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
             this._config.onFailedPageTransition(this);
           }
         } else {
-          if (currentIndex == this._viewmodel.getPages().length) {
-            if (this._config.onFormConcluded) {
-              this._config.onFormConcluded(this);
-            }
-          } else {
-            if (this._config.onAfterPageTransition) {
-              this._config.onAfterPageTransition(this);
-            }
+          if (this._config.onAfterPageTransition) {
+            this._config.onAfterPageTransition(this);
           }
         }
       });

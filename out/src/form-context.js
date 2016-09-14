@@ -224,14 +224,22 @@ var MetaFormContext = (function (_super) {
         })
             .then(function (x) { return _this._updateViewModel(x); })
             .then(function () {
-            if (originalModel.currentPageIndex == _this._viewmodel.currentPageIndex) {
+            var currentIndex = _this._viewmodel.currentPageIndex;
+            if (originalModel.currentPageIndex == currentIndex) {
                 if (_this._config.onFailedPageTransition) {
                     _this._config.onFailedPageTransition(_this);
                 }
             }
             else {
-                if (_this._config.onAfterPageTransition) {
-                    _this._config.onAfterPageTransition(_this);
+                if (currentIndex == _this._viewmodel.getPages().length) {
+                    if (_this._config.onFormConcluded) {
+                        _this._config.onFormConcluded(_this);
+                    }
+                }
+                else {
+                    if (_this._config.onAfterPageTransition) {
+                        _this._config.onAfterPageTransition(_this);
+                    }
                 }
             }
         });

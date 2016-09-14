@@ -116,9 +116,9 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   }
 
   setConclusion(conclusion:IConclusionMessage) {
-    if (null != this._conclusion && this._conclusion !== conclusion) {
+    /*if (null != this._conclusion && this._conclusion !== conclusion) {
       throw new Error(`form already has a conclusion: ${this._conclusion} ${conclusion}`);
-    }
+    }*/
     this._conclusion = conclusion; 
     this._updateViewModel(this._viewmodel.gotoPage(this._viewmodel.getPages().length));
   }
@@ -252,13 +252,20 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       })
       .then((x) => this._updateViewModel(x))
       .then(() => {
-        if (originalModel.currentPageIndex == this._viewmodel.currentPageIndex) {
+        let currentIndex = this._viewmodel.currentPageIndex;
+        if (originalModel.currentPageIndex == currentIndex) {
           if (this._config.onFailedPageTransition) {
             this._config.onFailedPageTransition(this);
           }
         } else {
-          if (this._config.onAfterPageTransition) {
-            this._config.onAfterPageTransition(this);
+          if (currentIndex == this._viewmodel.getPages().length) {
+            if (this._config.onFormConcluded) {
+              this._config.onFormConcluded(this);
+            }
+          } else {
+            if (this._config.onAfterPageTransition) {
+              this._config.onAfterPageTransition(this);
+            }
           }
         }
       });

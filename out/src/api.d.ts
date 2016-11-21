@@ -103,8 +103,8 @@ export interface IFormContext extends IClientProps {
     updatePage(step: number): void;
     setConclusion(conclusion: IConclusionMessage): void;
     getConclusion(): IConclusionMessage | null;
-    pageNext: (event: UIEvent) => void;
-    pageBack: (event: UIEvent) => void;
+    pageNext: (event: React.SyntheticEvent) => void;
+    pageBack: (event: React.SyntheticEvent) => void;
     pageNextAllowed(): boolean;
     pageBackAllowed(): boolean;
     isBusy(): boolean;

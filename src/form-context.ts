@@ -23,6 +23,8 @@ import {
 import { parseSearchParams } from './search-params';
 import { arraysDifferent }   from './props-different'
 
+import * as React from 'react';
+
 var requestParams = parseSearchParams(location.search);
 
 var overridePage = requestParams.page!=null ? +(requestParams.page) : null;
@@ -66,8 +68,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     }
   }
 
-  pageNext:(event:UIEvent)=>void;
-  pageBack:(event:UIEvent)=>void;
+  pageNext:(event:React.SyntheticEvent)=>void;
+  pageBack:(event:React.SyntheticEvent)=>void;
 
   pageNextAllowed():boolean {
     if (this.isBusy()) {

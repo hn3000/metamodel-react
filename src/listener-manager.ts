@@ -1,4 +1,6 @@
 
+import * as React from 'react';
+
 export class ListenerManager<T> {
   constructor() {
     this._next = [];
@@ -36,8 +38,8 @@ export class ListenerManager<T> {
 }
 
 
-export function clickHandler(fun:(...args:any[])=>void, ...args:any[]):(event:UIEvent)=>void {
-    return (event:UIEvent) => {
+export function clickHandler(fun:(...args:any[])=>void, ...args:any[]):(event:React.SyntheticEvent)=>void {
+    return (event:React.SyntheticEvent) => {
         event.preventDefault();
         fun.apply(args[0], args.slice(1));
     }

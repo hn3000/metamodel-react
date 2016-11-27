@@ -28,7 +28,7 @@ export class FieldWrapper extends React.Component<IFieldWrapperProps,void> {
     return <div {...props}>
       {this.props.children}
       <div className="errors">There were errors:</div>
-      {this.props.errors.map((e) => <div key={e} className="errors">{e.msg}</div>)}
+      {this.props.errors.map((e) => <div key={e.code} className="errors">{e.msg}</div>)}
     </div>;
   }
 }
@@ -156,7 +156,7 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
     this.setState({ error: ''+evt.error, dataurl: null });
   }
 
-  handleFile(evt:UIEvent) {
+  handleFile(evt:React.FormEvent<HTMLElement>) {
     let files = (evt.target as HTMLInputElement).files; 
     if (files && files.length) {
       let first = files[0];

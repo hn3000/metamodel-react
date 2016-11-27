@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import * as React from 'react';
 export declare class ListenerManager<T> {
     constructor();
@@ -7,4 +8,4 @@ export declare class ListenerManager<T> {
     private _current;
     private _next;
 }
-export declare function clickHandler(fun: (...args: any[]) => void, ...args: any[]): (event: React.SyntheticEvent) => void;
+export declare function clickHandler(fun: (...args: any[]) => void, ...args: any[]): (event: React.SyntheticEvent<HTMLElement>) => void;

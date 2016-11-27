@@ -1,3 +1,5 @@
+/// <reference types="react" />
+/// <reference types="es6-promise" />
 import * as React from 'react';
 import { IModelType, IModelTypeComposite, IModelView, IStatusMessage, IPropertyStatusMessage, IClientProps } from '@hn3000/metamodel';
 export interface IFormProps {
@@ -39,7 +41,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     value?: any;
     defaultValue?: any;
     placeholder?: string;
-    onChange?: (evt: React.FormEvent) => void;
+    onChange?: (evt: React.FormEvent<HTMLElement>) => void;
     context?: IFormContext;
 }
 export interface IInputComponentContext {
@@ -103,8 +105,8 @@ export interface IFormContext extends IClientProps {
     updatePage(step: number): void;
     setConclusion(conclusion: IConclusionMessage): void;
     getConclusion(): IConclusionMessage | null;
-    pageNext: (event: React.SyntheticEvent) => void;
-    pageBack: (event: React.SyntheticEvent) => void;
+    pageNext: (event: React.SyntheticEvent<HTMLElement>) => void;
+    pageBack: (event: React.SyntheticEvent<HTMLElement>) => void;
     pageNextAllowed(): boolean;
     pageBackAllowed(): boolean;
     isBusy(): boolean;

@@ -68,8 +68,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     }
   }
 
-  pageNext:(event:React.SyntheticEvent)=>void;
-  pageBack:(event:React.SyntheticEvent)=>void;
+  pageNext:(event:React.SyntheticEvent<HTMLElement>)=>void;
+  pageBack:(event:React.SyntheticEvent<HTMLElement>)=>void;
 
   pageNextAllowed():boolean {
     if (this.isBusy()) {

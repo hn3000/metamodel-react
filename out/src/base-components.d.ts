@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import * as React from 'react';
 import { IFormContext } from './api';
 import { MetaFormContext } from './form-context';

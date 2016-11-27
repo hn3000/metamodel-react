@@ -1,10 +1,11 @@
+/// <reference types="react" />
 import { IClientProps, ClientProps, IModelTypeComposite, IModelView } from '@hn3000/metamodel';
 import { IConclusionMessage, IFormContext, IFormConfig, IModelUpdater } from './api';
 import * as React from 'react';
 export declare class MetaFormContext extends ClientProps implements IFormContext, IClientProps {
     constructor(config: IFormConfig, metamodel: IModelTypeComposite<any>, data?: any);
-    pageNext: (event: React.SyntheticEvent) => void;
-    pageBack: (event: React.SyntheticEvent) => void;
+    pageNext: (event: React.SyntheticEvent<HTMLElement>) => void;
+    pageBack: (event: React.SyntheticEvent<HTMLElement>) => void;
     pageNextAllowed(): boolean;
     pageBackAllowed(): boolean;
     readonly config: IFormConfig;

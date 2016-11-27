@@ -23,7 +23,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     this.nochangeHandler = this.nochangeHandler.bind(this);
   }
 
-  changeHandler(evt:React.FormEvent) {
+  changeHandler(evt:React.FormEvent<HTMLElement>) {
     let target = evt.target as any;
     let context = this.formContext;
     let fieldName = this.props.field;

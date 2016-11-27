@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import * as React from 'react';
 import { IPageProps } from './api';
 import { MetaContextFollower } from './base-components';

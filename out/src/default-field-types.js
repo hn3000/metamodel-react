@@ -27,7 +27,7 @@ var FieldWrapper = (function (_super) {
         return React.createElement("div", __assign({}, props), 
             this.props.children, 
             React.createElement("div", {className: "errors"}, "There were errors:"), 
-            this.props.errors.map(function (e) { return React.createElement("div", {key: e, className: "errors"}, e.msg); }));
+            this.props.errors.map(function (e) { return React.createElement("div", {key: e.code, className: "errors"}, e.msg); }));
     };
     return FieldWrapper;
 }(React.Component));

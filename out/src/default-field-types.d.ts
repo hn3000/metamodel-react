@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import * as React from 'react';
 import { IInputComponentProps, IInputComponentState, IFormWrapperProps, IPageWrapperProps, IFieldWrapperProps } from './api';
 export declare class FieldWrapper extends React.Component<IFieldWrapperProps, void> {
@@ -37,7 +38,7 @@ export declare class MetaFormInputFile extends React.Component<IInputComponentPr
     constructor(props: IInputComponentProps, reactContext: any);
     handleContents(evt: ProgressEvent): void;
     handleError(evt: ErrorEvent): void;
-    handleFile(evt: UIEvent): void;
+    handleFile(evt: React.FormEvent<HTMLElement>): void;
     render(): JSX.Element;
 }
 export declare class MetaFormUnknownFieldType extends React.Component<IInputComponentProps, IInputComponentState> {

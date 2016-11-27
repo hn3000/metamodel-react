@@ -59,7 +59,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     value?: any;
     defaultValue?: any;
     placeholder?:string;
-    onChange?: (evt: React.FormEvent) => void;
+    onChange?: (evt: React.FormEvent<HTMLElement>) => void;
     context?:IFormContext
 }
 
@@ -152,8 +152,8 @@ export interface IFormContext extends IClientProps {
   setConclusion(conclusion:IConclusionMessage):void;
   getConclusion():IConclusionMessage|null;
   
-  pageNext:(event:React.SyntheticEvent)=>void;
-  pageBack:(event:React.SyntheticEvent)=>void;
+  pageNext:(event:React.SyntheticEvent<HTMLElement>)=>void;
+  pageBack:(event:React.SyntheticEvent<HTMLElement>)=>void;
 
   pageNextAllowed():boolean;
   pageBackAllowed():boolean;

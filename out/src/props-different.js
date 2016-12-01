@@ -19,7 +19,7 @@ function objectsDifferent(a, b) {
         return true;
     for (var _i = 0, keysA_1 = keysA; _i < keysA_1.length; _i++) {
         var k = keysA_1[_i];
-        if (a[k] != b[k]) {
+        if (a[k] !== b[k]) {
             var thisA = a[k];
             var thisB = b[k];
             if (Array.isArray(thisA)) {

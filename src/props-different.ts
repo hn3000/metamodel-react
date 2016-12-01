@@ -19,7 +19,7 @@ export function objectsDifferent(a:any, b:any) {
   if (arraysDifferent(keysA, keysB)) return true;
 
   for (let k of keysA) {
-    if (a[k] != b[k]) {
+    if (a[k] !== b[k]) {
       let thisA = a[k];
       let thisB = b[k];
       if (Array.isArray(thisA)) {

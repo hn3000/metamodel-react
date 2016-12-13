@@ -4,15 +4,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var base_components_1 = require('./base-components');
-var React = require('react');
+var base_components_1 = require("./base-components");
+var React = require("react");
 var MetaForm = (function (_super) {
     __extends(MetaForm, _super);
     function MetaForm(props, context) {
-        _super.call(this, props, context);
+        var _this = _super.call(this, props, context) || this;
         if (null == props.context) {
             console.log("no context found in context for MetaForm", props);
         }
+        return _this;
     }
     MetaForm.prototype.getChildContext = function () {
         return {
@@ -28,7 +29,7 @@ var MetaForm = (function (_super) {
         */
         var metamodel = formContext.metamodel;
         var modelId = metamodel.propGet('schema').modelId || metamodel.name;
-        return (React.createElement(Wrapper, {id: modelId, busy: formContext.isBusy()}, this.props.children));
+        return (React.createElement(Wrapper, { id: modelId, busy: formContext.isBusy() }, this.props.children));
     };
     MetaForm.prototype._updateState = function (context) {
         this.setState({
@@ -36,8 +37,8 @@ var MetaForm = (function (_super) {
             currentPage: context.currentPage
         });
     };
-    MetaForm.childContextTypes = base_components_1.MetaContextAware.contextTypes;
     return MetaForm;
 }(base_components_1.MetaContextFollower));
+MetaForm.childContextTypes = base_components_1.MetaContextAware.contextTypes;
 exports.MetaForm = MetaForm;
 //# sourceMappingURL=meta-form.js.map

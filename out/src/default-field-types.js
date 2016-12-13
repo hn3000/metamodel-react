@@ -12,11 +12,11 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-var React = require('react');
+var React = require("react");
 var FieldWrapper = (function (_super) {
     __extends(FieldWrapper, _super);
     function FieldWrapper() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     FieldWrapper.prototype.render = function () {
         var props = {};
@@ -24,10 +24,10 @@ var FieldWrapper = (function (_super) {
         if (this.props.hasErrors) {
             props['className'] = 'has-error';
         }
-        return React.createElement("div", __assign({}, props), 
-            this.props.children, 
-            React.createElement("div", {className: "errors"}, "There were errors:"), 
-            this.props.errors.map(function (e) { return React.createElement("div", {key: e.code, className: "errors"}, e.msg); }));
+        return React.createElement("div", __assign({}, props),
+            this.props.children,
+            React.createElement("div", { className: "errors" }, "There were errors:"),
+            this.props.errors.map(function (e) { return React.createElement("div", { key: e.code, className: "errors" }, e.msg); }));
     };
     return FieldWrapper;
 }(React.Component));
@@ -35,7 +35,7 @@ exports.FieldWrapper = FieldWrapper;
 var PageWrapper = (function (_super) {
     __extends(PageWrapper, _super);
     function PageWrapper() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     PageWrapper.prototype.render = function () {
         return React.createElement("div", null, this.props.children);
@@ -46,14 +46,14 @@ exports.PageWrapper = PageWrapper;
 var FormWrapper = (function (_super) {
     __extends(FormWrapper, _super);
     function FormWrapper() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     FormWrapper.prototype.render = function () {
         var wrapperProps = {};
         if (this.props.busy) {
             wrapperProps.className = 'form-busy';
         }
-        return React.createElement("form", __assign({method: "POST", action: "#"}, wrapperProps), this.props.children);
+        return React.createElement("form", __assign({ method: "POST", action: "#" }, wrapperProps), this.props.children);
     };
     return FormWrapper;
 }(React.Component));
@@ -61,11 +61,11 @@ exports.FormWrapper = FormWrapper;
 var MetaFormInputString = (function (_super) {
     __extends(MetaFormInputString, _super);
     function MetaFormInputString() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     MetaFormInputString.prototype.render = function () {
         var props = this.props;
-        return React.createElement("input", {type: "text", placeholder: props.field, onChange: props.onChange, value: props.value});
+        return React.createElement("input", { type: "text", placeholder: props.field, onChange: props.onChange, value: props.value });
     };
     return MetaFormInputString;
 }(React.Component));
@@ -73,11 +73,11 @@ exports.MetaFormInputString = MetaFormInputString;
 var MetaFormInputNumber = (function (_super) {
     __extends(MetaFormInputNumber, _super);
     function MetaFormInputNumber() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     MetaFormInputNumber.prototype.render = function () {
         var props = this.props;
-        return React.createElement("input", {type: "text", placeholder: this.props.field, onChange: props.onChange, value: props.value});
+        return React.createElement("input", { type: "text", placeholder: this.props.field, onChange: props.onChange, value: props.value });
     };
     return MetaFormInputNumber;
 }(React.Component));
@@ -85,11 +85,11 @@ exports.MetaFormInputNumber = MetaFormInputNumber;
 var MetaFormInputBool = (function (_super) {
     __extends(MetaFormInputBool, _super);
     function MetaFormInputBool() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     MetaFormInputBool.prototype.render = function () {
         var props = this.props;
-        return React.createElement("input", {type: "checkbox", onChange: props.onChange, checked: props.value});
+        return React.createElement("input", { type: "checkbox", onChange: props.onChange, checked: props.value });
     };
     return MetaFormInputBool;
 }(React.Component));
@@ -97,7 +97,7 @@ exports.MetaFormInputBool = MetaFormInputBool;
 var MetaFormInputEnumSelect = (function (_super) {
     __extends(MetaFormInputEnumSelect, _super);
     function MetaFormInputEnumSelect() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     MetaFormInputEnumSelect.prototype.render = function () {
         var props = this.props;
@@ -107,9 +107,9 @@ var MetaFormInputEnumSelect = (function (_super) {
             values = [];
         }
         var hasValue = null != props.value;
-        return (React.createElement("select", {onChange: props.onChange, value: props.value}, 
-            React.createElement("option", {key: null, value: null, disabled: hasValue, hidden: hasValue}, "choose one"), 
-            values.map(function (x) { return (React.createElement("option", {key: x, value: x}, x)); })));
+        return (React.createElement("select", { onChange: props.onChange, value: props.value },
+            React.createElement("option", { key: null, value: null, disabled: hasValue, hidden: hasValue }, "choose one"),
+            values.map(function (x) { return (React.createElement("option", { key: x, value: x }, x)); })));
     };
     return MetaFormInputEnumSelect;
 }(React.Component));
@@ -117,8 +117,9 @@ exports.MetaFormInputEnumSelect = MetaFormInputEnumSelect;
 var MetaFormInputEnumRadios = (function (_super) {
     __extends(MetaFormInputEnumRadios, _super);
     function MetaFormInputEnumRadios(props, context) {
-        _super.call(this, props, context);
-        this._group = (Math.random() * Number.MAX_VALUE).toString(36);
+        var _this = _super.call(this, props, context) || this;
+        _this._group = (Math.random() * Number.MAX_VALUE).toString(36);
+        return _this;
     }
     MetaFormInputEnumRadios.prototype.render = function () {
         var props = this.props;
@@ -128,8 +129,8 @@ var MetaFormInputEnumRadios = (function (_super) {
             values = [];
         }
         var group = this._group;
-        var radios = values.map(function (x) { return (React.createElement("label", {key: x + '_' + group}, 
-            React.createElement("input", {type: "radio", name: group, onChange: props.onChange, value: x, checked: x === props.value}), 
+        var radios = values.map(function (x) { return (React.createElement("label", { key: x + '_' + group },
+            React.createElement("input", { type: "radio", name: group, onChange: props.onChange, value: x, checked: x === props.value }),
             x)); });
         return React.createElement("div", null, radios);
     };
@@ -139,7 +140,7 @@ exports.MetaFormInputEnumRadios = MetaFormInputEnumRadios;
 var MetaFormInputEnumCheckbox = (function (_super) {
     __extends(MetaFormInputEnumCheckbox, _super);
     function MetaFormInputEnumCheckbox() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     MetaFormInputEnumCheckbox.prototype.render = function () {
         var props = this.props;
@@ -149,8 +150,8 @@ var MetaFormInputEnumCheckbox = (function (_super) {
         if (null != itemType) {
             values = itemType.possibleValues();
         }
-        var radios = values.map(function (x) { return (React.createElement("label", null, 
-            React.createElement("input", {type: "checkbox", onChange: props.onChange, value: x, checked: x === props.value}), 
+        var radios = values.map(function (x) { return (React.createElement("label", null,
+            React.createElement("input", { type: "checkbox", onChange: props.onChange, value: x, checked: x === props.value }),
             x)); });
         return React.createElement("div", null, radios);
     };
@@ -160,11 +161,12 @@ exports.MetaFormInputEnumCheckbox = MetaFormInputEnumCheckbox;
 var MetaFormInputFile = (function (_super) {
     __extends(MetaFormInputFile, _super);
     function MetaFormInputFile(props, reactContext) {
-        _super.call(this, props, reactContext);
-        this.state = { dataurl: null };
-        this.handleFile = this.handleFile.bind(this);
-        this.handleContents = this.handleContents.bind(this);
-        this.handleError = this.handleError.bind(this);
+        var _this = _super.call(this, props, reactContext) || this;
+        _this.state = { dataurl: null };
+        _this.handleFile = _this.handleFile.bind(_this);
+        _this.handleContents = _this.handleContents.bind(_this);
+        _this.handleError = _this.handleError.bind(_this);
+        return _this;
     }
     MetaFormInputFile.prototype.handleContents = function (evt) {
         console.log('loaded: ', evt.target);
@@ -191,10 +193,10 @@ var MetaFormInputFile = (function (_super) {
     MetaFormInputFile.prototype.render = function () {
         var props = this.props;
         var state = this.state;
-        return React.createElement("div", null, 
-            React.createElement("input", {type: "file", onChange: this.handleFile, defaultValue: this.props.defaultValue.file}), 
-            state.dataurl && React.createElement("img", {src: state.dataurl, height: "50"}), 
-            state.error && React.createElement("span", {className: "error"}, state.dataurl));
+        return React.createElement("div", null,
+            React.createElement("input", { type: "file", onChange: this.handleFile, defaultValue: this.props.defaultValue.file }),
+            state.dataurl && React.createElement("img", { src: state.dataurl, height: "50" }),
+            state.error && React.createElement("span", { className: "error" }, state.dataurl));
     };
     return MetaFormInputFile;
 }(React.Component));
@@ -202,10 +204,10 @@ exports.MetaFormInputFile = MetaFormInputFile;
 var MetaFormUnknownFieldType = (function (_super) {
     __extends(MetaFormUnknownFieldType, _super);
     function MetaFormUnknownFieldType() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     MetaFormUnknownFieldType.prototype.render = function () {
-        return React.createElement("input", {type: "text", placeholder: this.props.field + ": unknown kind"});
+        return React.createElement("input", { type: "text", placeholder: this.props.field + ": unknown kind" });
     };
     return MetaFormUnknownFieldType;
 }(React.Component));

@@ -4,32 +4,31 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var metamodel_1 = require('@hn3000/metamodel');
-var listener_manager_1 = require('./listener-manager');
-var search_params_1 = require('./search-params');
-var props_different_1 = require('./props-different');
+var metamodel_1 = require("@hn3000/metamodel");
+var listener_manager_1 = require("./listener-manager");
+var search_params_1 = require("./search-params");
+var props_different_1 = require("./props-different");
 var requestParams = search_params_1.parseSearchParams(location.search);
 var overridePage = requestParams.page != null ? +(requestParams.page) : null;
 var PAGE_INIT = -1;
 var MetaFormContext = (function (_super) {
     __extends(MetaFormContext, _super);
     function MetaFormContext(config, metamodel, data) {
-        var _this = this;
         if (data === void 0) { data = {}; }
-        _super.call(this);
-        this._config = config;
+        var _this = _super.call(this) || this;
+        _this._config = config;
         if (null != overridePage) {
             config.allowNextWhenInvalid = true;
         }
-        this._metamodel = metamodel;
+        _this._metamodel = metamodel;
         var page = null != overridePage ? overridePage - (config.usePageIndex ? 0 : 1) : PAGE_INIT;
-        this._viewmodel = new metamodel_1.ModelView(metamodel, data, page);
-        this.pageBack = listener_manager_1.clickHandler(this.updatePage, this, -1);
-        this.pageNext = listener_manager_1.clickHandler(this.updatePage, this, +1);
-        this._listeners = new listener_manager_1.ListenerManager();
-        this._promises = [];
-        if (null != this._config.onFormInit) {
-            var update = this._config.onFormInit(this);
+        _this._viewmodel = new metamodel_1.ModelView(metamodel, data, page);
+        _this.pageBack = listener_manager_1.clickHandler(_this.updatePage, _this, -1);
+        _this.pageNext = listener_manager_1.clickHandler(_this.updatePage, _this, +1);
+        _this._listeners = new listener_manager_1.ListenerManager();
+        _this._promises = [];
+        if (null != _this._config.onFormInit) {
+            var update = _this._config.onFormInit(_this);
             update.then(function (x) {
                 var model = _this._viewmodel;
                 if (typeof x === 'function') {
@@ -44,8 +43,9 @@ var MetaFormContext = (function (_super) {
                 }
                 _this._updateViewModel(model);
             });
-            this._promiseInFlight(update);
+            _this._promiseInFlight(update);
         }
+        return _this;
     }
     MetaFormContext.prototype.pageNextAllowed = function () {
         if (this.isBusy()) {

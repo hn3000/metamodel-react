@@ -4,25 +4,25 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var React = require('react');
-var base_components_1 = require('./base-components');
-var meta_form_1 = require('./meta-form');
+var React = require("react");
+var base_components_1 = require("./base-components");
+var meta_form_1 = require("./meta-form");
 var MetaPage = (function (_super) {
     __extends(MetaPage, _super);
     function MetaPage(props, context) {
-        _super.call(this, props, context);
+        return _super.call(this, props, context) || this;
     }
     MetaPage.prototype.render = function () {
         var context = this.formContext;
         if (this.props.page == context.currentPage) {
             var formContext = this.formContext;
             var Wrapper = this.formContext.config.wrappers.page;
-            return React.createElement(Wrapper, {busy: formContext.isBusy()}, this.props.children);
+            return React.createElement(Wrapper, { busy: formContext.isBusy() }, this.props.children);
         }
         return null;
     };
-    MetaPage.contextTypes = meta_form_1.MetaForm.childContextTypes;
     return MetaPage;
 }(base_components_1.MetaContextFollower));
+MetaPage.contextTypes = meta_form_1.MetaForm.childContextTypes;
 exports.MetaPage = MetaPage;
 //# sourceMappingURL=meta-page.js.map

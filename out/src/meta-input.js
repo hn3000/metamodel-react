@@ -12,17 +12,18 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-var base_components_1 = require('./base-components');
-var React = require('react');
+var base_components_1 = require("./base-components");
+var React = require("react");
 var MetaInput = (function (_super) {
     __extends(MetaInput, _super);
     function MetaInput(props, context) {
-        _super.call(this, props, context);
-        if (null == this.formContext)
+        var _this = _super.call(this, props, context) || this;
+        if (null == _this.formContext)
             console.log("no context found for MetaInput", props);
-        this._updatedState(this.formContext, true);
-        this.changeHandler = this.changeHandler.bind(this);
-        this.nochangeHandler = this.nochangeHandler.bind(this);
+        _this._updatedState(_this.formContext, true);
+        _this.changeHandler = _this.changeHandler.bind(_this);
+        _this.nochangeHandler = _this.nochangeHandler.bind(_this);
+        return _this;
     }
     MetaInput.prototype.changeHandler = function (evt) {
         var target = evt.target;
@@ -80,13 +81,14 @@ var MetaInput = (function (_super) {
         var Input;
         if (0 === React.Children.count(this.props.children)) {
             Input = context.config.findBest(fieldType, fieldName, flavor);
-            children = [React.createElement(Input, __assign({key: 0}, props))];
+            children = [React.createElement(Input, __assign({ key: 0 }, props))];
         }
         else {
             children = React.Children.map(this.props.children, function (c) {
-                // avoid providing our props to html elements
-                if (typeof (c.type) === 'string')
+                // avoid providing our props to html elements or NPEs
+                if (null == c || typeof (c.type) === 'string') {
                     return c;
+                }
                 return React.cloneElement(c, props);
             });
         }
@@ -128,8 +130,8 @@ var MetaInput = (function (_super) {
             }
         }
     };
-    MetaInput.contextTypes = base_components_1.MetaContextFollower.contextTypes;
     return MetaInput;
 }(base_components_1.MetaContextFollower));
+MetaInput.contextTypes = base_components_1.MetaContextFollower.contextTypes;
 exports.MetaInput = MetaInput;
 //# sourceMappingURL=meta-input.js.map

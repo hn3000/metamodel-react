@@ -1,5 +1,5 @@
 "use strict";
-var fields = require('./default-field-types');
+var fields = require("./default-field-types");
 function objMatcher(template) {
     var keys = Object.keys(template);
     var n = keys.length;

@@ -4,8 +4,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var React = require('react');
-var props_different_1 = require('./props-different');
+var React = require("react");
+var props_different_1 = require("./props-different");
 exports.MetaForm_ContextTypes = {
     formContext: React.PropTypes.shape({
         config: React.PropTypes.object,
@@ -18,11 +18,12 @@ exports.MetaForm_ContextTypes = {
 var MetaContextAware = (function (_super) {
     __extends(MetaContextAware, _super);
     function MetaContextAware(props, context) {
-        _super.call(this, props, context);
-        if (null == this.formContext || null == this.formContext.metamodel) {
-            var name_1 = this.constructor.name || '';
+        var _this = _super.call(this, props, context) || this;
+        if (null == _this.formContext || null == _this.formContext.metamodel) {
+            var name_1 = _this.constructor.name || '';
             console.log("missing context info in MetaContextAware " + name_1, props, context);
         }
+        return _this;
     }
     Object.defineProperty(MetaContextAware.prototype, "formContext", {
         get: function () {
@@ -31,14 +32,14 @@ var MetaContextAware = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    MetaContextAware.contextTypes = exports.MetaForm_ContextTypes;
     return MetaContextAware;
 }(React.Component));
+MetaContextAware.contextTypes = exports.MetaForm_ContextTypes;
 exports.MetaContextAware = MetaContextAware;
 var MetaContextAwarePure = (function (_super) {
     __extends(MetaContextAwarePure, _super);
     function MetaContextAwarePure() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     MetaContextAwarePure.prototype.shouldComponentUpdate = function (nextProps, nextState, nextContext) {
         return props_different_1.propsDifferent(this.props, nextProps);
@@ -49,8 +50,9 @@ exports.MetaContextAwarePure = MetaContextAwarePure;
 var MetaContextFollower = (function (_super) {
     __extends(MetaContextFollower, _super);
     function MetaContextFollower(props, context) {
-        _super.call(this, props, context);
-        this._unsubscribe = null;
+        var _this = _super.call(this, props, context) || this;
+        _this._unsubscribe = null;
+        return _this;
     }
     MetaContextFollower.prototype._updatedState = function (context, initState) {
         var newState = {
@@ -77,8 +79,8 @@ var MetaContextFollower = (function (_super) {
         this._unsubscribe && this._unsubscribe();
         this._unsubscribe = null;
     };
-    MetaContextFollower.contextTypes = exports.MetaForm_ContextTypes;
     return MetaContextFollower;
 }(MetaContextAware));
+MetaContextFollower.contextTypes = exports.MetaForm_ContextTypes;
 exports.MetaContextFollower = MetaContextFollower;
 //# sourceMappingURL=base-components.js.map

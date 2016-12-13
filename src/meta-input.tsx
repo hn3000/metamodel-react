@@ -93,8 +93,10 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
       children = [ <Input key={0} {...props} /> ];
     } else {
       children = React.Children.map(this.props.children, (c) => {
-        // avoid providing our props to html elements
-        if (typeof((c as any).type) === 'string') return c;
+        // avoid providing our props to html elements or NPEs
+        if (null == c || typeof((c as any).type) === 'string') {
+          return c;
+        }
         return React.cloneElement(c as JSX.Element, props);
       });
     }

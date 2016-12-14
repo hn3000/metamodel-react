@@ -28,7 +28,7 @@ var MetaFormContext = (function (_super) {
         _this._listeners = new listener_manager_1.ListenerManager();
         _this._promises = [];
         if (null != _this._config.onFormInit) {
-            var update = _this._config.onFormInit(_this);
+            var update = Promise.resolve(_this).then(function (ctx) { return _this._config.onFormInit(ctx); });
             update.then(function (x) {
                 var model = _this._viewmodel;
                 if (typeof x === 'function') {

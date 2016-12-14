@@ -50,7 +50,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     this._promises = [];
 
     if (null != this._config.onFormInit) {
-      var update = this._config.onFormInit(this);
+      var update = Promise.resolve(this).then((ctx)=> this._config.onFormInit(ctx));
+
       update.then((x) => {
         var model = this._viewmodel;
         if (typeof x === 'function') {

@@ -7,5 +7,7 @@ export declare class MetaPage extends MetaContextFollower<IPageProps, any> {
         formContext: React.Requireable<any>;
     };
     constructor(props: IPageProps, context: any);
+    private _skipped;
+    shouldComponentUpdate(nextProps: IPageProps, nextState: any, nextContext: any): boolean;
     render(): JSX.Element;
 }

@@ -20,7 +20,7 @@ var MetaInput = (function (_super) {
         var _this = _super.call(this, props, context) || this;
         if (null == _this.formContext)
             console.log("no context found for MetaInput", props);
-        _this._updatedState(_this.formContext, true);
+        _this.initialContext(_this.formContext);
         _this.changeHandler = _this.changeHandler.bind(_this);
         _this.nochangeHandler = _this.nochangeHandler.bind(_this);
         return _this;
@@ -99,36 +99,27 @@ var MetaInput = (function (_super) {
             return React.createElement("div", null, children);
         }
     };
-    MetaInput.prototype.shouldComponentUpdate = function (nextProps, nextState, nextCtx) {
-        var nextContext = nextCtx.formContext;
-        var thisContext = this.formContext;
-        var field = this.props.field;
-        var state = this.state;
-        var newValue = nextContext.viewmodel.getFieldValue(field);
-        var oldValue = state.fieldValue;
-        var newErrors = nextContext.viewmodel.getFieldMessages(field);
-        var oldErrors = state.fieldErrors;
-        return newValue != oldValue || newErrors != oldErrors && newErrors.length > 0 && oldErrors.length > 0;
-    };
-    MetaInput.prototype._updatedState = function (context, initState) {
+    /*
+    shouldComponentUpdate(nextProps: IInputProps, nextState: any, nextCtx: any) {
+      let nextContext = nextCtx.formContext as IFormContext;
+      let thisContext = this.formContext;
+  
+      let field = this.props.field;
+      let state = this.state;
+      let newValue = nextContext.viewmodel.getFieldValue(field);
+      let oldValue = state.fieldValue;
+      let newErrors = nextContext.viewmodel.getFieldMessages(field);
+      let oldErrors = state.fieldErrors;
+  
+      return newValue != oldValue || newErrors != oldErrors && newErrors.length > 0 && oldErrors.length > 0;
+    }*/
+    MetaInput.prototype._extractState = function (context) {
         var fieldName = this.props.field;
         var result = {
             fieldErrors: context.viewmodel.getFieldMessages(fieldName),
             fieldValue: context.viewmodel.getFieldValue(fieldName)
         };
-        if (initState) {
-            this.state = result;
-        }
-        else {
-            var state = this.state;
-            var newValue = result.fieldValue;
-            var oldValue = state.fieldValue;
-            var newErrors = result.fieldErrors;
-            var oldErrors = state.fieldErrors;
-            if (newValue !== oldValue || newErrors !== oldErrors && (newErrors.length > 0 || oldErrors.length > 0)) {
-                this.setState(result);
-            }
-        }
+        return result;
     };
     return MetaInput;
 }(base_components_1.MetaContextFollower));

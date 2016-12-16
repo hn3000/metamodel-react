@@ -17,7 +17,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
   constructor(props:IInputProps, context:any) {
     super(props, context);
     if (null == this.formContext) console.log("no context found for MetaInput", props);
-    this._updatedState(this.formContext, true);
+    this.initialContext(this.formContext);
 
     this.changeHandler = this.changeHandler.bind(this);
     this.nochangeHandler = this.nochangeHandler.bind(this);
@@ -109,6 +109,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
 
   }
 
+  /*
   shouldComponentUpdate(nextProps: IInputProps, nextState: any, nextCtx: any) {
     let nextContext = nextCtx.formContext as IFormContext;
     let thisContext = this.formContext;
@@ -121,30 +122,16 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     let oldErrors = state.fieldErrors; 
 
     return newValue != oldValue || newErrors != oldErrors && newErrors.length > 0 && oldErrors.length > 0; 
+  }*/
+
+  _extractState(context:IFormContext) {
+    let fieldName = this.props.field;
+    let result = {
+      fieldErrors: context.viewmodel.getFieldMessages(fieldName),
+      fieldValue: context.viewmodel.getFieldValue(fieldName)
+    } as any;
+    return result;
   }
-
-  _updatedState (context:IFormContext, initState:boolean) {
-      let fieldName = this.props.field;
-      let result = {
-    	  fieldErrors: context.viewmodel.getFieldMessages(fieldName),
-    	  fieldValue: context.viewmodel.getFieldValue(fieldName)
-      };
-
-      if (initState) {
-        this.state = result;
-      } else {
-        let state = this.state;
-        let newValue = result.fieldValue;
-        let oldValue = state.fieldValue;
-        let newErrors = result.fieldErrors;
-        let oldErrors = state.fieldErrors; 
-
-        if (newValue !== oldValue || newErrors !== oldErrors && (newErrors.length > 0 || oldErrors.length > 0)) {
-          this.setState(result);
-          //this.forceUpdate();
-        }
-      }
-    }
 
   private _context:any;
 }

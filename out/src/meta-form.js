@@ -13,6 +13,9 @@ var MetaForm = (function (_super) {
         if (null == props.context) {
             console.log("no context found in context for MetaForm", props);
         }
+        else {
+            _this.initialContext(_this.props.context);
+        }
         return _this;
     }
     MetaForm.prototype.getChildContext = function () {
@@ -31,11 +34,14 @@ var MetaForm = (function (_super) {
         var modelId = metamodel.propGet('schema').modelId || metamodel.name;
         return (React.createElement(Wrapper, { id: modelId, busy: formContext.isBusy() }, this.props.children));
     };
-    MetaForm.prototype._updateState = function (context) {
-        this.setState({
-            viewmodel: context.viewmodel,
-            currentPage: context.currentPage
-        });
+    MetaForm.prototype._extractState = function (context) {
+        return {
+            busy: context.isBusy(),
+            page: context.currentPage,
+            pageMessages: context.viewmodel.getStatusMessages(),
+            statusMessages: context.viewmodel.getStatusMessages(),
+            conclusio: context.getConclusion()
+        };
     };
     return MetaForm;
 }(base_components_1.MetaContextFollower));

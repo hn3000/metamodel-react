@@ -10,6 +10,7 @@ export interface IFormProps {
 }
 export interface IPageProps {
     page: number;
+    contents?: React.ComponentClass<any> | string;
 }
 export interface IInputProps {
     field: string;

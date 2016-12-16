@@ -25,6 +25,8 @@ export class MetaForm extends MetaContextFollower<IFormProps, any> {
     super(props, context);
     if (null == props.context) {
       console.log("no context found in context for MetaForm", props);
+    } else {
+      this.initialContext(this.props.context);
     }
   }
 
@@ -46,11 +48,14 @@ export class MetaForm extends MetaContextFollower<IFormProps, any> {
       </Wrapper>);
   }
 
-  _updateState(context:IFormContext) {
-    this.setState({
-      viewmodel: context.viewmodel,
-      currentPage: context.currentPage
-    })
+  _extractState(context:IFormContext) {
+    return {
+      busy: context.isBusy(),
+      page: context.currentPage,
+      pageMessages: context.viewmodel.getStatusMessages(),
+      statusMessages: context.viewmodel.getStatusMessages(),
+      conclusio: context.getConclusion()
+    } as any;
   }
 }
 

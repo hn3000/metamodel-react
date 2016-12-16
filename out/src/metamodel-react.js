@@ -26,7 +26,7 @@ exports.MetaContextAwarePure = base_components_1.MetaContextAwarePure;
 function chainUpdaters() {
     var updaters = [];
     for (var _i = 0; _i < arguments.length; _i++) {
-        updaters[_i - 0] = arguments[_i];
+        updaters[_i] = arguments[_i];
     }
     return function (model, c) {
         return updaters.reduce(function (m, u) { return u(m, c); }, model);

@@ -10,15 +10,43 @@ var meta_form_1 = require("./meta-form");
 var MetaPage = (function (_super) {
     __extends(MetaPage, _super);
     function MetaPage(props, context) {
-        return _super.call(this, props, context) || this;
+        var _this = _super.call(this, props, context) || this;
+        _this._skipped = 0;
+        return _this;
     }
+    MetaPage.prototype.shouldComponentUpdate = function (nextProps, nextState, nextContext) {
+        var formContext = this.formContext;
+        var nextFormContext = nextContext.formContext;
+        var result = (this.props.page === formContext.currentPage
+            || nextProps.page === nextFormContext.currentPage) && (true // super.shouldComponentUpdate(nextProps, nextState, nextContext)
+        );
+        if (result) {
+            this._skipped = 0;
+        }
+        else {
+            ++this._skipped;
+        }
+        console.log("page scu: " + nextProps.page + " " + result + " (skipped " + this._skipped + ")");
+        return result;
+    };
     MetaPage.prototype.render = function () {
         var context = this.formContext;
         if (this.props.page == context.currentPage) {
-            var formContext = this.formContext;
-            var Wrapper = this.formContext.config.wrappers.page;
-            return React.createElement(Wrapper, { busy: formContext.isBusy() }, this.props.children);
+            var Wrapper = context.config.wrappers.page;
+            console.log("rendering page " + this.props.page);
+            if (null == this.props.contents) {
+                return React.createElement(Wrapper, { busy: context.isBusy() }, this.props.children);
+            }
+            else {
+                if (0 != React.Children.count(this.props.children)) {
+                    console.log("warning: MetaPage ignores children if contents (" + this.props.contents + ") is specified");
+                }
+                var Contents = this.props.contents;
+                return React.createElement(Wrapper, { busy: context.isBusy() },
+                    React.createElement(Contents, null));
+            }
         }
+        console.log("not rendering page " + this.props.page + ", we're on " + context.currentPage);
         return null;
     };
     return MetaPage;

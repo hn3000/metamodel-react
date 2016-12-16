@@ -54,15 +54,25 @@ var MetaContextFollower = (function (_super) {
         _this._unsubscribe = null;
         return _this;
     }
-    MetaContextFollower.prototype._updatedState = function (context, initState) {
+    MetaContextFollower.prototype.initialContext = function (context) {
+        this._updatedContext(context, true);
+    };
+    MetaContextFollower.prototype._extractState = function (context) {
         var newState = {
-            currentPage: context.currentPage
+            currentPage: context.currentPage,
+            viewmodel: context.viewmodel
         };
+        return newState;
+    };
+    MetaContextFollower.prototype._updatedContext = function (context, initState) {
+        var newState = this._extractState(context);
         if (initState) {
             this.state = newState;
         }
         else {
-            this.setState(newState);
+            if (props_different_1.propsDifferent(this.state, newState)) {
+                this.setState(newState);
+            }
         }
     };
     MetaContextFollower.prototype.componentDidMount = function () {
@@ -71,8 +81,8 @@ var MetaContextFollower = (function (_super) {
         this._unsubscribe = this.formContext.subscribe(function () {
             if (!_this._unsubscribe)
                 return;
-            _this._updatedState(_this.formContext);
-            _this.forceUpdate();
+            _this._updatedContext(_this.formContext);
+            //this.forceUpdate();
         });
     };
     MetaContextFollower.prototype.componentWillUnmount = function () {

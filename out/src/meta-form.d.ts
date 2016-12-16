@@ -11,5 +11,5 @@ export declare class MetaForm extends MetaContextFollower<IFormProps, any> {
     };
     constructor(props: IFormProps, context: any);
     render(): JSX.Element;
-    _updateState(context: IFormContext): void;
+    _extractState(context: IFormContext): any;
 }

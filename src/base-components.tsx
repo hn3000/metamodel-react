@@ -42,13 +42,22 @@ export abstract class MetaContextAware<
   get formContext():IFormContext {
     return this.props.context || (this.context as any).formContext;
   } 
+
+  /*
+  shouldComponentUpdate(nextProps: P, nextState: S, nextContext: any): boolean {
+    return (
+      propsDifferent(this.props, nextProps) 
+      || propsDifferent(this.state, nextState)
+      || propsDifferent(this.context, nextContext)
+    );
+  }
+  */
 }
 
 export class MetaContextAwarePure<P,S> extends MetaContextAware<P,S> {
   shouldComponentUpdate(nextProps: P, nextState: S, nextContext: any): boolean {
     return propsDifferent(this.props, nextProps);
   }
-
 }
 
 export abstract class MetaContextFollower<
@@ -63,16 +72,30 @@ export abstract class MetaContextFollower<
   constructor(props:P, context?:MetaFormContext) {
     super(props, context);
     this._unsubscribe = null;
+
+
   }
 
-  protected _updatedState(context?:IFormContext, initState?:boolean) {
-    let newState:S = { 
-      currentPage: context.currentPage 
+  protected initialContext(context:IFormContext) {
+    this._updatedContext(context, true);
+  }
+
+  protected _extractState(context:IFormContext): S {
+    var newState:S = {
+      currentPage: context.currentPage,
+      viewmodel: context.viewmodel
     } as any;
+    return newState;
+  }
+
+  private _updatedContext(context:IFormContext, initState?:boolean) {
+    let newState:S = this._extractState(context);
     if (initState) {
       this.state = newState;
     } else {
-      this.setState(newState);
+      if (propsDifferent(this.state, newState)) {
+        this.setState(newState);
+      }
     }
   }
 
@@ -80,8 +103,8 @@ export abstract class MetaContextFollower<
     this._unsubscribe && this._unsubscribe();
     this._unsubscribe = this.formContext.subscribe(() => {
       if (!this._unsubscribe) return;
-      this._updatedState(this.formContext);
-      this.forceUpdate();
+      this._updatedContext(this.formContext);
+      //this.forceUpdate();
     });
   }
 

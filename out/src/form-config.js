@@ -26,7 +26,7 @@ function kindMatcher(kind) {
 function andMatcher() {
     var matcher = [];
     for (var _i = 0; _i < arguments.length; _i++) {
-        matcher[_i - 0] = arguments[_i];
+        matcher[_i] = arguments[_i];
     }
     return function (field) { return matcher.reduce(function (q, m) {
         var qq = m(field);

@@ -26,7 +26,9 @@ export declare abstract class MetaContextFollower<P extends IMetaFormBaseProps, 
         formContext: React.Requireable<any>;
     };
     constructor(props: P, context?: MetaFormContext);
-    protected _updatedState(context?: IFormContext, initState?: boolean): void;
+    protected initialContext(context: IFormContext): void;
+    protected _extractState(context: IFormContext): S;
+    private _updatedContext(context, initState?);
     componentDidMount(): void;
     componentWillUnmount(): void;
     private _unsubscribe;

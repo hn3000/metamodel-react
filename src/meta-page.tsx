@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { IPageProps } from './api';
+import { IPageProps, IFormContext } from './api';
 import { MetaContextFollower } from './base-components';
 import { MetaForm } from './meta-form';
 
@@ -21,8 +21,9 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
     let formContext = this.formContext;
     let nextFormContext = nextContext.formContext;
     let result =  (
-        this.props.page === formContext.currentPage 
-        || nextProps.page === nextFormContext.currentPage
+        !this.state 
+        || this.props.page === this.state.currentPage 
+        || nextProps.page === nextState.currentPage
       ) && (
         true // super.shouldComponentUpdate(nextProps, nextState, nextContext)
       );
@@ -35,6 +36,15 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
     console.log(`page scu: ${nextProps.page} ${result} (skipped ${this._skipped})`);
     return result;
   }
+
+  protected _extractState(context:IFormContext): any {
+    var newState = {
+      currentPage: context.currentPage,
+      //viewmodel: context.viewmodel
+    } as any;
+    return newState;
+  }
+
 
   render() {
     let context = this.formContext;

@@ -17,8 +17,9 @@ var MetaPage = (function (_super) {
     MetaPage.prototype.shouldComponentUpdate = function (nextProps, nextState, nextContext) {
         var formContext = this.formContext;
         var nextFormContext = nextContext.formContext;
-        var result = (this.props.page === formContext.currentPage
-            || nextProps.page === nextFormContext.currentPage) && (true // super.shouldComponentUpdate(nextProps, nextState, nextContext)
+        var result = (!this.state
+            || this.props.page === this.state.currentPage
+            || nextProps.page === nextState.currentPage) && (true // super.shouldComponentUpdate(nextProps, nextState, nextContext)
         );
         if (result) {
             this._skipped = 0;
@@ -28,6 +29,12 @@ var MetaPage = (function (_super) {
         }
         console.log("page scu: " + nextProps.page + " " + result + " (skipped " + this._skipped + ")");
         return result;
+    };
+    MetaPage.prototype._extractState = function (context) {
+        var newState = {
+            currentPage: context.currentPage,
+        };
+        return newState;
     };
     MetaPage.prototype.render = function () {
         var context = this.formContext;

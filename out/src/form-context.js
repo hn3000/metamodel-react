@@ -121,16 +121,14 @@ var MetaFormContext = (function (_super) {
         var _this = this;
         var newModel = updater(this._viewmodel, this);
         var config = this._config;
-        this._viewmodel = newModel;
-        var nextUpdate;
+        //this._viewmodel = newModel;
+        this._updateViewModel(newModel);
+        var nextUpdate = Promise.resolve(function (x, c) { return x; });
         if (config.onModelUpdate) {
-            nextUpdate = config.onModelUpdate(this);
+            nextUpdate = nextUpdate.then(function () { return config.onModelUpdate(_this); });
         }
-        else {
-            nextUpdate = Promise.resolve(function (x) { return x; });
-        }
-        nextUpdate.then(function (updater) {
-            var updatedModel = updater(newModel, _this);
+        nextUpdate.then(function (updater2) {
+            var updatedModel = updater2(newModel, _this);
             _this._updateViewModel(updatedModel);
             var needsValidation = config.validateOnUpdate;
             if (!needsValidation && config.validateOnUpdateIfInvalid) {

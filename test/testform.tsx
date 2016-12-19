@@ -27,6 +27,15 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
     super(props, context);
   }
 
+  _extractState(formContext: IFormContext) {
+    var result = {
+      currentPage: formContext.currentPage,
+      back: formContext.pageBackAllowed(),
+      next: formContext.pageNextAllowed()
+    };
+    return result;
+  }
+
   render() {
     return (
       <MetaForm context={this.props.context}>

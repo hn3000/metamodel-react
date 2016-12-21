@@ -100,11 +100,20 @@ var MetaFormContext = (function (_super) {
         return this._conclusion;
     };
     MetaFormContext.prototype.setConclusion = function (conclusion) {
+        var _this = this;
         /*if (null != this._conclusion && this._conclusion !== conclusion) {
           throw new Error(`form already has a conclusion: ${this._conclusion} ${conclusion}`);
         }*/
         this._conclusion = conclusion;
-        this._updateViewModel(this._viewmodel.gotoPage(this._viewmodel.getPages().length));
+        // ensure page reflects that the form is concluded
+        var endPage = this._viewmodel.getPages().length;
+        if (this.currentPage != endPage) {
+            Promise.resolve().then(function () {
+                if (_this.currentPage != endPage) {
+                    _this._updateViewModel(_this._viewmodel.gotoPage(endPage));
+                }
+            });
+        }
     };
     /*
      * similar to redux: returns the unsubscribe function

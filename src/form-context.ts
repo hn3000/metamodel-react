@@ -123,7 +123,16 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       throw new Error(`form already has a conclusion: ${this._conclusion} ${conclusion}`);
     }*/
     this._conclusion = conclusion; 
-    this._updateViewModel(this._viewmodel.gotoPage(this._viewmodel.getPages().length));
+
+    // ensure page reflects that the form is concluded
+    let endPage = this._viewmodel.getPages().length;
+    if (this.currentPage != endPage) {
+      Promise.resolve().then(() => {
+        if (this.currentPage != endPage) {
+          this._updateViewModel(this._viewmodel.gotoPage(endPage));
+        }
+      });
+    }
   }
 
   /* 

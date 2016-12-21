@@ -33,10 +33,10 @@ function andMatcher() {
         return qq && q + qq;
     }, 0); };
 }
-function hasPVC(from, to) {
+function hasPossibleValueCountBetween(from, to) {
     return function (field) {
-        var pv = field.asItemType() && field.asItemType().possibleValues();
-        var pvc = pv ? pv.length : 0;
+        var possibleValues = field.asItemType() && field.asItemType().possibleValues();
+        var pvc = possibleValues ? possibleValues.length : 0;
         if ((pvc >= from) && (!to || pvc < to)) {
             return 1;
         }
@@ -133,15 +133,15 @@ var MetaFormConfig = (function () {
                 component: fields.MetaFormInputFile
             },
             {
-                matchQuality: andMatcher(kindMatcher('string'), hasPVC(10)),
+                matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(10, undefined)),
                 component: fields.MetaFormInputEnumSelect
             },
             {
-                matchQuality: andMatcher(kindMatcher('string'), hasPVC(2, 10)),
+                matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(2, 10)),
                 component: fields.MetaFormInputEnumRadios
             },
             {
-                matchQuality: andMatcher(kindMatcher('string'), hasPVC(1, 2)),
+                matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(1, 2)),
                 component: fields.MetaFormInputEnumCheckbox
             }
         ];

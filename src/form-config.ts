@@ -53,10 +53,10 @@ function andMatcher(...matcher:matchQFun[]):matchQFun {
   }, 0);
 }
 
-function hasPVC(from:number, to?:number) {
+function hasPossibleValueCountBetween(from:number, to?:number) {
   return (field:IModelType<any>) => {
-    let pv = field.asItemType() && field.asItemType().possibleValues();
-    let pvc = pv ? pv.length : 0;
+    let possibleValues = field.asItemType() && field.asItemType().possibleValues();
+    let pvc = possibleValues ? possibleValues.length : 0;
     if ((pvc >= from) && (!to || pvc < to)) {
       return 1;
     }
@@ -157,15 +157,15 @@ export class MetaFormConfig implements IFormConfig {
         component: fields.MetaFormInputFile
       },
       {
-        matchQuality: andMatcher(kindMatcher('string'), hasPVC(10)),
+        matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(10, undefined)),
         component: fields.MetaFormInputEnumSelect
       },
       {
-        matchQuality: andMatcher(kindMatcher('string'), hasPVC(2,10)),
+        matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(2,10)),
         component: fields.MetaFormInputEnumRadios
       },
       {
-        matchQuality: andMatcher(kindMatcher('string'), hasPVC(1,2)),
+        matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(1,2)),
         component: fields.MetaFormInputEnumCheckbox
       }
     ];

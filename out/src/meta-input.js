@@ -29,6 +29,10 @@ var MetaInput = (function (_super) {
         var target = evt.target;
         var context = this.formContext;
         var fieldName = this.props.field;
+        var oldValue = null;
+        if (null != this.props.onChange) {
+            oldValue = context.viewmodel.getFieldValue(fieldName);
+        }
         if (target.type === "checkbox") {
             context.updateModel(fieldName, target.checked);
         }
@@ -39,6 +43,12 @@ var MetaInput = (function (_super) {
             }
             else {
                 context.updateModel(fieldName, target.value);
+            }
+        }
+        if (null != this.props.onChange) {
+            var newValue = context.viewmodel.getFieldValue(fieldName);
+            if (newValue !== oldValue) {
+                this.props.onChange(context, fieldName, newValue, oldValue);
             }
         }
     };

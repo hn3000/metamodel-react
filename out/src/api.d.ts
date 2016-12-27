@@ -12,11 +12,15 @@ export interface IPageProps {
     page: number;
     contents?: React.ComponentClass<any> | string;
 }
+export interface IInputChangeHandler {
+    (formContext: IFormContext, fieldName: string, newValue: any, oldValue: any): void;
+}
 export interface IInputProps {
     field: string;
     flavour?: string;
     flavor?: string;
     wrapper?: React.ComponentClass<IWrapperComponentProps>;
+    onChange?: IInputChangeHandler;
 }
 export interface IWrapperComponentProps {
     hasErrors?: boolean;

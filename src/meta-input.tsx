@@ -28,6 +28,12 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     let context = this.formContext;
     let fieldName = this.props.field;
 
+    let oldValue = null;
+    
+    if (null != this.props.onChange) {
+      oldValue = context.viewmodel.getFieldValue(fieldName);
+    }
+
     if (target.type === "checkbox") {
       context.updateModel(fieldName, target.checked);
     } else {
@@ -38,6 +44,14 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
         context.updateModel(fieldName, target.value);
       }
     }
+
+    if (null != this.props.onChange) {
+      let newValue = context.viewmodel.getFieldValue(fieldName);
+      if (newValue !== oldValue) {
+        this.props.onChange(context, fieldName, newValue, oldValue);
+      }
+    }
+
   }
 
   nochangeHandler() {

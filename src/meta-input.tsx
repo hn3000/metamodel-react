@@ -34,6 +34,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
       || updateType === 'number' 
       || updateType === 'boolean'
       || Array.isArray(update)
+      || update == null
     );
 
     let newValue: Primitive;
@@ -45,12 +46,15 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
       let target = evt.target as HTMLInputElement;
       if (target.type === "checkbox") {
         newValue = target.checked;
-      } else if (target.value == '') {
-        newValue = null;
       } else {
         newValue = target.value;
       }
     }
+
+    if (newValue == '') {
+      newValue = null;
+    }
+
     let context = this.formContext;
     let fieldName = this.props.field;
 

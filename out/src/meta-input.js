@@ -30,7 +30,8 @@ var MetaInput = (function (_super) {
         var updateIsPrimitive = (updateType === 'string'
             || updateType === 'number'
             || updateType === 'boolean'
-            || Array.isArray(update));
+            || Array.isArray(update)
+            || update == null);
         var newValue;
         if (updateIsPrimitive) {
             newValue = update;
@@ -41,12 +42,12 @@ var MetaInput = (function (_super) {
             if (target.type === "checkbox") {
                 newValue = target.checked;
             }
-            else if (target.value == '') {
-                newValue = null;
-            }
             else {
                 newValue = target.value;
             }
+        }
+        if (newValue == '') {
+            newValue = null;
         }
         var context = this.formContext;
         var fieldName = this.props.field;

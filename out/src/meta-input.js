@@ -25,30 +25,40 @@ var MetaInput = (function (_super) {
         _this.nochangeHandler = _this.nochangeHandler.bind(_this);
         return _this;
     }
-    MetaInput.prototype.changeHandler = function (evt) {
-        var target = evt.target;
+    MetaInput.prototype.changeHandler = function (update) {
+        var updateType = typeof update;
+        var updateIsPrimitive = (updateType === 'string'
+            || updateType === 'number'
+            || updateType === 'boolean'
+            || Array.isArray(update));
+        var newValue;
+        if (updateIsPrimitive) {
+            newValue = update;
+        }
+        else if (update.hasOwnProperty('target')) {
+            var evt = update;
+            var target = evt.target;
+            if (target.type === "checkbox") {
+                newValue = target.checked;
+            }
+            else if (target.value == '') {
+                newValue = null;
+            }
+            else {
+                newValue = target.value;
+            }
+        }
         var context = this.formContext;
         var fieldName = this.props.field;
         var oldValue = null;
         if (null != this.props.onChange) {
             oldValue = context.viewmodel.getFieldValue(fieldName);
         }
-        if (target.type === "checkbox") {
-            context.updateModel(fieldName, target.checked);
-        }
-        else {
-            // TOOD: should we check null is okay?
-            if (target.value == '') {
-                context.updateModel(fieldName, null);
-            }
-            else {
-                context.updateModel(fieldName, target.value);
-            }
-        }
+        context.updateModel(fieldName, newValue);
         if (null != this.props.onChange) {
-            var newValue = context.viewmodel.getFieldValue(fieldName);
-            if (newValue !== oldValue) {
-                this.props.onChange(context, fieldName, newValue, oldValue);
+            var newValue_1 = context.viewmodel.getFieldValue(fieldName);
+            if (newValue_1 !== oldValue) {
+                this.props.onChange(context, fieldName, newValue_1, oldValue);
             }
         }
     };

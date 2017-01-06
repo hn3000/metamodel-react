@@ -1,7 +1,7 @@
 /// <reference types="react" />
 /// <reference types="es6-promise" />
 import * as React from 'react';
-import { IModelType, IModelTypeComposite, IModelView, IStatusMessage, IPropertyStatusMessage, IClientProps } from '@hn3000/metamodel';
+import { Primitive, IModelType, IModelTypeComposite, IModelView, IStatusMessage, IPropertyStatusMessage, IClientProps } from '@hn3000/metamodel';
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
@@ -46,7 +46,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     value?: any;
     defaultValue?: any;
     placeholder?: string;
-    onChange?: (evt: React.FormEvent<HTMLElement>) => void;
+    onChange?: (update: Primitive | React.FormEvent<HTMLElement>) => void;
     context?: IFormContext;
 }
 export interface IInputComponentContext {

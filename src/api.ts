@@ -2,6 +2,7 @@
 import * as React from 'react';
 
 import {
+  Primitive,
   IModelType,
   IModelTypeComposite,
   IModelTypeItem,
@@ -64,7 +65,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     value?: any;
     defaultValue?: any;
     placeholder?:string;
-    onChange?: (evt: React.FormEvent<HTMLElement>) => void;
+    onChange?: (update: Primitive|React.FormEvent<HTMLElement>) => void;
     context?:IFormContext
 }
 

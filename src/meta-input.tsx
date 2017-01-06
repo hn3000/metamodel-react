@@ -1,4 +1,8 @@
 
+import {
+  Primitive
+} from '@hn3000/metamodel';
+
 import { 
   IInputProps,
   IInputComponentProps,
@@ -23,27 +27,40 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     this.nochangeHandler = this.nochangeHandler.bind(this);
   }
 
-  changeHandler(evt:React.FormEvent<HTMLElement>) {
-    let target = evt.target as any;
+  changeHandler(update: React.FormEvent<HTMLElement>|Primitive) {
+    let updateType = typeof update;
+    let updateIsPrimitive = (
+      updateType === 'string' 
+      || updateType === 'number' 
+      || updateType === 'boolean'
+      || Array.isArray(update)
+    );
+
+    let newValue: Primitive;
+
+    if  (updateIsPrimitive) {
+      newValue = update as Primitive;
+    } else if (update.hasOwnProperty('target')) {
+      let evt = update as React.FormEvent<HTMLElement>;
+      let target = evt.target as HTMLInputElement;
+      if (target.type === "checkbox") {
+        newValue = target.checked;
+      } else if (target.value == '') {
+        newValue = null;
+      } else {
+        newValue = target.value;
+      }
+    }
     let context = this.formContext;
     let fieldName = this.props.field;
 
     let oldValue = null;
-    
+
     if (null != this.props.onChange) {
       oldValue = context.viewmodel.getFieldValue(fieldName);
     }
 
-    if (target.type === "checkbox") {
-      context.updateModel(fieldName, target.checked);
-    } else {
-      // TOOD: should we check null is okay?
-      if (target.value == '') {
-        context.updateModel(fieldName, null);
-      } else {
-        context.updateModel(fieldName, target.value);
-      }
-    }
+    context.updateModel(fieldName, newValue);
 
     if (null != this.props.onChange) {
       let newValue = context.viewmodel.getFieldValue(fieldName);
@@ -51,7 +68,6 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
         this.props.onChange(context, fieldName, newValue, oldValue);
       }
     }
-
   }
 
   nochangeHandler() {

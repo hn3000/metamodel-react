@@ -93,9 +93,8 @@ export interface IFormConfig extends IComponentFinder, IFormEvents {
     validateOnUpdate: boolean;
     validateOnUpdateIfInvalid: boolean;
     validateDebounceMS: number;
-    allowNextWhenInvalid: boolean;
-    allowSubmitWhenInvalid: boolean;
     busyDelayMS: number;
+    allowNavigationWithInvalidPages: boolean;
 }
 export interface IConclusionMessage extends IStatusMessage {
 }
@@ -110,9 +109,25 @@ export interface IFormContext extends IClientProps {
     updatePage(step: number): void;
     setConclusion(conclusion: IConclusionMessage): void;
     getConclusion(): IConclusionMessage | null;
-    pageNext: (event: React.SyntheticEvent<HTMLElement>) => void;
-    pageBack: (event: React.SyntheticEvent<HTMLElement>) => void;
-    pageNextAllowed(): boolean;
-    pageBackAllowed(): boolean;
+    /** Return true while a Promise returned from an event handler is still in flight */
     isBusy(): boolean;
+    /** Return true if all data up to the current page is valid */
+    isValid(): boolean;
+    /** Return true if all data on the current page is valid */
+    isPageValid(): boolean;
+    /** Return true unless we're on the page behind the last model page */
+    hasNextPage(): boolean;
+    /** Return true unless we're on the first model page or behind the last model page */
+    hasPreviousPage(): boolean;
+    isFinished(): boolean;
+    /**
+     * Try to advance to the next page, will validate current data and proceed
+     * if isValid() is true; does nothing if isBusy() returns true
+     */
+    pageNext: (event: React.SyntheticEvent<HTMLElement>) => void;
+    /**
+     * Try to go back to the previous page, will not run validations;
+     * does nothing if we're on the first page already
+     */
+    pageBack: (event: React.SyntheticEvent<HTMLElement>) => void;
 }

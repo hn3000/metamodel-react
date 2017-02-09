@@ -22,16 +22,25 @@ var registry = new mm.ModelSchemaParser();
 interface TestFormProps {
   context: MetaFormContext;
 }
+
+export function pageBackAllowed(formContext: IFormContext) {
+  return formContext.hasPreviousPage() && !formContext.isBusy() && !formContext.isFinished();
+}
+export function pageNextAllowed(formContext: IFormContext) {
+  return formContext.hasNextPage() && !formContext.isBusy() && formContext.isValid();
+}
+
 class TestForm extends MetaContextFollower<TestFormProps,any> {
   constructor(props:TestFormProps, context:any) {
     super(props, context);
+    this.state = {};
   }
 
   _extractState(formContext: IFormContext) {
     var result = {
       currentPage: formContext.currentPage,
-      back: formContext.pageBackAllowed(),
-      next: formContext.pageNextAllowed()
+      back: pageBackAllowed(formContext),
+      next: pageNextAllowed(formContext)
     };
     return result;
   }
@@ -40,8 +49,8 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
     return (
       <MetaForm context={this.props.context}>
         <div className={'page'+this.props.context.currentPage}> 
-          <button disabled={!this.props.context.pageBackAllowed()} onClick={this.props.context.pageBack}>back</button>
-          <button disabled={!this.props.context.pageNextAllowed()} onClick={this.props.context.pageNext}>next</button>
+          <button disabled={!this.state.back} onClick={this.props.context.pageBack}>back</button>
+          <button disabled={!this.state.next} onClick={this.props.context.pageNext}>next</button>
         </div>
         <div>
           <MetaPage page={0}>
@@ -51,11 +60,14 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
             <MetaInput field="country" flavor="select"/>
             <MetaInput field="file" />
           </MetaPage>
-          <ContactFormPage2 />
+          <MetaPage page={1} contents={ContactFormPage2} />
+          <MetaPage page={2}>
+            <h2>Done, Thanks!</h2>
+          </MetaPage>
         </div>
-        <div className={'page'+this.props.context.currentPage+'b:'+this.props.context.pageBackAllowed()+'-n:'+this.props.context.pageNextAllowed()}>
-        <button disabled={!this.props.context.pageBackAllowed()} onClick={this.props.context.pageBack}>back</button>
-        <button disabled={!this.props.context.pageNextAllowed()} onClick={this.props.context.pageNext}>next</button>
+        <div className={'page'+this.props.context.currentPage+'b:'+!this.state.back+'-n:'+!this.state.back}>
+        <button disabled={!this.state.back} onClick={this.props.context.pageBack}>back</button>
+        <button disabled={!this.state.next} onClick={this.props.context.pageNext}>next</button>
         </div>
       </MetaForm>
     );

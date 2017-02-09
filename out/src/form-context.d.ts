@@ -6,8 +6,11 @@ export declare class MetaFormContext extends ClientProps implements IFormContext
     constructor(config: IFormConfig, metamodel: IModelTypeComposite<any>, data?: any);
     pageNext: (event: React.SyntheticEvent<HTMLElement>) => void;
     pageBack: (event: React.SyntheticEvent<HTMLElement>) => void;
-    pageNextAllowed(): boolean;
-    pageBackAllowed(): boolean;
+    hasNextPage(): boolean;
+    hasPreviousPage(): boolean;
+    isFinished(): boolean;
+    isValid(): boolean;
+    isPageValid(): boolean;
     readonly config: IFormConfig;
     readonly metamodel: IModelTypeComposite<any>;
     readonly viewmodel: IModelView<any>;

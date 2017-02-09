@@ -7,7 +7,6 @@ var __extends = (this && this.__extends) || function (d, b) {
 var metamodel_1 = require("@hn3000/metamodel");
 var listener_manager_1 = require("./listener-manager");
 var search_params_1 = require("./search-params");
-var props_different_1 = require("./props-different");
 var requestParams = search_params_1.parseSearchParams(location.search);
 var overridePage = requestParams.page != null ? +(requestParams.page) : null;
 var PAGE_INIT = -1;
@@ -17,9 +16,6 @@ var MetaFormContext = (function (_super) {
         if (data === void 0) { data = {}; }
         var _this = _super.call(this) || this;
         _this._config = config;
-        if (null != overridePage) {
-            config.allowNextWhenInvalid = true;
-        }
         _this._metamodel = metamodel;
         var page = null != overridePage ? overridePage - (config.usePageIndex ? 0 : 1) : PAGE_INIT;
         _this._viewmodel = new metamodel_1.ModelView(metamodel, data, page);
@@ -47,23 +43,22 @@ var MetaFormContext = (function (_super) {
         }
         return _this;
     }
-    MetaFormContext.prototype.pageNextAllowed = function () {
-        if (this.isBusy()) {
-            return false;
-        }
+    MetaFormContext.prototype.hasNextPage = function () {
         var vm = this._viewmodel;
-        var hasNext = vm.currentPageIndex < vm.getPages().length;
-        var config = this._config;
-        var validating = (config.validateOnUpdateIfInvalid
-            || config.validateOnUpdateIfInvalid) && !config.allowNextWhenInvalid;
-        return hasNext && (!validating || vm.isPageValid(null));
+        return vm.currentPageIndex < vm.getPages().length;
     };
-    MetaFormContext.prototype.pageBackAllowed = function () {
-        if (this.isBusy()) {
-            return false;
-        }
+    MetaFormContext.prototype.hasPreviousPage = function () {
         var vm = this._viewmodel;
-        return vm.currentPageIndex > 0;
+        return vm.currentPageIndex > 0 && !this.isFinished();
+    };
+    MetaFormContext.prototype.isFinished = function () {
+        return null != this._conclusion || !this.hasNextPage();
+    };
+    MetaFormContext.prototype.isValid = function () {
+        return this._viewmodel.arePagesUpToCurrentValid();
+    };
+    MetaFormContext.prototype.isPageValid = function () {
+        return this._viewmodel.isPageValid();
     };
     Object.defineProperty(MetaFormContext.prototype, "config", {
         get: function () {
@@ -179,13 +174,8 @@ var MetaFormContext = (function (_super) {
         }
         var promise = nextModel
             .then(function (validatedModel) {
-            var override = false;
             var isSubmit = originalModel.currentPageNo == originalModel.getPages().length;
-            var allowNext = !isSubmit && _this._config.allowNextWhenInvalid
-                || isSubmit && _this._config.allowSubmitWhenInvalid;
-            if (allowNext && !props_different_1.arraysDifferent(originalModel.getPageMessages(), validatedModel.getPageMessages())) {
-                override = true;
-            }
+            var override = _this._config.allowNavigationWithInvalidPages;
             if (step < 0 || override || validatedModel.isPageValid(null)) {
                 var promise;
                 if (_this._config.onPageTransition) {

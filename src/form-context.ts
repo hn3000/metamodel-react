@@ -35,9 +35,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   constructor(config: IFormConfig, metamodel:IModelTypeComposite<any>, data:any={}) {
     super();
     this._config = config;
-    if (null != overridePage) {
-      config.allowNextWhenInvalid = true;
-    }
+
     this._metamodel = metamodel;
 
     let page = null != overridePage ? overridePage-(config.usePageIndex?0:1) : PAGE_INIT;
@@ -72,30 +70,26 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   pageNext:(event:React.SyntheticEvent<HTMLElement>)=>void;
   pageBack:(event:React.SyntheticEvent<HTMLElement>)=>void;
 
-  pageNextAllowed():boolean {
-    if (this.isBusy()) {
-      return false;
-    }
-
+  hasNextPage():boolean {
     let vm = this._viewmodel;
-    let hasNext = vm.currentPageIndex < vm.getPages().length;
-
-    let config = this._config;
-
-    let validating = (
-      config.validateOnUpdateIfInvalid 
-      || config.validateOnUpdateIfInvalid) && !config.allowNextWhenInvalid;
- 
-
-    return hasNext && (!validating || vm.isPageValid(null)); 
+    return vm.currentPageIndex < vm.getPages().length;
   }
-  pageBackAllowed():boolean {
-    if (this.isBusy()) {
-      return false;
-    }
 
+  hasPreviousPage():boolean {
     let vm = this._viewmodel;
-    return vm.currentPageIndex > 0;
+    return vm.currentPageIndex > 0 && !this.isFinished();
+  }
+
+  isFinished():boolean {
+    return null != this._conclusion || !this.hasNextPage();
+  }
+
+  isValid() {
+    return this._viewmodel.arePagesUpToCurrentValid();
+  }
+
+  isPageValid() {
+    return this._viewmodel.isPageValid();
   }
 
   get config(): IFormConfig {
@@ -207,14 +201,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     
     let promise = nextModel
       .then((validatedModel) => {
-        let override = false;
         let isSubmit = originalModel.currentPageNo == originalModel.getPages().length;
-        let allowNext = !isSubmit && this._config.allowNextWhenInvalid
-                      || isSubmit && this._config.allowSubmitWhenInvalid;
 
-        if (allowNext && !arraysDifferent(originalModel.getPageMessages(), validatedModel.getPageMessages())) {
-          override = true;
-        }
+        let override = this._config.allowNavigationWithInvalidPages;
+
         if (step < 0 || override || validatedModel.isPageValid(null)) {
           
           var promise:Promise<IModelView<any>>;

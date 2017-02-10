@@ -3,7 +3,8 @@ import * as React from 'react';
 
 import {
   IModelType,
-  IModelTypeComposite
+  IModelTypeComposite,
+  ModelTypeArray
 } from '@hn3000/metamodel';
 
 import {
@@ -122,15 +123,56 @@ export class MetaFormInputEnumCheckbox extends React.Component<IInputComponentPr
       values = itemType.possibleValues();
     }
 
-    let radios = values.map((x:string)=> (
+    let checkBoxes = values.map((x:string)=> (
       <label>
         <input type="checkbox" onChange={props.onChange} value={x} checked={x === props.value} />{x}
       </label>
     ));
 
-    return <div>{radios}</div>;
+    return <div>{checkBoxes}</div>;
   }
 }
+
+export class MetaFormInputEnumCheckboxArray extends React.Component<IInputComponentProps, IInputComponentState> {
+
+  constructor(props: IInputComponentProps, context: any) {
+    super(props, context);
+    this.updateValue = this.updateValue.bind(this);
+  }
+
+  updateValue(ev: React.FormEvent<HTMLInputElement>) {
+    let target = ev.target as HTMLInputElement;
+    let value = (this.props.value as string[]) || [];
+    if (target.checked) {
+      if (-1 === value.indexOf(target.value)) {
+        value = value.concat([ target.value ]);
+      }
+    } else {
+      value = value.filter(x => x != target.value);
+    }
+    this.props.onChange(value);
+  }
+
+  render() {
+    let props = this.props;
+    let fieldType = props.fieldType as ModelTypeArray<any>;
+    
+    let itemType = fieldType.itemType().asItemType();
+    var values:any[] = [  ];
+    if (null != itemType) {
+      values = itemType.possibleValues();
+    }
+
+    let checkBoxes = values.map((x:string)=> (
+      <label key={x}>
+        <input type="checkbox" onChange={this.updateValue} value={x} checked={-1 !== props.value.indexOf(x)} />{x}
+      </label>
+    ));
+
+    return <div>{checkBoxes}</div>;
+  }
+}
+
 
 export interface IFileInputState {
   dataurl:string;

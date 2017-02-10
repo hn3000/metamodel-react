@@ -30,6 +30,11 @@ export declare class MetaFormInputEnumRadios extends React.Component<IInputCompo
 export declare class MetaFormInputEnumCheckbox extends React.Component<IInputComponentProps, IInputComponentState> {
     render(): JSX.Element;
 }
+export declare class MetaFormInputEnumCheckboxArray extends React.Component<IInputComponentProps, IInputComponentState> {
+    constructor(props: IInputComponentProps, context: any);
+    updateValue(ev: React.FormEvent<HTMLInputElement>): void;
+    render(): JSX.Element;
+}
 export interface IFileInputState {
     dataurl: string;
     error?: string;

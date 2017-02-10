@@ -150,14 +150,51 @@ var MetaFormInputEnumCheckbox = (function (_super) {
         if (null != itemType) {
             values = itemType.possibleValues();
         }
-        var radios = values.map(function (x) { return (React.createElement("label", null,
+        var checkBoxes = values.map(function (x) { return (React.createElement("label", null,
             React.createElement("input", { type: "checkbox", onChange: props.onChange, value: x, checked: x === props.value }),
             x)); });
-        return React.createElement("div", null, radios);
+        return React.createElement("div", null, checkBoxes);
     };
     return MetaFormInputEnumCheckbox;
 }(React.Component));
 exports.MetaFormInputEnumCheckbox = MetaFormInputEnumCheckbox;
+var MetaFormInputEnumCheckboxArray = (function (_super) {
+    __extends(MetaFormInputEnumCheckboxArray, _super);
+    function MetaFormInputEnumCheckboxArray(props, context) {
+        var _this = _super.call(this, props, context) || this;
+        _this.updateValue = _this.updateValue.bind(_this);
+        return _this;
+    }
+    MetaFormInputEnumCheckboxArray.prototype.updateValue = function (ev) {
+        var target = ev.target;
+        var value = this.props.value || [];
+        if (target.checked) {
+            if (-1 === value.indexOf(target.value)) {
+                value = value.concat([target.value]);
+            }
+        }
+        else {
+            value = value.filter(function (x) { return x != target.value; });
+        }
+        this.props.onChange(value);
+    };
+    MetaFormInputEnumCheckboxArray.prototype.render = function () {
+        var _this = this;
+        var props = this.props;
+        var fieldType = props.fieldType;
+        var itemType = fieldType.itemType().asItemType();
+        var values = [];
+        if (null != itemType) {
+            values = itemType.possibleValues();
+        }
+        var checkBoxes = values.map(function (x) { return (React.createElement("label", { key: x },
+            React.createElement("input", { type: "checkbox", onChange: _this.updateValue, value: x, checked: -1 !== props.value.indexOf(x) }),
+            x)); });
+        return React.createElement("div", null, checkBoxes);
+    };
+    return MetaFormInputEnumCheckboxArray;
+}(React.Component));
+exports.MetaFormInputEnumCheckboxArray = MetaFormInputEnumCheckboxArray;
 var MetaFormInputFile = (function (_super) {
     __extends(MetaFormInputFile, _super);
     function MetaFormInputFile(props, reactContext) {

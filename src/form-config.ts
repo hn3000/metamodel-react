@@ -2,6 +2,7 @@
 
 import {
   IModelType,
+  ModelTypeArray,
   IPropertyStatusMessage
 } from  '@hn3000/metamodel';
 
@@ -44,6 +45,16 @@ function objMatcher(template:any):matchQFun { //</any>
 
 function kindMatcher(kind:string):matchQFun {
   return (field:IModelType<any>) => (field.kind === kind?1:0)
+}
+
+function elementMatcher(matcher: matchQFun):matchQFun {
+  return (field:IModelType<any>) => {
+    let af = field as ModelTypeArray<any>;
+    if (af.itemType && af.itemType()) {
+      return matcher(af.itemType());
+    }
+    return 0;
+  };
 }
 
 function andMatcher(...matcher:matchQFun[]):matchQFun {
@@ -149,11 +160,11 @@ export class MetaFormConfig implements IFormConfig {
         component: fields.MetaFormInputBool
       },
       {
-        matchQuality: objMatcher({kind:'bool'}),
+        matchQuality: objMatcher({type:'bool'}),
         component: fields.MetaFormInputBool
       },
       {
-        matchQuality: objMatcher({kind:'object', format: 'file'}),
+        matchQuality: objMatcher({type:'object', format: 'file'}),
         component: fields.MetaFormInputFile
       },
       {
@@ -167,6 +178,10 @@ export class MetaFormConfig implements IFormConfig {
       {
         matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(1,2)),
         component: fields.MetaFormInputEnumCheckbox
+      },
+      {
+        matchQuality: andMatcher(kindMatcher('array'), elementMatcher(kindMatcher('string'))),
+        component: fields.MetaFormInputEnumCheckboxArray
       }
     ];
   }

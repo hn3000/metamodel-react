@@ -59,6 +59,7 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
             <MetaInput field="username" />
             <MetaInput field="country" flavor="select"/>
             <MetaInput field="file" />
+            <MetaInput field="options" />
           </MetaPage>
           <MetaPage page={1} contents={ContactFormPage2} />
           <MetaPage page={2}>

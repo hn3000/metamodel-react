@@ -23,6 +23,15 @@ function objMatcher(template) {
 function kindMatcher(kind) {
     return function (field) { return (field.kind === kind ? 1 : 0); };
 }
+function elementMatcher(matcher) {
+    return function (field) {
+        var af = field;
+        if (af.itemType && af.itemType()) {
+            return matcher(af.itemType());
+        }
+        return 0;
+    };
+}
 function andMatcher() {
     var matcher = [];
     for (var _i = 0; _i < arguments.length; _i++) {
@@ -124,11 +133,11 @@ var MetaFormConfig = (function () {
                 component: fields.MetaFormInputBool
             },
             {
-                matchQuality: objMatcher({ kind: 'bool' }),
+                matchQuality: objMatcher({ type: 'bool' }),
                 component: fields.MetaFormInputBool
             },
             {
-                matchQuality: objMatcher({ kind: 'object', format: 'file' }),
+                matchQuality: objMatcher({ type: 'object', format: 'file' }),
                 component: fields.MetaFormInputFile
             },
             {
@@ -142,6 +151,10 @@ var MetaFormConfig = (function () {
             {
                 matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(1, 2)),
                 component: fields.MetaFormInputEnumCheckbox
+            },
+            {
+                matchQuality: andMatcher(kindMatcher('array'), elementMatcher(kindMatcher('string'))),
+                component: fields.MetaFormInputEnumCheckboxArray
             }
         ];
     };

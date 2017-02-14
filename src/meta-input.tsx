@@ -98,9 +98,14 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     let fieldValue = modelValue;
 
     if (null == fieldValue) {
-      fieldValue = fieldType.create();
-      if (fieldValue instanceof Date) {
-        fieldValue = ""; // TODO: I suspect new Date() is not a good default value
+      switch (fieldType.kind) {
+        case 'array': 
+        case 'object':
+          fieldValue = fieldType.create();
+          break;
+        default: 
+          fieldValue = ""; 
+          break;
       }
     }
 

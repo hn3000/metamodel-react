@@ -94,7 +94,15 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     let viewmodel = context.viewmodel;
     let fieldErrors = viewmodel.getFieldMessages(fieldName);
     let modelValue = viewmodel.getFieldValue(fieldName);
-    let fieldValue = (null != modelValue) ? modelValue : '';
+
+    let fieldValue = modelValue;
+
+    if (null == fieldValue) {
+      fieldValue = fieldType.create();
+      if (fieldValue instanceof Date) {
+        fieldValue = ""; // TODO: I suspect new Date() is not a good default value
+      }
+    }
 
     let isEditable = context.viewmodel.isFieldEditable(this.props.field);
 

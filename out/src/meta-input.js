@@ -79,7 +79,13 @@ var MetaInput = (function (_super) {
         var viewmodel = context.viewmodel;
         var fieldErrors = viewmodel.getFieldMessages(fieldName);
         var modelValue = viewmodel.getFieldValue(fieldName);
-        var fieldValue = (null != modelValue) ? modelValue : '';
+        var fieldValue = modelValue;
+        if (null == fieldValue) {
+            fieldValue = fieldType.create();
+            if (fieldValue instanceof Date) {
+                fieldValue = ""; // TODO: I suspect new Date() is not a good default value
+            }
+        }
         var isEditable = context.viewmodel.isFieldEditable(this.props.field);
         var props = {
             id: formid + '#' + this.props.field,

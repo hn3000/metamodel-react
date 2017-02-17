@@ -35,6 +35,28 @@ export declare class MetaFormInputEnumCheckboxArray extends React.Component<IInp
     updateValue(ev: React.FormEvent<HTMLInputElement>): void;
     render(): JSX.Element;
 }
+export interface IInputNumberSliderProps extends IInputComponentProps {
+    min?: number;
+    max?: number;
+    step?: number;
+}
+export interface IInputNumberSliderState {
+    min: number;
+    max: number;
+    step: number;
+}
+export declare class MetaFormInputNumberSliderCombo extends React.Component<IInputNumberSliderProps, IInputNumberSliderState> {
+    constructor(props: IInputNumberSliderProps, context: any);
+    deriveState(oldState: IInputNumberSliderState, props: IInputNumberSliderProps): {
+        min: number;
+        max: number;
+        step: number;
+    };
+    componentWillReceiveProps(props: IInputNumberSliderProps): void;
+    handleMouseMove(ev: React.MouseEvent<HTMLInputElement>): void;
+    handleChange(ev: React.FormEvent<HTMLInputElement>): void;
+    render(): JSX.Element;
+}
 export interface IFileInputState {
     dataurl: string;
     error?: string;

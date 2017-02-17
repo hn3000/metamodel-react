@@ -4,7 +4,10 @@ import * as React from 'react';
 import {
   IModelType,
   IModelTypeComposite,
-  ModelTypeArray
+  ModelTypeArray,
+  ModelTypeConstraintMore,
+  ModelTypeConstraintLess,
+  ModelTypeConstraintMultipleOf
 } from '@hn3000/metamodel';
 
 import {
@@ -18,6 +21,8 @@ import {
 import {
   MetaContextAwarePure
 } from './base-components'
+
+import { propsDifferent } from './props-different';
 
 export class FieldWrapper extends React.Component<IFieldWrapperProps,void> {
   render() {
@@ -173,6 +178,109 @@ export class MetaFormInputEnumCheckboxArray extends React.Component<IInputCompon
   }
 }
 
+export interface IInputNumberSliderProps extends IInputComponentProps {
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+export interface IInputNumberSliderState {
+  min: number;
+  max: number;
+  step: number;
+}
+
+export class MetaFormInputNumberSliderCombo extends React.Component<IInputNumberSliderProps, IInputNumberSliderState> {
+
+  constructor(props: IInputNumberSliderProps, context: any) {
+    super(props, context);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.deriveState = this.deriveState.bind(this);
+
+    this.state = this.deriveState(null, props);
+  }
+
+  deriveState(oldState: IInputNumberSliderState, props:IInputNumberSliderProps) {
+    let itemType = props.fieldType.asItemType();
+    let minC = itemType.lowerBound() as ModelTypeConstraintMore;
+    let maxC = itemType.upperBound() as ModelTypeConstraintLess;
+    let multC = itemType.findConstraints(c => c.id.indexOf('multipleOf') === 0);
+
+    let min = minC && minC.value;
+    let max = maxC && maxC.value;
+
+    let step = props.step || (multC.length && (multC[0] as ModelTypeConstraintMultipleOf).modulus);
+
+    if (null != props.min && (null == min || min > props.min)) {
+      min = props.min;
+    }
+    if (null != props.max && (null == max || max < props.max)) {
+      max = props.max;
+    }
+
+    if (null != step) {
+      if (null != min) {
+        min = Math.round(Math.ceil(min/step) * step);
+      }
+      if (null != max) {
+        max = Math.round(Math.floor(max/step) * step);
+      }
+    }
+
+    return { min, max, step };
+  }
+
+  componentWillReceiveProps(props: IInputNumberSliderProps) {
+    if (propsDifferent(props, this.props)) {
+      this.setState(this.deriveState);
+    }
+  }
+
+  handleMouseMove(ev: React.MouseEvent<HTMLInputElement>) {
+    if (ev.buttons !== 0) {
+      this.handleChange(ev);
+    }
+  }
+
+  handleChange(ev: React.FormEvent<HTMLInputElement>) {
+    let { min, max, step } = this.state;
+    let value: string|number = Number(ev.currentTarget.value);
+
+    if (isNaN(value)) {
+      value = ev.currentTarget.value;
+    } else if (null != step) {
+      value = Math.round(Math.round(value/step) * step);
+      if (null != min && value < min) {
+        value = Math.round(Math.ceil(min/step) * step);
+      } else if (null != max && value > max) {
+        value = Math.round(Math.floor(max/step) * step);
+      }
+    }
+
+    this.props.onChange(value);
+  }
+
+
+  render() {
+    let onChange = this.handleChange;
+    let { value } = this.props;
+    let { min, max, step } = this.state;
+
+    return <div>
+      <input min={min} max={max} step={step}
+             type="range" 
+             value={value} 
+             onChange={onChange} 
+             onMouseUp={onChange} 
+             onMouseMoveCapture={this.handleMouseMove} />
+      <input min={min} max={max} step={step}
+             type="number" 
+             value={value} 
+             onChange={onChange} />
+    </div>;
+  }
+}
 
 export interface IFileInputState {
   dataurl:string;

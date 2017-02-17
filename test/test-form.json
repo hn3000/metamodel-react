@@ -6,7 +6,14 @@
       "username":  { "type": "string", "maxLength": 20, "format": "username", "pattern": "^[a-z][a-z0-9]+" },
       "country":   { "$ref": "#/definitions/Country" },
       "file":      { "type": "object", "format": "file" },
-      "options":   { "type": "array", "items": { "type": "string", "enum": [ "alpaka", "berta", "charlotte" ]} }
+      "options":   { "type": "array", "items": { "type": "string", "enum": [ "alpaka", "berta", "charlotte" ]} },
+      "someNumber": { 
+        "type": "number", 
+        "flavour": "slider",
+        "minimum": 12000,
+        "maximum": 100000,
+        "multipleOf": 17
+      }
     },
     "allOf": [
       { "$ref": "#/pages/1/schema"}
@@ -26,7 +33,7 @@
     "pages": [
       { 
         "alias": "names-and-country",
-        "fields": ["firstname", "lastname", "username", "country", "file", "options"] 
+        "fields": ["firstname", "lastname", "username", "country", "file", "options", "someNumber"] 
       },
       { 
         "alias": "email-etc",

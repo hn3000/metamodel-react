@@ -13,6 +13,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 var React = require("react");
+var props_different_1 = require("./props-different");
 var FieldWrapper = (function (_super) {
     __extends(FieldWrapper, _super);
     function FieldWrapper() {
@@ -195,6 +196,78 @@ var MetaFormInputEnumCheckboxArray = (function (_super) {
     return MetaFormInputEnumCheckboxArray;
 }(React.Component));
 exports.MetaFormInputEnumCheckboxArray = MetaFormInputEnumCheckboxArray;
+var MetaFormInputNumberSliderCombo = (function (_super) {
+    __extends(MetaFormInputNumberSliderCombo, _super);
+    function MetaFormInputNumberSliderCombo(props, context) {
+        var _this = _super.call(this, props, context) || this;
+        _this.handleMouseMove = _this.handleMouseMove.bind(_this);
+        _this.handleChange = _this.handleChange.bind(_this);
+        _this.deriveState = _this.deriveState.bind(_this);
+        _this.state = _this.deriveState(null, props);
+        return _this;
+    }
+    MetaFormInputNumberSliderCombo.prototype.deriveState = function (oldState, props) {
+        var itemType = props.fieldType.asItemType();
+        var minC = itemType.lowerBound();
+        var maxC = itemType.upperBound();
+        var multC = itemType.findConstraints(function (c) { return c.id.indexOf('multipleOf') === 0; });
+        var min = minC && minC.value;
+        var max = maxC && maxC.value;
+        var step = props.step || (multC.length && multC[0].modulus);
+        if (null != props.min && (null == min || min > props.min)) {
+            min = props.min;
+        }
+        if (null != props.max && (null == max || max < props.max)) {
+            max = props.max;
+        }
+        if (null != step) {
+            if (null != min) {
+                min = Math.round(Math.ceil(min / step) * step);
+            }
+            if (null != max) {
+                max = Math.round(Math.floor(max / step) * step);
+            }
+        }
+        return { min: min, max: max, step: step };
+    };
+    MetaFormInputNumberSliderCombo.prototype.componentWillReceiveProps = function (props) {
+        if (props_different_1.propsDifferent(props, this.props)) {
+            this.setState(this.deriveState);
+        }
+    };
+    MetaFormInputNumberSliderCombo.prototype.handleMouseMove = function (ev) {
+        if (ev.buttons !== 0) {
+            this.handleChange(ev);
+        }
+    };
+    MetaFormInputNumberSliderCombo.prototype.handleChange = function (ev) {
+        var _a = this.state, min = _a.min, max = _a.max, step = _a.step;
+        var value = Number(ev.currentTarget.value);
+        if (isNaN(value)) {
+            value = ev.currentTarget.value;
+        }
+        else if (null != step) {
+            value = Math.round(Math.round(value / step) * step);
+            if (null != min && value < min) {
+                value = Math.round(Math.ceil(min / step) * step);
+            }
+            else if (null != max && value > max) {
+                value = Math.round(Math.floor(max / step) * step);
+            }
+        }
+        this.props.onChange(value);
+    };
+    MetaFormInputNumberSliderCombo.prototype.render = function () {
+        var onChange = this.handleChange;
+        var value = this.props.value;
+        var _a = this.state, min = _a.min, max = _a.max, step = _a.step;
+        return React.createElement("div", null,
+            React.createElement("input", { min: min, max: max, step: step, type: "range", value: value, onChange: onChange, onMouseUp: onChange, onMouseMoveCapture: this.handleMouseMove }),
+            React.createElement("input", { min: min, max: max, step: step, type: "number", value: value, onChange: onChange }));
+    };
+    return MetaFormInputNumberSliderCombo;
+}(React.Component));
+exports.MetaFormInputNumberSliderCombo = MetaFormInputNumberSliderCombo;
 var MetaFormInputFile = (function (_super) {
     __extends(MetaFormInputFile, _super);
     function MetaFormInputFile(props, reactContext) {

@@ -25,10 +25,13 @@ export declare class MetaFormConfig implements IFormConfig {
     private _components;
     static defaultWrappers(): IWrappers;
     static defaultComponents(): ({
-        matchQuality: (field: IModelType<any>) => number;
+        matchQuality: (type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]) => number;
         component: typeof fields.MetaFormInputString;
     } | {
-        matchQuality: (field: IModelType<any>) => number;
+        matchQuality: (type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]) => number;
+        component: typeof fields.MetaFormInputNumberSliderCombo;
+    } | {
+        matchQuality: (type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]) => number;
         component: typeof fields.MetaFormInputFile;
     })[];
 }

@@ -23,11 +23,29 @@ function objMatcher(template) {
 function kindMatcher(kind) {
     return function (field) { return (field.kind === kind ? 1 : 0); };
 }
+function flavorMatcher(flavor) {
+    var flv = flavor;
+    return function (type, fieldName, flavor) {
+        var matchArgs = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            matchArgs[_i - 3] = arguments[_i];
+        }
+        if ((flavor === flv)
+            || (function (x) { return x && (x.flavor === flv) || (x.flavour === flv); })(type.propGet('schema'))) {
+            return 1;
+        }
+        return 0;
+    };
+}
 function elementMatcher(matcher) {
-    return function (field) {
-        var af = field;
+    return function (type, fieldName, flavor) {
+        var matchArgs = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            matchArgs[_i - 3] = arguments[_i];
+        }
+        var af = type;
         if (af.itemType && af.itemType()) {
-            return matcher(af.itemType());
+            return matcher.apply(void 0, [af.itemType(), fieldName, flavor].concat(matchArgs));
         }
         return 0;
     };
@@ -37,10 +55,16 @@ function andMatcher() {
     for (var _i = 0; _i < arguments.length; _i++) {
         matcher[_i] = arguments[_i];
     }
-    return function (field) { return matcher.reduce(function (q, m) {
-        var qq = m(field);
-        return qq && q + qq;
-    }, 0); };
+    return function (type, fieldName, flavor) {
+        var matchArgs = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            matchArgs[_i - 3] = arguments[_i];
+        }
+        return matcher.reduce(function (q, m) {
+            var qq = m.apply(void 0, [type, fieldName, flavor].concat(matchArgs));
+            return qq && q + qq;
+        }, 0);
+    };
 }
 function hasPossibleValueCountBetween(from, to) {
     return function (field) {
@@ -127,6 +151,10 @@ var MetaFormConfig = (function () {
             {
                 matchQuality: kindMatcher('number'),
                 component: fields.MetaFormInputNumber
+            },
+            {
+                matchQuality: andMatcher(kindMatcher('number'), flavorMatcher('slider')),
+                component: fields.MetaFormInputNumberSliderCombo
             },
             {
                 matchQuality: kindMatcher('bool'),

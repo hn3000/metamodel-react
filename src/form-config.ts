@@ -20,7 +20,7 @@ import * as fields from './default-field-types';
 import * as React from 'react';
 import { Promise } from 'es6-promise';
 
-type matchQFun = (field:IModelType<any>)=>number;
+type matchQFun = (type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]) => number;
 
 function objMatcher(template:any):matchQFun { //</any>
   var keys = Object.keys(template);
@@ -47,21 +47,35 @@ function kindMatcher(kind:string):matchQFun {
   return (field:IModelType<any>) => (field.kind === kind?1:0)
 }
 
+function flavorMatcher(flavor:string):matchQFun {
+  let flv = flavor;
+  return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
+    if (
+      (flavor === flv)
+      || ((x) => x && (x.flavor === flv) || (x.flavour === flv))(type.propGet('schema'))
+    ) {
+      return 1;
+    }
+    return 0;
+  };
+}
+
 function elementMatcher(matcher: matchQFun):matchQFun {
-  return (field:IModelType<any>) => {
-    let af = field as ModelTypeArray<any>;
+  return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
+    let af = type as ModelTypeArray<any>;
     if (af.itemType && af.itemType()) {
-      return matcher(af.itemType());
+      return matcher(af.itemType(), fieldName, flavor, ...matchArgs);
     }
     return 0;
   };
 }
 
 function andMatcher(...matcher:matchQFun[]):matchQFun {
-  return (field:IModelType<any>) => matcher.reduce((q, m) => {
-    let qq = m(field);
-    return qq && q + qq;
-  }, 0);
+  return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => 
+    matcher.reduce((q, m) => {
+      let qq = m(type, fieldName, flavor, ...matchArgs);
+      return qq && q + qq;
+    }, 0);
 }
 
 function hasPossibleValueCountBetween(from:number, to?:number) {
@@ -154,6 +168,10 @@ export class MetaFormConfig implements IFormConfig {
       {
         matchQuality: kindMatcher('number'),
         component: fields.MetaFormInputNumber
+      },
+      {
+        matchQuality: andMatcher(kindMatcher('number'), flavorMatcher('slider')),
+        component: fields.MetaFormInputNumberSliderCombo
       },
       {
         matchQuality: kindMatcher('bool'),

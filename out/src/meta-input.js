@@ -46,7 +46,7 @@ var MetaInput = (function (_super) {
                 newValue = target.value;
             }
         }
-        if (newValue == '') {
+        if (newValue === '') {
             newValue = null;
         }
         var context = this.formContext;

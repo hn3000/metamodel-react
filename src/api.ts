@@ -115,7 +115,7 @@ export interface IFormEvents {
   onPageTransition?: (ctx:IFormContext, direction:number) => Promise<IPropertyStatusMessage[]|IModelUpdater>;
   onAfterPageTransition?: (ctx:IFormContext) => void;
   onFailedPageTransition?: (ctx:IFormContext) => void;
-  onModelUpdate?: (ctx:IFormContext) => Promise<IModelUpdater>
+  onModelUpdate?: (ctx:IFormContext) => Promise<IModelUpdater>;
 }
 
 export interface IFormConfig extends IComponentFinder, IFormEvents {

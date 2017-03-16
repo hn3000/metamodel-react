@@ -51,7 +51,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
       }
     }
 
-    if (newValue == '') {
+    if (newValue === '') {
       newValue = null;
     }
 

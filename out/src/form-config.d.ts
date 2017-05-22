@@ -1,4 +1,3 @@
-/// <reference types="es6-promise" />
 import { IModelType, IPropertyStatusMessage } from '@hn3000/metamodel';
 import { IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent, IModelUpdater } from './api';
 import * as fields from './default-field-types';

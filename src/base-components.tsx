@@ -1,5 +1,8 @@
 
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
+import { Requireable } from 'prop-types';
+export { Requireable } from 'prop-types';
 
 import { IFormContext } from './api';
 import { MetaFormContext } from './form-context';
@@ -12,15 +15,15 @@ export interface IMetaFormBaseState {
   currentPage?:number;
 }
 
-export var MetaForm_ContextTypes = {
-  formContext: React.PropTypes.shape({
-    config: React.PropTypes.object,
-    metamodel: React.PropTypes.object,
-    viewmodel: React.PropTypes.object,
-    currentPage: React.PropTypes.number,
-    i18nData: React.PropTypes.object
+export var MetaForm_ContextTypes = PropTypes.shape({
+  formContext: PropTypes.shape({
+    config: PropTypes.object,
+    metamodel: PropTypes.object,
+    viewmodel: PropTypes.object,
+    currentPage: PropTypes.number,
+    i18nData: PropTypes.object
   })
-};
+});
 
 export abstract class MetaContextAware<
       P extends IMetaFormBaseProps, 
@@ -29,7 +32,7 @@ export abstract class MetaContextAware<
     extends React.Component<P, S> 
 {
 
-  static contextTypes = MetaForm_ContextTypes;
+  static contextTypes: Requireable<any> = MetaForm_ContextTypes;
 
   constructor(props:P, context?:MetaFormContext) {
     super(props, context);

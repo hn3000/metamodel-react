@@ -1,20 +1,27 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
+var PropTypes = require("prop-types");
 var props_different_1 = require("./props-different");
-exports.MetaForm_ContextTypes = {
-    formContext: React.PropTypes.shape({
-        config: React.PropTypes.object,
-        metamodel: React.PropTypes.object,
-        viewmodel: React.PropTypes.object,
-        currentPage: React.PropTypes.number,
-        i18nData: React.PropTypes.object
+exports.MetaForm_ContextTypes = PropTypes.shape({
+    formContext: PropTypes.shape({
+        config: PropTypes.object,
+        metamodel: PropTypes.object,
+        viewmodel: PropTypes.object,
+        currentPage: PropTypes.number,
+        i18nData: PropTypes.object
     })
-};
+});
 var MetaContextAware = (function (_super) {
     __extends(MetaContextAware, _super);
     function MetaContextAware(props, context) {
@@ -39,7 +46,7 @@ exports.MetaContextAware = MetaContextAware;
 var MetaContextAwarePure = (function (_super) {
     __extends(MetaContextAwarePure, _super);
     function MetaContextAwarePure() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     MetaContextAwarePure.prototype.shouldComponentUpdate = function (nextProps, nextState, nextContext) {
         return props_different_1.propsDifferent(this.props, nextProps);

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var fields = require("./default-field-types");
 function objMatcher(template) {
     var keys = Object.keys(template);

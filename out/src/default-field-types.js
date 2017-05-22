@@ -1,9 +1,14 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -12,12 +17,13 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var props_different_1 = require("./props-different");
 var FieldWrapper = (function (_super) {
     __extends(FieldWrapper, _super);
     function FieldWrapper() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     FieldWrapper.prototype.render = function () {
         var props = {};
@@ -36,7 +42,7 @@ exports.FieldWrapper = FieldWrapper;
 var PageWrapper = (function (_super) {
     __extends(PageWrapper, _super);
     function PageWrapper() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     PageWrapper.prototype.render = function () {
         return React.createElement("div", null, this.props.children);
@@ -47,7 +53,7 @@ exports.PageWrapper = PageWrapper;
 var FormWrapper = (function (_super) {
     __extends(FormWrapper, _super);
     function FormWrapper() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     FormWrapper.prototype.render = function () {
         var wrapperProps = {};
@@ -62,7 +68,7 @@ exports.FormWrapper = FormWrapper;
 var MetaFormInputString = (function (_super) {
     __extends(MetaFormInputString, _super);
     function MetaFormInputString() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     MetaFormInputString.prototype.render = function () {
         var props = this.props;
@@ -74,7 +80,7 @@ exports.MetaFormInputString = MetaFormInputString;
 var MetaFormInputNumber = (function (_super) {
     __extends(MetaFormInputNumber, _super);
     function MetaFormInputNumber() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     MetaFormInputNumber.prototype.render = function () {
         var props = this.props;
@@ -86,7 +92,7 @@ exports.MetaFormInputNumber = MetaFormInputNumber;
 var MetaFormInputBool = (function (_super) {
     __extends(MetaFormInputBool, _super);
     function MetaFormInputBool() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     MetaFormInputBool.prototype.render = function () {
         var props = this.props;
@@ -98,7 +104,7 @@ exports.MetaFormInputBool = MetaFormInputBool;
 var MetaFormInputEnumSelect = (function (_super) {
     __extends(MetaFormInputEnumSelect, _super);
     function MetaFormInputEnumSelect() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     MetaFormInputEnumSelect.prototype.render = function () {
         var props = this.props;
@@ -141,7 +147,7 @@ exports.MetaFormInputEnumRadios = MetaFormInputEnumRadios;
 var MetaFormInputEnumCheckbox = (function (_super) {
     __extends(MetaFormInputEnumCheckbox, _super);
     function MetaFormInputEnumCheckbox() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     MetaFormInputEnumCheckbox.prototype.render = function () {
         var props = this.props;
@@ -314,7 +320,7 @@ exports.MetaFormInputFile = MetaFormInputFile;
 var MetaFormUnknownFieldType = (function (_super) {
     __extends(MetaFormUnknownFieldType, _super);
     function MetaFormUnknownFieldType() {
-        return _super.apply(this, arguments) || this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     MetaFormUnknownFieldType.prototype.render = function () {
         return React.createElement("input", { type: "text", placeholder: this.props.field + ": unknown kind" });

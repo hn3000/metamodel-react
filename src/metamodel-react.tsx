@@ -44,9 +44,9 @@ export { MetaPage } from './meta-page';
 export { MetaInput } from './meta-input';
 
 export { 
-  MetaContextAware, 
-  MetaContextFollower, 
-  MetaContextAwarePure 
+  MetaContextAware,
+  MetaContextFollower,
+  MetaContextAwarePure
 } from './base-components';
 
 import { IModelView } from '@hn3000/metamodel';

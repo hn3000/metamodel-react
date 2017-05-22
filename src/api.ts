@@ -1,5 +1,6 @@
 
 import * as React from 'react';
+import { Requireable } from 'prop-types';
 
 import {
   Primitive,

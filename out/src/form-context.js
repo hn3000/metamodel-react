@@ -1,9 +1,15 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
 var metamodel_1 = require("@hn3000/metamodel");
 var listener_manager_1 = require("./listener-manager");
 var search_params_1 = require("./search-params");
@@ -24,7 +30,8 @@ var MetaFormContext = (function (_super) {
         _this._listeners = new listener_manager_1.ListenerManager();
         _this._promises = [];
         if (null != _this._config.onFormInit) {
-            var update = Promise.resolve(_this).then(function (ctx) { return _this._config.onFormInit(ctx); });
+            var update = Promise.resolve(_this)
+                .then(function (ctx) { return _this._config.onFormInit(ctx); });
             update.then(function (x) {
                 var model = _this._viewmodel;
                 if (typeof x === 'function') {
@@ -107,7 +114,7 @@ var MetaFormContext = (function (_super) {
                 if (_this.currentPage != endPage) {
                     _this._updateViewModel(_this._viewmodel.gotoPage(endPage));
                 }
-            });
+            }).then(null, function (xx) { return (console.log('unhandled exception', xx), null); });
         }
     };
     /*
@@ -123,6 +130,15 @@ var MetaFormContext = (function (_super) {
     };
     MetaFormContext.prototype.updateModelTransactional = function (updater, skipValidation) {
         var _this = this;
+        if (this.isBusy()) {
+            //let error = new Error('causality violation: updateModelTransactional not allowed while already busy');
+            console.warn('updateModelTransactional called while busy, deferring action');
+            Promise.all(this._promises).then(function () {
+                console.log('updateModelTransactional - next attempt, busy: ', _this.isBusy());
+                _this.updateModelTransactional(updater, skipValidation);
+            });
+            return;
+        }
         var newModel = updater(this._viewmodel, this);
         var config = this._config;
         //this._viewmodel = newModel;
@@ -153,11 +169,21 @@ var MetaFormContext = (function (_super) {
         this._promiseInFlight(nextUpdate);
     };
     MetaFormContext.prototype._updateViewModel = function (viewmodel) {
+        if (this._viewmodel.currentPageIndex > viewmodel.currentPageIndex) {
+            try {
+                throw new Error('stacktrace for debugging');
+            }
+            catch (xx) {
+                console.debug(xx);
+            }
+        }
         this._viewmodel = viewmodel;
         this._notifyAll();
     };
     MetaFormContext.prototype._notifyAll = function () {
+        console.log('notify all', this._viewmodel.currentPageIndex);
         this._listeners.all.forEach(function (x) { return x(); });
+        console.log('/notify all');
     };
     MetaFormContext.prototype.updatePage = function (step) {
         var _this = this;
@@ -243,8 +269,9 @@ var MetaFormContext = (function (_super) {
         var index = this._promises.indexOf(promise);
         if (-1 == index) {
             this._promises.push(promise);
-            var remove = function (x) { return (_this._promiseResolved(promise), x); };
-            promise.then(remove, remove);
+            var remove_1 = function (x) { return (_this._promiseResolved(promise), x); };
+            var removeX = function (x) { return (console.log('promise unhandled exception', x), remove_1(x)); };
+            promise.then(remove_1, removeX);
             if (this._promises.length == 1) {
                 var delay = this._config.busyDelayMS;
                 this._promisesBusyTime = Date.now() + delay;

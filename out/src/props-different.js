@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function propsDifferent(a, b) {
     if (Array.isArray(a)) {
         if (arraysDifferent(a, b)) {

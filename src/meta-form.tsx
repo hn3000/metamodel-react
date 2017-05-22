@@ -11,6 +11,7 @@ import {
 } from './base-components';
 
 import * as React from 'react';
+import { Requireable } from 'prop-types';
 
 export class MetaForm extends MetaContextFollower<IFormProps, any> {
 	static childContextTypes = MetaContextAware.contextTypes; 

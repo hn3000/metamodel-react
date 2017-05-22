@@ -48,7 +48,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     this._promises = [];
 
     if (null != this._config.onFormInit) {
-      var update = Promise.resolve(this).then((ctx)=> this._config.onFormInit(ctx));
+      var update = Promise.resolve(this)
+          .then((ctx)=> this._config.onFormInit(ctx));
 
       update.then((x) => {
         var model = this._viewmodel;
@@ -125,7 +126,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         if (this.currentPage != endPage) {
           this._updateViewModel(this._viewmodel.gotoPage(endPage));
         }
-      });
+      }).then(null, (xx: any) => (console.log('unhandled exception', xx), null));
     }
   }
 
@@ -142,6 +143,17 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     this.updateModelTransactional(model => model.withChangedField(field,value));
   }
   updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean) {
+    if (this.isBusy()) {
+      //let error = new Error('causality violation: updateModelTransactional not allowed while already busy');
+      console.warn('updateModelTransactional called while busy, deferring action');
+      Promise.all(this._promises).then(() => {
+        console.log('updateModelTransactional - next attempt, busy: ', this.isBusy());
+        this.updateModelTransactional(updater, skipValidation);
+      });
+
+      return;
+    }
+
     let newModel = updater(this._viewmodel, this);
     let config = this._config;
     //this._viewmodel = newModel;
@@ -178,12 +190,21 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   private _debounceValidationTimeout: number;
 
   _updateViewModel(viewmodel:IModelView<any>) {
+    if (this._viewmodel.currentPageIndex > viewmodel.currentPageIndex) {
+      try {
+        throw new Error('stacktrace for debugging');
+      } catch (xx) {
+        console.debug(xx);
+      }
+    }
     this._viewmodel = viewmodel;
     this._notifyAll();
   }
 
   _notifyAll() {
+    console.log('notify all', this._viewmodel.currentPageIndex);
     this._listeners.all.forEach((x) => x());
+    console.log('/notify all');
   }
 
   updatePage(step:number) {
@@ -279,7 +300,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     if (-1 == index) {
       this._promises.push(promise);
       let remove = (x:any) => (this._promiseResolved(promise),x);
-      promise.then(remove,remove);
+      let removeX = (x:any) => (console.log('promise unhandled exception', x), remove(x));
+      promise.then(remove,removeX);
       if (this._promises.length == 1) {
         let delay = this._config.busyDelayMS;
         this._promisesBusyTime = Date.now() + delay;

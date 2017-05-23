@@ -13,7 +13,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var PropTypes = require("prop-types");
 var props_different_1 = require("./props-different");
-exports.MetaForm_ContextTypes = PropTypes.shape({
+exports.MetaForm_ContextTypes = {
+    isRequired: function () { return false; },
     formContext: PropTypes.shape({
         config: PropTypes.object,
         metamodel: PropTypes.object,
@@ -21,7 +22,7 @@ exports.MetaForm_ContextTypes = PropTypes.shape({
         currentPage: PropTypes.number,
         i18nData: PropTypes.object
     })
-});
+};
 var MetaContextAware = (function (_super) {
     __extends(MetaContextAware, _super);
     function MetaContextAware(props, context) {

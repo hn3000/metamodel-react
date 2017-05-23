@@ -3,7 +3,10 @@ import { IFormProps, IFormContext } from './api';
 import { MetaContextFollower } from './base-components';
 import { Requireable } from 'prop-types';
 export declare class MetaForm extends MetaContextFollower<IFormProps, any> {
-    static childContextTypes: Requireable<any>;
+    static childContextTypes: {
+        isRequired: () => boolean;
+        formContext: Requireable<any>;
+    };
     getChildContext(): {
         formContext: IFormContext;
     };

@@ -15,7 +15,8 @@ export interface IMetaFormBaseState {
   currentPage?:number;
 }
 
-export var MetaForm_ContextTypes = PropTypes.shape({
+export var MetaForm_ContextTypes = {
+  isRequired: function() { return false; },
   formContext: PropTypes.shape({
     config: PropTypes.object,
     metamodel: PropTypes.object,
@@ -23,7 +24,7 @@ export var MetaForm_ContextTypes = PropTypes.shape({
     currentPage: PropTypes.number,
     i18nData: PropTypes.object
   })
-});
+};
 
 export abstract class MetaContextAware<
       P extends IMetaFormBaseProps, 
@@ -32,7 +33,7 @@ export abstract class MetaContextAware<
     extends React.Component<P, S> 
 {
 
-  static contextTypes: Requireable<any> = MetaForm_ContextTypes;
+  static contextTypes = MetaForm_ContextTypes;
 
   constructor(props:P, context?:MetaFormContext) {
     super(props, context);

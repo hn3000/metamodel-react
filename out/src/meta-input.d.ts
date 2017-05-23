@@ -5,7 +5,10 @@ import { MetaContextFollower } from './base-components';
 import * as React from 'react';
 import { Requireable } from 'prop-types';
 export declare class MetaInput extends MetaContextFollower<IInputProps, any> {
-    static contextTypes: Requireable<any>;
+    static contextTypes: {
+        isRequired: () => boolean;
+        formContext: Requireable<any>;
+    };
     constructor(props: IInputProps, context: any);
     changeHandler(update: React.FormEvent<HTMLElement> | Primitive): void;
     nochangeHandler(): void;

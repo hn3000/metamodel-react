@@ -3,3 +3,4 @@ node_modules
 typings
 out/test
 npm-debug.log
+.settings/chrome

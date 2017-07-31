@@ -65,6 +65,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         this._updateViewModel(model);
       });
       this._promiseInFlight(update);
+    } else {
+      this._updateViewModel(this._viewmodel.changePage(1));
     }
   }
 

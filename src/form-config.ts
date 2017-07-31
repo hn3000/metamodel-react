@@ -18,9 +18,8 @@ import {
 import * as fields from './default-field-types';
 
 import * as React from 'react';
-import { Promise } from 'es6-promise';
 
-type matchQFun = (type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]) => number;
+export type matchQFun = (type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]) => number;
 
 function objMatcher(template:any):matchQFun { //</any>
   var keys = Object.keys(template);

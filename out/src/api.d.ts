@@ -1,21 +1,23 @@
 /// <reference types="react" />
-/// <reference types="es6-promise" />
 import * as React from 'react';
 import { Primitive, IModelType, IModelTypeComposite, IModelView, IStatusMessage, IPropertyStatusMessage, IClientProps } from '@hn3000/metamodel';
+export interface IMetaFormBaseProps {
+    context?: IFormContext;
+}
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
     action?: string;
     method?: string;
 }
-export interface IPageProps {
+export interface IPageProps extends IMetaFormBaseProps {
     page: number;
     contents?: React.ComponentClass<any> | string;
 }
 export interface IInputChangeHandler {
     (formContext: IFormContext, fieldName: string, newValue: any, oldValue: any): void;
 }
-export interface IInputProps {
+export interface IInputProps extends IMetaFormBaseProps {
     field: string;
     flavour?: string;
     flavor?: string;

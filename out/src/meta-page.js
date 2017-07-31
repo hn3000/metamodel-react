@@ -62,8 +62,8 @@ var MetaPage = (function (_super) {
         console.log("not rendering page " + this.props.page + ", we're on " + context.currentPage);
         return null;
     };
+    MetaPage.contextTypes = meta_form_1.MetaForm.childContextTypes;
     return MetaPage;
 }(base_components_1.MetaContextFollower));
-MetaPage.contextTypes = meta_form_1.MetaForm.childContextTypes;
 exports.MetaPage = MetaPage;
 //# sourceMappingURL=meta-page.js.map

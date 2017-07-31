@@ -1,13 +1,13 @@
 /// <reference types="react" />
 import * as React from 'react';
 import { IInputComponentProps, IInputComponentState, IFormWrapperProps, IPageWrapperProps, IFieldWrapperProps } from './api';
-export declare class FieldWrapper extends React.Component<IFieldWrapperProps, void> {
+export declare class FieldWrapper extends React.Component<IFieldWrapperProps, any> {
     render(): JSX.Element;
 }
-export declare class PageWrapper extends React.Component<IPageWrapperProps, void> {
+export declare class PageWrapper extends React.Component<IPageWrapperProps, any> {
     render(): JSX.Element;
 }
-export declare class FormWrapper extends React.Component<IFormWrapperProps, void> {
+export declare class FormWrapper extends React.Component<IFormWrapperProps, any> {
     render(): JSX.Element;
 }
 export declare class MetaFormInputString extends React.Component<IInputComponentProps, IInputComponentState> {

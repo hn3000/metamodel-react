@@ -1,5 +1,5 @@
-/* /// <reference path="../typings/index.d.ts" /> */
 "use strict";
+/* /// <reference path="../typings/index.d.ts" /> */
 Object.defineProperty(exports, "__esModule", { value: true });
 var metamodel_1 = require("@hn3000/metamodel");
 exports.ValidationScope = metamodel_1.ValidationScope;

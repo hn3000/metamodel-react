@@ -40,9 +40,9 @@ var MetaContextAware = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    MetaContextAware.contextTypes = exports.MetaForm_ContextTypes;
     return MetaContextAware;
 }(React.Component));
-MetaContextAware.contextTypes = exports.MetaForm_ContextTypes;
 exports.MetaContextAware = MetaContextAware;
 var MetaContextAwarePure = (function (_super) {
     __extends(MetaContextAwarePure, _super);
@@ -97,8 +97,8 @@ var MetaContextFollower = (function (_super) {
         this._unsubscribe && this._unsubscribe();
         this._unsubscribe = null;
     };
+    MetaContextFollower.contextTypes = exports.MetaForm_ContextTypes;
     return MetaContextFollower;
 }(MetaContextAware));
-MetaContextFollower.contextTypes = exports.MetaForm_ContextTypes;
 exports.MetaContextFollower = MetaContextFollower;
 //# sourceMappingURL=base-components.js.map

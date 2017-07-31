@@ -48,6 +48,9 @@ var MetaFormContext = (function (_super) {
             });
             _this._promiseInFlight(update);
         }
+        else {
+            _this._updateViewModel(_this._viewmodel.changePage(1));
+        }
         return _this;
     }
     MetaFormContext.prototype.hasNextPage = function () {

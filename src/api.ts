@@ -15,8 +15,10 @@ import {
   IClientProps
 } from '@hn3000/metamodel';
 
-import * as Promise from 'es6-promise';
-
+export interface IMetaFormBaseProps {
+    context?: IFormContext;
+}
+  
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
@@ -24,14 +26,14 @@ export interface IFormProps {
     method?:string;
 }
 
-export interface IPageProps {
+export interface IPageProps extends IMetaFormBaseProps {
     page: number;
     contents?: React.ComponentClass<any> | string;
 }
 export interface IInputChangeHandler {
     (formContext: IFormContext, fieldName: string, newValue: any, oldValue: any): void
 }
-export interface IInputProps {
+export interface IInputProps extends IMetaFormBaseProps {
     field: string;
     flavour?: string;
     flavor?: string;

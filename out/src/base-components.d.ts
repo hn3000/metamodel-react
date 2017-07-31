@@ -2,11 +2,8 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 export { Requireable } from 'prop-types';
-import { IFormContext } from './api';
+import { IFormContext, IMetaFormBaseProps } from './api';
 import { MetaFormContext } from './form-context';
-export interface IMetaFormBaseProps {
-    context?: IFormContext;
-}
 export interface IMetaFormBaseState {
     currentPage?: number;
 }

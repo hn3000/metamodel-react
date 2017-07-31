@@ -1,6 +1,7 @@
 import { IModelType, IPropertyStatusMessage } from '@hn3000/metamodel';
 import { IWrappers, IComponentMatcher, IFormConfig, IFormContext, InputComponent, IModelUpdater } from './api';
 import * as fields from './default-field-types';
+export declare type matchQFun = (type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]) => number;
 export declare class MetaFormConfig implements IFormConfig {
     constructor(wrappers?: IWrappers, components?: IComponentMatcher[]);
     setWrappers(wrappers: IWrappers): void;
@@ -24,13 +25,13 @@ export declare class MetaFormConfig implements IFormConfig {
     private _components;
     static defaultWrappers(): IWrappers;
     static defaultComponents(): ({
-        matchQuality: (type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]) => number;
+        matchQuality: matchQFun;
         component: typeof fields.MetaFormInputString;
     } | {
-        matchQuality: (type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]) => number;
+        matchQuality: matchQFun;
         component: typeof fields.MetaFormInputNumberSliderCombo;
     } | {
-        matchQuality: (type: IModelType<any>, fieldName: string, flavor: string, ...matchargs: any[]) => number;
+        matchQuality: matchQFun;
         component: typeof fields.MetaFormInputFile;
     })[];
 }

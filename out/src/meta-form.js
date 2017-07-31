@@ -49,8 +49,8 @@ var MetaForm = (function (_super) {
             conclusio: context.getConclusion()
         };
     };
+    MetaForm.childContextTypes = base_components_1.MetaContextAware.contextTypes;
     return MetaForm;
 }(base_components_1.MetaContextFollower));
-MetaForm.childContextTypes = base_components_1.MetaContextAware.contextTypes;
 exports.MetaForm = MetaForm;
 //# sourceMappingURL=meta-form.js.map

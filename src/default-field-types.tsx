@@ -24,7 +24,7 @@ import {
 
 import { propsDifferent } from './props-different';
 
-export class FieldWrapper extends React.Component<IFieldWrapperProps,void> {
+export class FieldWrapper extends React.Component<IFieldWrapperProps,any> {
   render() {
     var props:any = {};
     var errors:JSX.Element[] = [];
@@ -33,17 +33,20 @@ export class FieldWrapper extends React.Component<IFieldWrapperProps,void> {
     }
     return <div {...props}>
       {this.props.children}
-      <div className="errors">There were errors:</div>
-      {this.props.errors.map((e) => <div key={e.code} className="errors">{e.msg}</div>)}
+      { this.props.hasErrors && <div>
+        <div className="errors">There were errors:</div>
+        {this.props.errors.map((e) => <div key={e.code} className="errors">{e.msg}</div>)}
+        </div>
+      }
     </div>;
   }
 }
-export class PageWrapper extends React.Component<IPageWrapperProps,void> {
+export class PageWrapper extends React.Component<IPageWrapperProps,any> {
   render() {
     return <div>{this.props.children}</div>;
   }
 }
-export class FormWrapper extends React.Component<IFormWrapperProps,void> {
+export class FormWrapper extends React.Component<IFormWrapperProps,any> {
   render() {
     let wrapperProps:any = {};
     if (this.props.busy) {
@@ -55,8 +58,8 @@ export class FormWrapper extends React.Component<IFormWrapperProps,void> {
 
 export class MetaFormInputString extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
-    let props = this.props;
-    return <input type="text" placeholder={props.field} onChange={props.onChange} value={props.value}></input>;
+    let { field, onChange, value, placeholder } = this.props;
+    return <input type="text" placeholder={placeholder} onChange={onChange} value={value}></input>;
   }
 }
 

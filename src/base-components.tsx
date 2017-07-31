@@ -4,13 +4,10 @@ import * as PropTypes from 'prop-types';
 import { Requireable } from 'prop-types';
 export { Requireable } from 'prop-types';
 
-import { IFormContext } from './api';
+import { IFormContext, IMetaFormBaseProps } from './api';
 import { MetaFormContext } from './form-context';
 import { propsDifferent } from './props-different';
 
-export interface IMetaFormBaseProps {
-  context?: IFormContext;
-}
 export interface IMetaFormBaseState {
   currentPage?:number;
 }

@@ -33,8 +33,9 @@ var FieldWrapper = (function (_super) {
         }
         return React.createElement("div", __assign({}, props),
             this.props.children,
-            React.createElement("div", { className: "errors" }, "There were errors:"),
-            this.props.errors.map(function (e) { return React.createElement("div", { key: e.code, className: "errors" }, e.msg); }));
+            this.props.hasErrors && React.createElement("div", null,
+                React.createElement("div", { className: "errors" }, "There were errors:"),
+                this.props.errors.map(function (e) { return React.createElement("div", { key: e.code, className: "errors" }, e.msg); })));
     };
     return FieldWrapper;
 }(React.Component));
@@ -71,8 +72,8 @@ var MetaFormInputString = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     MetaFormInputString.prototype.render = function () {
-        var props = this.props;
-        return React.createElement("input", { type: "text", placeholder: props.field, onChange: props.onChange, value: props.value });
+        var _a = this.props, field = _a.field, onChange = _a.onChange, value = _a.value, placeholder = _a.placeholder;
+        return React.createElement("input", { type: "text", placeholder: placeholder, onChange: onChange, value: value });
     };
     return MetaFormInputString;
 }(React.Component));

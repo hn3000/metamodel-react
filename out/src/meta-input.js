@@ -159,8 +159,8 @@ var MetaInput = (function (_super) {
         };
         return result;
     };
+    MetaInput.contextTypes = base_components_1.MetaContextFollower.contextTypes;
     return MetaInput;
 }(base_components_1.MetaContextFollower));
-MetaInput.contextTypes = base_components_1.MetaContextFollower.contextTypes;
 exports.MetaInput = MetaInput;
 //# sourceMappingURL=meta-input.js.map

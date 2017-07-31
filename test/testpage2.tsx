@@ -15,7 +15,7 @@ export interface IFormPage2Props {
 
 
 export class ContactFormPage2 extends React.Component<IFormPage2Props, IFormPage2Props> {
-  
+
   render() {
     return (
         <div>

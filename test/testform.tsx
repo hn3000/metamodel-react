@@ -13,6 +13,11 @@ import {
   MetaContextFollower,
   IPropertyStatusMessage
 } from '../src/metamodel-react';
+
+import {
+  MetaFormInputEnumRadios
+} from '../src/default-field-types';
+
 import * as mm from '@hn3000/metamodel';
 
 import { ContactFormPage2 } from './testpage2';
@@ -57,7 +62,7 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
             <MetaInput field="firstname" />
             <MetaInput field="lastname" />
             <MetaInput field="username" />
-            <MetaInput field="country" flavor="select"/>
+            <MetaInput field="country" flavor="select" />
             <MetaInput field="file" />
             <MetaInput field="options" />
             <MetaInput field="someNumber" />

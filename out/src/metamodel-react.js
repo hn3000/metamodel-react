@@ -12,6 +12,7 @@ var search_params_1 = require("./search-params");
 exports.parseSearchParams = search_params_1.parseSearchParams;
 var form_config_1 = require("./form-config");
 exports.MetaFormConfig = form_config_1.MetaFormConfig;
+exports.MatchQ = form_config_1.MatchQ;
 var form_context_1 = require("./form-context");
 exports.MetaFormContext = form_context_1.MetaFormContext;
 var meta_form_1 = require("./meta-form");

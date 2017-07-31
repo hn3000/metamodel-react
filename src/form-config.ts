@@ -21,70 +21,74 @@ import * as React from 'react';
 
 export type matchQFun = (type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]) => number;
 
-function objMatcher(template:any):matchQFun { //</any>
-  var keys = Object.keys(template);
-  var n = keys.length;
+export class MatchQ {
+  static likeObject(template:any): matchQFun { //</any>
+    var keys = Object.keys(template);
+    var n = keys.length;
 
-  return ((field:IModelType<any> /*</any>*/) => { 
-    var result = 0;
-    var fieldObj = field as any;
-    let schema = fieldObj && fieldObj.propGet && fieldObj.propGet('schema');
-    for (var i = 0; i < n; i++) {
-      let k = keys[i];
-      let t = template[k];
-      if (t == fieldObj[k] || t == schema[k]) {
-        ++result;
-      } else {
-        return 0;
+    return ((field:IModelType<any> /*</any>*/) => {
+      var result = 0;
+      var fieldObj = field as any;
+      let schema = fieldObj && fieldObj.propGet && fieldObj.propGet('schema');
+      for (var i = 0; i < n; i++) {
+        let k = keys[i];
+        let t = template[k];
+        if (t == fieldObj[k] || t == schema[k]) {
+          ++result;
+        } else {
+          return 0;
+        }
       }
+      return result;
+    });
+  }
+  static kind(kind:string):matchQFun {
+    return (field:IModelType<any>) => (field.kind === kind?1:0)
+  }
+  static flavor(flavor:string):matchQFun {
+    let flv = flavor;
+    return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
+      if (
+        (flavor === flv)
+        || ((x) => x && (x.flavor === flv) || (x.flavour === flv))(type.propGet('schema'))
+      ) {
+        return 1;
+      }
+      return 0;
+    };
+  }
+  static element(matcher: matchQFun):matchQFun {
+    return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
+      let af = type as ModelTypeArray<any>;
+      if (af.itemType && af.itemType()) {
+        return matcher(af.itemType(), fieldName, flavor, ...matchArgs);
+      }
+      return 0;
+    };
+  }
+  static and(...matcher:matchQFun[]):matchQFun {
+    return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) =>
+      matcher.reduce((q, m) => {
+        let qq = m(type, fieldName, flavor, ...matchArgs);
+        return qq && q + qq;
+      }, 0);
+  }
+  static or(...matcher:matchQFun[]):matchQFun {
+    return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) =>
+      matcher.reduce((q, m) => {
+        let qq = m(type, fieldName, flavor, ...matchArgs);
+        return q + ((null != qq) ? qq : 0);
+      }, 0);
+  }
+  static possibleValueCountRange(from:number, to?:number) {
+    return (field:IModelType<any>) => {
+      let possibleValues = field.asItemType() && field.asItemType().possibleValues();
+      let pvc = possibleValues ? possibleValues.length : 0;
+      if ((pvc >= from) && (!to || pvc < to)) {
+        return 1;
+      }
+      return 0;
     }
-    return result;
-  });
-}
-
-function kindMatcher(kind:string):matchQFun {
-  return (field:IModelType<any>) => (field.kind === kind?1:0)
-}
-
-function flavorMatcher(flavor:string):matchQFun {
-  let flv = flavor;
-  return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
-    if (
-      (flavor === flv)
-      || ((x) => x && (x.flavor === flv) || (x.flavour === flv))(type.propGet('schema'))
-    ) {
-      return 1;
-    }
-    return 0;
-  };
-}
-
-function elementMatcher(matcher: matchQFun):matchQFun {
-  return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
-    let af = type as ModelTypeArray<any>;
-    if (af.itemType && af.itemType()) {
-      return matcher(af.itemType(), fieldName, flavor, ...matchArgs);
-    }
-    return 0;
-  };
-}
-
-function andMatcher(...matcher:matchQFun[]):matchQFun {
-  return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => 
-    matcher.reduce((q, m) => {
-      let qq = m(type, fieldName, flavor, ...matchArgs);
-      return qq && q + qq;
-    }, 0);
-}
-
-function hasPossibleValueCountBetween(from:number, to?:number) {
-  return (field:IModelType<any>) => {
-    let possibleValues = field.asItemType() && field.asItemType().possibleValues();
-    let pvc = possibleValues ? possibleValues.length : 0;
-    if ((pvc >= from) && (!to || pvc < to)) {
-      return 1;
-    }
-    return 0;
   }
 }
 
@@ -161,43 +165,43 @@ export class MetaFormConfig implements IFormConfig {
   public static defaultComponents() {
     return [
       {
-        matchQuality: kindMatcher('string'),
+        matchQuality: MatchQ.kind('string'),
         component: fields.MetaFormInputString
       },
       {
-        matchQuality: kindMatcher('number'),
+        matchQuality: MatchQ.kind('number'),
         component: fields.MetaFormInputNumber
       },
       {
-        matchQuality: andMatcher(kindMatcher('number'), flavorMatcher('slider')),
+        matchQuality: MatchQ.and(MatchQ.kind('number'), MatchQ.flavor('slider')),
         component: fields.MetaFormInputNumberSliderCombo
       },
       {
-        matchQuality: kindMatcher('bool'),
+        matchQuality: MatchQ.kind('bool'),
         component: fields.MetaFormInputBool
       },
       {
-        matchQuality: objMatcher({type:'bool'}),
+        matchQuality: MatchQ.likeObject({type:'bool'}),
         component: fields.MetaFormInputBool
       },
       {
-        matchQuality: objMatcher({type:'object', format: 'file'}),
+        matchQuality: MatchQ.likeObject({type:'object', format: 'file'}),
         component: fields.MetaFormInputFile
       },
       {
-        matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(10, undefined)),
+        matchQuality: MatchQ.and(MatchQ.kind('string'), MatchQ.possibleValueCountRange(10, undefined)),
         component: fields.MetaFormInputEnumSelect
       },
       {
-        matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(2,10)),
+        matchQuality: MatchQ.and(MatchQ.kind('string'), MatchQ.or(MatchQ.possibleValueCountRange(2,10), MatchQ.flavor('radios'))),
         component: fields.MetaFormInputEnumRadios
       },
       {
-        matchQuality: andMatcher(kindMatcher('string'), hasPossibleValueCountBetween(1,2)),
+        matchQuality: MatchQ.and(MatchQ.kind('string'), MatchQ.possibleValueCountRange(1,2)),
         component: fields.MetaFormInputEnumCheckbox
       },
       {
-        matchQuality: andMatcher(kindMatcher('array'), elementMatcher(kindMatcher('string'))),
+        matchQuality: MatchQ.and(MatchQ.kind('array'), MatchQ.element(MatchQ.kind('string'))),
         component: fields.MetaFormInputEnumCheckboxArray
       }
     ];

@@ -24,6 +24,7 @@ export class ContactFormPage2 extends React.Component<IFormPage2Props, IFormPage
           <MetaInput field="birth" />
           <MetaInput field="flag1" />
           <MetaInput field="flag2" />
+          <MetaInput field="languages" />
         </div>
     );
   }

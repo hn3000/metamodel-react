@@ -13,9 +13,9 @@ import {
 import {
   IInputComponentProps,
   IInputComponentState,
-  IFormWrapperProps, 
+  IFormWrapperProps,
   IPageWrapperProps,
-  IFieldWrapperProps 
+  IFieldWrapperProps
 } from './api';
 
 import {
@@ -29,7 +29,7 @@ export class FieldWrapper extends React.Component<IFieldWrapperProps,any> {
     var props:any = {};
     var errors:JSX.Element[] = [];
     if (this.props.hasErrors) {
-      props['className'] = 'has-error'; 
+      props['className'] = 'has-error';
     }
     return <div {...props}>
       {this.props.children}
@@ -81,7 +81,7 @@ export class MetaFormInputEnumSelect extends React.Component<IInputComponentProp
   render() {
     let props = this.props;
     let vm = props.context.viewmodel;
-    
+
     let values:any[] = vm.getPossibleFieldValues(props.field);
     if (null == values) {
       values = [];
@@ -102,7 +102,7 @@ export class MetaFormInputEnumRadios extends React.Component<IInputComponentProp
   render() {
     let props = this.props;
     let vm = props.context.viewmodel;
-    
+
     let values:any[] = vm.getPossibleFieldValues(props.field);
     if (null == values) {
       values = [];
@@ -124,7 +124,7 @@ export class MetaFormInputEnumCheckbox extends React.Component<IInputComponentPr
   render() {
     let props = this.props;
     let fieldType = props.fieldType;
-    
+
     let itemType = fieldType.asItemType();
     var values:any[] = [  ];
     if (null != itemType) {
@@ -162,11 +162,11 @@ export class MetaFormInputEnumCheckboxArray extends React.Component<IInputCompon
   }
 
   render() {
-    let props = this.props;
-    let fieldType = props.fieldType as ModelTypeArray<any>;
-    
-    let itemType = fieldType.itemType().asItemType();
-    var values:any[] = [  ];
+    const props = this.props;
+    const fieldType = props.fieldType as ModelTypeArray<any>;
+
+    const itemType = fieldType.itemType().asItemType();
+    let values:any[] = [  ];
     if (null != itemType) {
       values = itemType.possibleValues();
     }
@@ -272,14 +272,14 @@ export class MetaFormInputNumberSliderCombo extends React.Component<IInputNumber
 
     return <div>
       <input min={min} max={max} step={step}
-             type="range" 
-             value={value} 
-             onChange={onChange} 
-             onMouseUp={onChange} 
+             type="range"
+             value={value}
+             onChange={onChange}
+             onMouseUp={onChange}
              onMouseMoveCapture={this.handleMouseMove} />
       <input min={min} max={max} step={step}
-             type="number" 
-             value={value} 
+             type="number"
+             value={value}
              onChange={onChange} />
     </div>;
   }
@@ -310,7 +310,7 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
   }
 
   handleFile(evt:React.FormEvent<HTMLElement>) {
-    let files = (evt.target as HTMLInputElement).files; 
+    let files = (evt.target as HTMLInputElement).files;
     if (files && files.length) {
       let first = files[0];
       let reader = new FileReader();

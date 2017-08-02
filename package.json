@@ -1,6 +1,6 @@
 {
   "name": "@hn3000/metamodel-react",
-  "version": "1.0.0-alpha2",
+  "version": "1.0.0-alpha4",
   "description": "react components for metamodel rendering",
   "main": "out/src/metamodel-react.js",
   "typings": "out/src/metamodel-react.d.ts",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": "git@github.com:hn3000/metamodel-react",
   "dependencies": {
-    "@hn3000/metamodel": "^0.9.1",
+    "@hn3000/metamodel": "^0.10.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
   },

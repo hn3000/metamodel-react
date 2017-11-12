@@ -4,3 +4,4 @@ typings
 out/test
 npm-debug.log
 .settings/chrome
+out

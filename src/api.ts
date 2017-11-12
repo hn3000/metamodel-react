@@ -18,7 +18,7 @@ import {
 export interface IMetaFormBaseProps {
     context?: IFormContext;
 }
-  
+
 export interface IFormProps {
     context: IFormContext;
     currentPage?: number;
@@ -38,7 +38,7 @@ export interface IInputProps extends IMetaFormBaseProps {
     flavour?: string;
     flavor?: string;
     wrapper?:React.ComponentClass<IWrapperComponentProps>;
-    onChange?: IInputChangeHandler; 
+    onChange?: IInputChangeHandler;
 }
 
 export interface IWrapperComponentProps {
@@ -54,7 +54,7 @@ export interface IFormWrapperProps extends IWrapperComponentProps {
     busy?:boolean;
 }
 
-export interface IPageWrapperProps extends IWrapperComponentProps { 
+export interface IPageWrapperProps extends IWrapperComponentProps {
     busy?:boolean;
 }
 
@@ -68,7 +68,7 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     value?: any;
     defaultValue?: any;
     placeholder?:string;
-    onChange?: (update: Primitive|React.FormEvent<HTMLElement>) => void;
+    onChange?: (update: React.FormEvent<HTMLElement>|any) => void;
     context?:IFormContext
 }
 
@@ -76,7 +76,7 @@ export interface IInputComponentContext {
 
 }
 
-export interface IFieldWrapperProps extends IInputComponentProps { 
+export interface IFieldWrapperProps extends IInputComponentProps {
 
 }
 
@@ -144,7 +144,7 @@ export interface IFormContext extends IClientProps {
   viewmodel: IModelView<any>;
   currentPage: number;
 
-  /* 
+  /*
    * similar to redux: returns the unsubscribe function
    * listeners always called asynchronously: validation runs before
    * listeners are notfied
@@ -162,7 +162,7 @@ export interface IFormContext extends IClientProps {
 
   // query context state
   /** Return true while a Promise returned from an event handler is still in flight */
-  isBusy():boolean;          
+  isBusy():boolean;
 
   /** Return true if all data up to the current page is valid */
   isValid():boolean;
@@ -178,9 +178,9 @@ export interface IFormContext extends IClientProps {
 
   isFinished():boolean;
 
-  /** 
-   * Try to advance to the next page, will validate current data and proceed 
-   * if isValid() is true; does nothing if isBusy() returns true 
+  /**
+   * Try to advance to the next page, will validate current data and proceed
+   * if isValid() is true; does nothing if isBusy() returns true
    */
   pageNext:(event:React.SyntheticEvent<HTMLElement>)=>void;
   /**

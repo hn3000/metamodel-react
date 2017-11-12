@@ -339,6 +339,7 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
 
 export class MetaFormUnknownFieldType extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
-    return <input type="text" placeholder={this.props.field+": unknown kind"}></input>;
+    let { field, fieldType } = this.props;
+    return <input type="text" placeholder={`${field}: unknown kind "${fieldType.kind}"`}></input>;
   }
 }

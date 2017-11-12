@@ -18,6 +18,7 @@ export {
   IFormProps,
   IPageProps,
   IInputProps,
+  IMetaFormBaseProps,
   IWrappers,
   IFormWrapperProps,
   IPageWrapperProps,

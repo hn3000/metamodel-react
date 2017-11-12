@@ -24,10 +24,10 @@ export var MetaForm_ContextTypes = {
 };
 
 export abstract class MetaContextAware<
-      P extends IMetaFormBaseProps, 
+      P extends IMetaFormBaseProps,
       S
-    > 
-    extends React.Component<P, S> 
+    >
+    extends React.Component<P, S>
 {
 
   static contextTypes = MetaForm_ContextTypes;
@@ -42,12 +42,12 @@ export abstract class MetaContextAware<
 
   get formContext():IFormContext {
     return this.props.context || (this.context as any).formContext;
-  } 
+  }
 
   /*
   shouldComponentUpdate(nextProps: P, nextState: S, nextContext: any): boolean {
     return (
-      propsDifferent(this.props, nextProps) 
+      propsDifferent(this.props, nextProps)
       || propsDifferent(this.state, nextState)
       || propsDifferent(this.context, nextContext)
     );
@@ -62,10 +62,10 @@ export class MetaContextAwarePure<P,S> extends MetaContextAware<P,S> {
 }
 
 export abstract class MetaContextFollower<
-      P extends IMetaFormBaseProps, 
+      P extends IMetaFormBaseProps,
       S
-    > 
-    extends MetaContextAware<P, S> 
+    >
+    extends MetaContextAware<P, S>
 {
 
   static contextTypes = MetaForm_ContextTypes;
@@ -95,6 +95,7 @@ export abstract class MetaContextFollower<
       this.state = newState;
     } else {
       if (propsDifferent(this.state, newState)) {
+//console.debug(`new state: ${newState} replaces ${this.state}`);
         this.setState(newState);
       }
     }

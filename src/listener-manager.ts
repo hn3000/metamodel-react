@@ -19,7 +19,7 @@ export class ListenerManager<T> {
       if (-1 != pos) {
         this._ensureWritable();
         this._next.splice(pos, 1);
-      } 
+      }
     };
   }
 

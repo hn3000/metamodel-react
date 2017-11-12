@@ -3,7 +3,7 @@ import {
   Primitive
 } from '@hn3000/metamodel';
 
-import { 
+import {
   IInputProps,
   IInputComponentProps,
   InputComponent,
@@ -12,7 +12,7 @@ import {
 } from './api';
 import { MetaContextFollower, MetaContextAware } from './base-components';
 
-import * as React from 'react'; 
+import * as React from 'react';
 import { Requireable } from 'prop-types';
 
 export class MetaInput extends MetaContextFollower<IInputProps, any> {
@@ -28,20 +28,17 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     this.nochangeHandler = this.nochangeHandler.bind(this);
   }
 
-  changeHandler(update: React.FormEvent<HTMLElement>|Primitive) {
-    let updateType = typeof update;
-    let updateIsPrimitive = (
-      updateType === 'string' 
-      || updateType === 'number' 
-      || updateType === 'boolean'
-      || Array.isArray(update)
-      || update == null
+  changeHandler(update: React.FormEvent<HTMLElement>|any) {
+    const updateIsEvent = (
+      (update instanceof Event)
+      || (null != update && update.nativeEvent instanceof Event)
     );
+    const updateIsValue = !updateIsEvent;
 
-    let newValue: Primitive;
+    let newValue: any;
 
-    if  (updateIsPrimitive) {
-      newValue = update as Primitive;
+    if  (updateIsValue) {
+      newValue = update;
     } else if (update.hasOwnProperty('target')) {
       let evt = update as React.FormEvent<HTMLElement>;
       let target = evt.target as HTMLInputElement;
@@ -100,19 +97,19 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
 
     if (null == fieldValue) {
       switch (fieldType.kind) {
-        case 'array': 
+        case 'array':
         case 'object':
           fieldValue = fieldType.create();
           break;
-        default: 
-          fieldValue = ""; 
+        default:
+          fieldValue = "";
           break;
       }
     }
 
     let isEditable = context.viewmodel.isFieldEditable(this.props.field);
 
-    let props:IInputComponentProps = { 
+    let props:IInputComponentProps = {
       id: formid+'#'+this.props.field,
       field: this.props.field,
       fieldType: fieldType,
@@ -130,7 +127,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     var Wrapper = context.config.wrappers.field;
 
     if (this.props.hasOwnProperty('wrapper')) {
-      Wrapper = this.props.wrapper; 
+      Wrapper = this.props.wrapper;
     }
 
     var children:any;
@@ -167,9 +164,9 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     let newValue = nextContext.viewmodel.getFieldValue(field);
     let oldValue = state.fieldValue;
     let newErrors = nextContext.viewmodel.getFieldMessages(field);
-    let oldErrors = state.fieldErrors; 
+    let oldErrors = state.fieldErrors;
 
-    return newValue != oldValue || newErrors != oldErrors && newErrors.length > 0 && oldErrors.length > 0; 
+    return newValue != oldValue || newErrors != oldErrors && newErrors.length > 0 && oldErrors.length > 0;
   }*/
 
   _extractState(context:IFormContext) {

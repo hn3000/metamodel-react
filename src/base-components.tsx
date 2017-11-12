@@ -13,7 +13,7 @@ export interface IMetaFormBaseState {
 }
 
 export var MetaForm_ContextTypes = {
-  isRequired: function() { return false; },
+  isRequired: function():Error { return null; },
   formContext: PropTypes.shape({
     config: PropTypes.object,
     metamodel: PropTypes.object,

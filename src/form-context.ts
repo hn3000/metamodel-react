@@ -1,5 +1,5 @@
 
-import { 
+import {
   IClientProps,
   ClientProps,
   IModelTypeComposite,
@@ -98,7 +98,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   get config(): IFormConfig {
     return this._config;
   }
-  get metamodel(): IModelTypeComposite<any> /*</any>*/ { 
+  get metamodel(): IModelTypeComposite<any> /*</any>*/ {
     return this._metamodel;
   }
   get viewmodel(): IModelView<any> /*</any>*/ {
@@ -119,7 +119,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     /*if (null != this._conclusion && this._conclusion !== conclusion) {
       throw new Error(`form already has a conclusion: ${this._conclusion} ${conclusion}`);
     }*/
-    this._conclusion = conclusion; 
+    this._conclusion = conclusion;
 
     // ensure page reflects that the form is concluded
     let endPage = this._viewmodel.getPages().length;
@@ -132,7 +132,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     }
   }
 
-  /* 
+  /*
    * similar to redux: returns the unsubscribe function
    * listeners always called asynchronously: validation runs before
    * listeners are notfied
@@ -147,9 +147,9 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean) {
     if (this.isBusy()) {
       //let error = new Error('causality violation: updateModelTransactional not allowed while already busy');
-      console.warn('updateModelTransactional called while busy, deferring action');
+      //console.warn('updateModelTransactional called while busy, deferring action');
       Promise.all(this._promises).then(() => {
-        console.log('updateModelTransactional - next attempt, busy: ', this.isBusy());
+        //console.log('updateModelTransactional - next attempt, busy: ', this.isBusy());
         this.updateModelTransactional(updater, skipValidation);
       });
 
@@ -176,7 +176,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         if (!skipValidation && needsValidation) {
           let validator = () => {
             let validated = this._viewmodel.validateDefault();
-            validated.then((x) => this._updateViewModel(x));      
+            validated.then((x) => this._updateViewModel(x));
             this._debounceValidationTimeout = null;
           };
           if (this._debounceValidationTimeout) {
@@ -204,16 +204,16 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   }
 
   _notifyAll() {
-    console.log('notify all', this._viewmodel.currentPageIndex);
+    //console.log('notify all', this._viewmodel.currentPageIndex);
     this._listeners.all.forEach((x) => x());
-    console.log('/notify all');
+    //console.log('/notify all');
   }
 
   updatePage(step:number) {
     let originalModel = this._viewmodel;
 
     let nextModel:Promise<IModelView<any>>;
-    
+
     if (step < 0) {
       nextModel = Promise.resolve(originalModel);
     } else if (originalModel.currentPageNo == originalModel.getPages().length) {
@@ -221,7 +221,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     } else {
       nextModel = originalModel.validatePage();
     }
-    
+
     let promise = nextModel
       .then((validatedModel) => {
         let isSubmit = originalModel.currentPageNo == originalModel.getPages().length;
@@ -229,14 +229,14 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         let override = this._config.allowNavigationWithInvalidPages;
 
         if (step < 0 || override || validatedModel.isPageValid(null)) {
-          
+
           var promise:Promise<IModelView<any>>;
 
           if (this._config.onPageTransition) {
 
-            // replace model without notification 
+            // replace model without notification
             // so onPageTransition handler starts with this one
-            this._viewmodel = validatedModel; 
+            this._viewmodel = validatedModel;
 
             let moreValidation = this._config.onPageTransition(this, step);
             if (null == moreValidation) {
@@ -262,7 +262,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
 
           return promise.then((serverValidatedModel) => {
             if (step < 0 || (
-              serverValidatedModel.isPageValid(null) 
+              serverValidatedModel.isPageValid(null)
               && 0 == serverValidatedModel.getStatusMessages().length
             )) {
               var nextPageModel = serverValidatedModel.changePage(step);

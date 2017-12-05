@@ -22,8 +22,8 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
     let formContext = this.formContext;
     let nextFormContext = nextContext.formContext;
     let result =  (
-        !this.state 
-        || this.props.page === this.state.currentPage 
+        !this.state
+        || this.props.page === this.state.currentPage
         || nextProps.page === nextState.currentPage
       ) && (
         true // super.shouldComponentUpdate(nextProps, nextState, nextContext)
@@ -34,7 +34,7 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
       ++this._skipped;
     }
 
-    console.log(`page scu: ${nextProps.page} ${result} (skipped ${this._skipped})`);
+    //console.log(`page scu: ${nextProps.page} ${result} (skipped ${this._skipped})`);
     return result;
   }
 
@@ -52,7 +52,7 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
 
     if (this.props.page == context.currentPage) {
       let Wrapper = context.config.wrappers.page;
-      console.log(`rendering page ${this.props.page}`);
+      //console.log(`rendering page ${this.props.page}`);
       if (null == this.props.contents) {
         return <Wrapper busy={context.isBusy()}>{this.props.children}</Wrapper>;
       } else {
@@ -63,7 +63,7 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
         return <Wrapper busy={context.isBusy()}><Contents /></Wrapper>;
       }
     }
-    console.log(`not rendering page ${this.props.page}, we're on ${context.currentPage}`);
+    //console.log(`not rendering page ${this.props.page}, we're on ${context.currentPage}`);
     return null;
   }
 }

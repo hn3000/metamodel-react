@@ -301,7 +301,7 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
   }
 
   handleContents(evt:ProgressEvent) {
-    console.log('loaded: ', evt.target);
+    //console.log('loaded: ', evt.target);
     this.setState({ dataurl: ''+(evt.target as FileReader).result });
   }
   handleError(evt:ErrorEvent) {

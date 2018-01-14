@@ -22,7 +22,11 @@ export function objectsDifferent(a:any, b:any) {
     if (a[k] !== b[k]) {
       let thisA = a[k];
       let thisB = b[k];
-      if (Array.isArray(thisA)) {
+      if (k === 'children' && Array.isArray(thisA)) {
+        if (arraysDifferentShallow(thisA, thisB)) {
+          return true;
+        }
+      } else if (Array.isArray(thisA)) {
         if (arraysDifferent(thisA, thisB)) {
           return true;
         }
@@ -47,8 +51,20 @@ export function arraysDifferent<T>(a:T[], b:T[]) {
   for (var i = 0, n = a.length; i < n; ++i) {
     if (objectsDifferent(a[i], b[i])) {
       return true;
-    } 
+    }
   }
   return false;
 }
 
+export function arraysDifferentShallow<T>(a:T[], b:T[]) {
+  if (a === b) return false;
+  if ((null == a) != (null == b)) return true;
+  if (a.length !== b.length) return true;
+
+  for (var i = 0, n = a.length; i < n; ++i) {
+    if (a[i] != b[i]) {
+      return true;
+    }
+  }
+  return false;
+}

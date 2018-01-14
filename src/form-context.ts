@@ -180,9 +180,9 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
             this._debounceValidationTimeout = null;
           };
           if (this._debounceValidationTimeout) {
-            clearTimeout(this._debounceValidationTimeout);
+            window.clearTimeout(this._debounceValidationTimeout);
           }
-          this._debounceValidationTimeout = setTimeout(validator, config.validateDebounceMS);
+          this._debounceValidationTimeout = window.setTimeout(validator, config.validateDebounceMS);
         }
       }
     );

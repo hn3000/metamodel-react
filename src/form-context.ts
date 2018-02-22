@@ -213,7 +213,6 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
 
   _notifyAll() {
     //console.log('notify all', this._viewmodel.currentPageIndex);
-    console.log('.', new Error());
     this._listeners.all.forEach((x) => {
       x();
     });

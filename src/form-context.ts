@@ -21,7 +21,10 @@ import {
 } from './listener-manager';
 
 import { parseSearchParams } from './search-params';
-import { arraysDifferent }   from './props-different'
+import {
+  arraysDifferent
+  //,differentProps
+}   from './props-different'
 
 import * as React from 'react';
 
@@ -199,13 +202,21 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         console.debug(xx);
       }
     }
-    this._viewmodel = viewmodel;
-    this._notifyAll();
+    if (viewmodel !== this._viewmodel) {
+      /*if (console.debug) {
+        console.debug(differentProps(this._viewmodel, viewmodel));
+      }*/
+      this._viewmodel = viewmodel;
+      this._notifyAll();
+    }
   }
 
   _notifyAll() {
     //console.log('notify all', this._viewmodel.currentPageIndex);
-    this._listeners.all.forEach((x) => x());
+    console.log('.', new Error());
+    this._listeners.all.forEach((x) => {
+      x();
+    });
     //console.log('/notify all');
   }
 
@@ -307,7 +318,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       if (this._promises.length == 1) {
         let delay = this._config.busyDelayMS;
         this._promisesBusyTime = Date.now() + delay;
-        this._promisesTimeout = setTimeout(this._notifyAll.bind(this), delay);
+        this._promisesTimeout = window.setTimeout(() => {
+          this._promisesTimeout = null;
+          this._notifyAll();
+        }, delay);
       }
     }
   }
@@ -317,6 +331,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     if (-1 != index) {
       this._promises.splice(index,1);
       if (this._promises.length === 0) {
+        if (this._promisesTimeout) {
+          window.clearTimeout(this._promisesTimeout);
+          this._promisesTimeout = null;
+        }
         this._notifyAll(); // should have notified, anyway?
       }
     }

@@ -36,16 +36,26 @@
     <!--<script src="node_modules/systemjs/dist/system-polyfills.src.js"></script>-->
     <script src="node_modules/systemjs/dist/system.src.js"></script>
     <script>
+      let process = { env: { NODE_ENV: null } };
       System.config({
         map: {
-          "react": "node_modules/react/dist/react-with-addons.js",
-          "react-dom": "node_modules/react-dom/dist/react-dom.js",
-          "prop-types": "node_modules/prop-types/prop-types.js",
-          "isomorphic-fetch": "node_modules/isomorphic-fetch/fetch-npm-browserify.js",
-          "whatwg-fetch": "node_modules/whatwg-fetch/fetch.js",
-          "@hn3000/metamodel-react": "out/src/metamodel-react.js",
-          "@hn3000/metamodel": "node_modules/@hn3000/metamodel/out/src/model.js",
-          "@hn3000/json-ref": "node_modules/@hn3000/json-ref/out/src/index.js",
+          '@hn3000/json-ref':           'node_modules/@hn3000/json-ref/out/src/index.js',
+          '@hn3000/metamodel':          'node_modules/@hn3000/metamodel/out/src/model.js',
+          '@hn3000/metamodel-react':    'node_modules/@hn3000/metamodel-react/out/src/metamodel-react.js',
+          'blueimp-canvas-to-blob':     'node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.js',
+          'es6-promise':                'node_modules/es6-promise/dist/es6-promise.js',
+          'fbjs':                       'node_modules/fbjs/index.js',
+          'fbjs/lib':                   'node_modules/fbjs/lib',
+          'isomorphic-fetch':           'node_modules/isomorphic-fetch/fetch-npm-browserify.js',
+          'lodash':                     'node_modules/lodash/',
+          'object-assign':              'node_modules/object-assign/index.js',
+          'prop-types':                 'node_modules/prop-types/index.js',
+          'react':                      'node_modules/react/umd/react.development.js',
+          'react-dom':                  'node_modules/react-dom/umd/react-dom.development.js',
+//          'svg4everybody':              'node_modules/svg4everybody/dist/svg4everybody.js',
+//          'systemjs-jsonschema-loader': 'node_modules/@hn3000/systemjs-jsonschema-loader/out/src/index.js',
+//          'systemjs-plugin-json':       'node_modules/systemjs-plugin-json/json.js',
+          'whatwg-fetch':               'node_modules/whatwg-fetch/fetch.js',
           "testform": "out/test/testform.js"
 
         },
@@ -54,6 +64,14 @@
             format: 'cjs',
           },
           "node_modules/@hn3000/": {
+            format: 'cjs',
+            defaultExtension: 'js'
+          },
+          'node_modules/fbjs': {
+            format: 'cjs',
+            defaultExtension: 'js'
+          },
+          'node_modules/prop-types': {
             format: 'cjs',
             defaultExtension: 'js'
           }

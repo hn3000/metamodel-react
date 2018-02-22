@@ -1,4 +1,5 @@
 
+import { JsonPointer } from '@hn3000/json-ref';
 
 export function propsDifferent(a:any, b:any) {
   if (Array.isArray(a)) {
@@ -67,4 +68,37 @@ export function arraysDifferentShallow<T>(a:T[], b:T[]) {
     }
   }
   return false;
+}
+
+export interface IPropsDiff { [k:string]: { a: any, b: any }; }
+
+export function differentProps<T>(a: T, b: T): IPropsDiff {
+  let result = {} as IPropsDiff;
+  let visited: {[k:string]: boolean; } = {};
+  JsonPointer.walkObject(a, (val, ptr) => {
+    const k = ptr.asString();
+    if (val !== ptr.getValue(b)) {
+      result[k] = { a: val, b: ptr.getValue(b) };
+      return false;
+    }
+    visited[k] = true;
+
+    return true;
+  });
+
+  JsonPointer.walkObject(a, (val, ptr) => {
+    const k = ptr.asString();
+    if (visited[k]) {
+      return true;
+    }
+    if (val !== ptr.getValue(b)) {
+      result[k] = { a: val, b: ptr.getValue(b) };
+      return false;
+    }
+    visited[k] = true;
+
+    return true;
+  });
+
+  return result;
 }

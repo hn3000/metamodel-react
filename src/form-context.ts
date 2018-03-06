@@ -126,9 +126,9 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
 
     // ensure page reflects that the form is concluded
     let endPage = this._viewmodel.getPages().length;
-    if (this.currentPage != endPage) {
+    if (this._viewmodel.currentPageIndex != endPage) {
       Promise.resolve().then(() => {
-        if (this.currentPage != endPage) {
+        if (this._viewmodel.currentPageIndex != endPage) {
           this._updateViewModel(this._viewmodel.gotoPage(endPage));
         }
       }).then(null, (xx: any) => (console.log('unhandled exception', xx), null));
@@ -202,17 +202,36 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         console.debug(xx);
       }
     }
-    if (viewmodel !== this._viewmodel) {
-      /*if (console.debug) {
-        console.debug(differentProps(this._viewmodel, viewmodel));
-      }*/
-      this._viewmodel = viewmodel;
-      this._notifyAll();
-    }
+    this._viewmodel = viewmodel;
+    this._maybeNotifyAll();
   }
 
+  _maybeNotifyAll() {
+    const lnfy = this._lastNotified;
+    if (
+      !lnfy
+      || (lnfy.busy !== (this._promises && 0 !== this._promises.length))
+      || (lnfy.viewmodel != this._viewmodel)
+      || (lnfy.conclusion != this._conclusion)
+    ) {
+      this._lastNotified = {
+        viewmodel: this._viewmodel,
+        conclusion: this._conclusion,
+        busy: this._promises && 0 !== this._promises.length
+      };
+      this._notifyAll();
+    } else {
+      if (console.debug) {
+        try {
+          throw new Error();
+        } catch (xx) {
+          console.debug('skipped notifyAll', this._lastNotified, this._viewmodel, this._conclusion, xx)
+        }
+      }
+    }
+  }
   _notifyAll() {
-    //console.log('notify all', this._viewmodel.currentPageIndex);
+      //console.log('notify all', this._viewmodel.currentPageIndex);
     this._listeners.all.forEach((x) => {
       x();
     });
@@ -319,7 +338,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         this._promisesBusyTime = Date.now() + delay;
         this._promisesTimeout = window.setTimeout(() => {
           this._promisesTimeout = null;
-          this._notifyAll();
+          this._maybeNotifyAll();
         }, delay);
       }
     }
@@ -334,7 +353,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
           window.clearTimeout(this._promisesTimeout);
           this._promisesTimeout = null;
         }
-        this._notifyAll(); // should have notified, anyway?
+        this._maybeNotifyAll();
       }
     }
   }
@@ -349,5 +368,11 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   private _promisesTimeout:number;
 
   private _conclusion:IConclusionMessage;
+
+  private _lastNotified: {
+    conclusion: IConclusionMessage;
+    viewmodel: IModelView<any>;
+    busy: boolean;
+  };
 }
 

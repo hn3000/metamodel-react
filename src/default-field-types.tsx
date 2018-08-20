@@ -59,7 +59,7 @@ export class FormWrapper extends React.Component<IFormWrapperProps,any> {
 export class MetaFormInputString extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let { field, onChange, value, placeholder } = this.props;
-    return <input type="text" placeholder={placeholder} onChange={onChange} value={value}></input>;
+    return <input type="text" placeholder={placeholder || field} onChange={onChange} value={value}></input>;
   }
 }
 
@@ -304,9 +304,9 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
     //console.log('loaded: ', evt.target);
     this.setState({ dataurl: ''+(evt.target as FileReader).result });
   }
-  handleError(evt:ErrorEvent) {
+  handleError(reader: FileReader, evt:ProgressEvent) {
     console.log('error: ', evt);
-    this.setState({ error: ''+evt.error, dataurl: null });
+    this.setState({ error: ''+reader.error, dataurl: null });
   }
 
   handleFile(evt:React.FormEvent<HTMLElement>) {
@@ -315,7 +315,7 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
       let first = files[0];
       let reader = new FileReader();
       reader.onloadend = this.handleContents;
-      reader.onerror = this.handleError;
+      reader.onerror = this.handleError.bind(this, reader);
       reader.readAsDataURL(first);
       this.props.context.updateModel(this.props.field, {
         file: first,

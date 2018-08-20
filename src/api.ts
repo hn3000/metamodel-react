@@ -27,8 +27,9 @@ export interface IFormProps {
 }
 
 export interface IPageProps extends IMetaFormBaseProps {
-    page: number;
-    contents?: React.ComponentClass<any> | string;
+    page?: number; // needs either page or alias
+    alias?: string;
+    contents?: React.ReactType<any>; 
 }
 export interface IInputChangeHandler {
     (formContext: IFormContext, fieldName: string, newValue: any, oldValue: any): void
@@ -44,7 +45,7 @@ export interface IInputProps extends IMetaFormBaseProps {
 export interface IWrapperComponentProps {
     hasErrors?: boolean;
     errors?: IPropertyStatusMessage[];
-    field?:string;
+    context:IFormContext
 }
 
 export interface IFormWrapperProps extends IWrapperComponentProps {
@@ -56,6 +57,7 @@ export interface IFormWrapperProps extends IWrapperComponentProps {
 
 export interface IPageWrapperProps extends IWrapperComponentProps {
     busy?:boolean;
+    pageAlias: string;
 }
 
 export interface IInputComponentProps extends IWrapperComponentProps {
@@ -69,7 +71,6 @@ export interface IInputComponentProps extends IWrapperComponentProps {
     defaultValue?: any;
     placeholder?:string;
     onChange?: (update: React.FormEvent<HTMLElement>|any) => void;
-    context?:IFormContext
 }
 
 export interface IInputComponentContext {
@@ -77,23 +78,23 @@ export interface IInputComponentContext {
 }
 
 export interface IFieldWrapperProps extends IInputComponentProps {
-
+    field?:string;
 }
 
 export interface IInputComponentState extends IInputProps {
     flavour: string;
 }
 
-export type InputComponent = React.ComponentClass<IInputComponentProps>;// | React.StatelessComponent<IInputComponentProps>;
+export type InputComponent = React.ComponentType<IInputComponentProps>;
 
 export interface IComponentLookup {
     [key: string]: React.ReactType;
 }
 
 export interface IWrappers extends IComponentLookup {
-    form:  React.ComponentClass<IFormWrapperProps>;  // </IFormWrapperProps>
-    page:  React.ComponentClass<IPageWrapperProps>;  // </IPageWrapperProps>
-    field: React.ComponentClass<IFieldWrapperProps>; // </IFieldWrapperProps>
+    form:  React.ComponentType<IFormWrapperProps>;  // </IFormWrapperProps>
+    page:  React.ComponentType<IPageWrapperProps>;  // </IPageWrapperProps>
+    field: React.ComponentType<IFieldWrapperProps>; // </IFieldWrapperProps>
 }
 
 export interface IComponentMatchFun {
@@ -143,6 +144,7 @@ export interface IFormContext extends IClientProps {
   metamodel: IModelTypeComposite<any>;
   viewmodel: IModelView<any>;
   currentPage: number;
+  currentPageAlias: string;
 
   /*
    * similar to redux: returns the unsubscribe function

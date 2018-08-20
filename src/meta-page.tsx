@@ -24,7 +24,9 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
     let result =  (
         !this.state
         || this.props.page === this.state.currentPage
+        || this.props.alias === this.state.currentPageAlias
         || nextProps.page === nextState.currentPage
+        || nextProps.alias === nextState.currentPageAlias
       ) && (
         true // super.shouldComponentUpdate(nextProps, nextState, nextContext)
       );
@@ -41,6 +43,7 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
   protected _extractState(context:IFormContext): any {
     var newState = {
       currentPage: context.currentPage,
+      currentPageAlias: context.currentPageAlias,
       //viewmodel: context.viewmodel
     } as any;
     return newState;
@@ -50,20 +53,32 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
   render() {
     let context = this.formContext;
 
-    if (this.props.page == context.currentPage) {
+    let { page, alias, contents } = this.props;
+
+    const isCurrentPage = (
+      (null != page && page === context.currentPage)
+      || (null != alias && alias === context.currentPageAlias)
+    )
+
+    if (isCurrentPage) {
       let Wrapper = context.config.wrappers.page;
       //console.log(`rendering page ${this.props.page}`);
-      if (null == this.props.contents) {
-        return <Wrapper busy={context.isBusy()}>{this.props.children}</Wrapper>;
+      let wrapperProps = {
+        busy: context.isBusy(),
+        pageAlias: context.currentPageAlias,
+        context
+      };
+      if (null == contents) {
+        return <Wrapper {...wrapperProps}>{this.props.children}</Wrapper>;
       } else {
         if (0 != React.Children.count(this.props.children)) {
           console.log(`warning: MetaPage ignores children if contents (${this.props.contents}) is specified`);
         }
         let Contents = this.props.contents;
-        return <Wrapper busy={context.isBusy()}><Contents /></Wrapper>;
+        return <Wrapper {...wrapperProps}><Contents /></Wrapper>;
       }
     }
-    //console.log(`not rendering page ${this.props.page}, we're on ${context.currentPage}`);
+    //console.log(`not rendering page ${page || alias}, we're on ${context.currentPage} / ${context.currentPageAlias}`);
     return null;
   }
 }

@@ -33,7 +33,14 @@
     "pages": [
       {
         "alias": "names-and-country",
-        "fields": ["firstname", "lastname", "username", "country", "file", "options", "someNumber"]
+        "fields": ["firstname", "lastname", "username", "country", "file", "options", "someNumber"],
+        "pages": [
+          { "fields": [ "firstname", "lastname"] }, 
+          { "fields": [ "username"]}, 
+          { "fields": [ "country" ]}, 
+          { "fields": [ "file", "options"]}, 
+          { "fields": [ "someNumber"]}
+        ]
       },
       {
         "alias": "email-etc",
@@ -42,11 +49,17 @@
           "properties": {
             "email":     { "type": "string", "maxLength": 20, "format": "email" },
             "email2":    { "type": "string", "maxLength": 20, "format": "email" },
-            "birth":     { "type": "string", "pattern": "\\d{4}-\\d{2}-\\d{2}", "constraints":[ { "kind": "minAge", "value": "18years" }] },
+            "birth":     { "type": "string", "pattern": "\\d{4}-\\d{2}-\\d{2}", "constraints":[ { "constraint": "minAge", "value": "18years" }] },
             "languages": { "type": "array", "items": { "$ref": "#/definitions/Language" }, "uniqueItems": true },
             "flag1":     { "type": "boolean", "enum": [ true ] },
             "flag2":     { "type": "boolean" }
-          }
+          },
+          "pages": [
+            { "fields": [ "email", "email2"] }, 
+            { "fields": [ "birth"]}, 
+            { "fields": [ "languages" ]}, 
+            { "fields": [ "flag1", "flag2"]}
+          ]
         }
       }
     ],

@@ -57,6 +57,16 @@ export class MatchQ {
       return 0;
     };
   }
+  static format(format:string):matchQFun {
+    return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
+      if (
+        ((x) => x && (x.format === format))(type.propGet('schema'))
+      ) {
+        return 1;
+      }
+      return 0;
+    };
+  }  
   static element(matcher: matchQFun):matchQFun {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
       let af = type as ModelTypeArray<any>;

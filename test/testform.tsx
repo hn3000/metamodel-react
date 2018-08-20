@@ -14,13 +14,7 @@ import {
   IPropertyStatusMessage
 } from '../src/metamodel-react';
 
-import {
-  MetaFormInputEnumRadios
-} from '../src/default-field-types';
-
 import * as mm from '@hn3000/metamodel';
-
-import { ContactFormPage2 } from './testpage2';
 
 var registry = new mm.ModelSchemaParser();
 
@@ -51,6 +45,10 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
   }
 
   render() {
+    let { context } = this.props;
+    let { currentPage, currentPageAlias } = context;
+    let viewPage = context.viewmodel.getPage();
+    let pages = context.viewmodel.getPages();
     return (
       <MetaForm context={this.props.context}>
         <div className={'page'+this.props.context.currentPage}> 
@@ -58,19 +56,8 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
           <button disabled={!this.state.next} onClick={this.props.context.pageNext}>next</button>
         </div>
         <div>
-          <MetaPage page={0}>
-            <MetaInput field="firstname" />
-            <MetaInput field="lastname" />
-            <MetaInput field="username" />
-            <MetaInput field="country" flavor="select" />
-            <MetaInput field="file" />
-            <MetaInput field="options" />
-            <MetaInput field="someNumber" />
-          </MetaPage>
-          <MetaPage page={1} contents={ContactFormPage2} />
-          <MetaPage page={2}>
-            <h2>Done, Thanks!</h2>
-          </MetaPage>
+          { pages.map(p => <FormPage key={p.alias} alias={p.alias} page={p} />)}
+          <FormPage alias="conclusion" />
         </div>
         <div className={'page'+this.props.context.currentPage+'b:'+!this.state.back+'-n:'+!this.state.back}>
         <button disabled={!this.state.back} onClick={this.props.context.pageBack}>back</button>
@@ -80,6 +67,28 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
     );
   }
 }
+
+function FormPage(props: { alias: string; page?: mm.IModelViewPage }) {
+  let { alias, page } = props;
+  //console.log(`FormPage(${alias})`);
+  switch (alias) {
+    case 'conclusion':
+      return (
+        <MetaPage alias={alias}>
+          <h2>Done, Thanks!</h2>
+        </MetaPage>
+      );
+    default:
+      return (
+        <MetaPage alias={alias}>
+          { page && page.fields.map(field => <MetaInput field={field} key={field} />) }
+        </MetaPage>
+      );
+  }
+  return null;
+}
+
+
 
 let Firstnames = [
   "Eberhard",
@@ -150,10 +159,12 @@ function validateFormData(context:IFormContext) {
   let data = viewmodel.getModel();
   var messages: IPropertyStatusMessage[] = [];
 
-  if (0 === data.username.indexOf('hn30')) {
-    messages = [ { property: 'username', msg:'username is already taken', code:'username-taken', severity: MessageSeverity.ERROR } ];
-
-    return delayValue(messages, 500*parseInt(data.username.substr(4)));
+  if (null != data.username) {
+    if (0 === data.username.indexOf('hn30')) {
+      messages = [ { property: 'username', msg:'username is already taken', code:'username-taken', severity: MessageSeverity.ERROR } ];
+  
+      return delayValue(messages, 500*parseInt(data.username.substr(4)));
+    }
   }
 
   return delayValue(messages, 100);
@@ -184,6 +195,6 @@ export function run() {
 
     ReactDom.render(<TestForm context={context} />, formElem);
   }
-} 
+}
 
 run();

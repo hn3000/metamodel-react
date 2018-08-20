@@ -28,9 +28,10 @@ import {
 
 import * as React from 'react';
 
-var requestParams = parseSearchParams(location.search);
+var requestParams = parseSearchParams(location && location.search);
 
-var overridePage = requestParams.page!=null ? +(requestParams.page) : null;
+var overrideFocus = requestParams.overrideFocus!=null ? requestParams.overrideFocus[0] : null;
+var overridePage = requestParams.overridePage!=null ? +(requestParams.overridePage[0]) : null;
 
 const PAGE_INIT = -1;
 
@@ -43,6 +44,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
 
     let page = null != overridePage ? overridePage-(config.usePageIndex?0:1) : PAGE_INIT;
     this._viewmodel = new ModelView(metamodel, data, page);
+
+    if (null != overrideFocus) {
+      this._viewmodel = this._viewmodel.withFocusedPage(overrideFocus);
+    }
 
     this.pageBack = clickHandler(this.updatePage, this, -1);
     this.pageNext = clickHandler(this.updatePage, this, +1);
@@ -112,6 +117,17 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       return this._viewmodel.currentPageNo;
     }
     return this._viewmodel.currentPageIndex;
+  }
+
+  get currentPageAlias(): string {
+    
+    const vm = this._viewmodel;
+    const pageCount = this._viewmodel.getPages().length;
+    if (vm.currentPageIndex === pageCount) {
+      return 'conclusion';
+    }
+    const thePage = vm.getPage();
+    return null != thePage ? thePage.alias : null;
   }
 
   getConclusion() {

@@ -44,7 +44,7 @@ export class MetaForm extends MetaContextFollower<IFormProps, any> {
     let metamodel = formContext.metamodel;
     let modelId = metamodel.propGet('schema').modelId || metamodel.name;
 
-    return (<Wrapper id={modelId} busy={formContext.isBusy()}>
+    return (<Wrapper id={modelId} busy={formContext.isBusy()} context={formContext}>
         {this.props.children}
       </Wrapper>);
   }

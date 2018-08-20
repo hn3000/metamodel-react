@@ -42,9 +42,13 @@ export interface IInputProps extends IMetaFormBaseProps {
     onChange?: IInputChangeHandler;
 }
 
-export interface IWrapperComponentProps {
+export interface IFormComponentProps {
     hasErrors?: boolean;
     errors?: IPropertyStatusMessage[];
+    context?:IFormContext
+}
+
+export interface IWrapperComponentProps extends IFormComponentProps {
     context:IFormContext
 }
 
@@ -60,7 +64,7 @@ export interface IPageWrapperProps extends IWrapperComponentProps {
     pageAlias: string;
 }
 
-export interface IInputComponentProps extends IWrapperComponentProps {
+export interface IInputComponentProps extends IFormComponentProps {
     id?: string;
     field?: string;
     fieldType?: IModelType<any>;

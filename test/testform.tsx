@@ -88,8 +88,6 @@ function FormPage(props: { alias: string; page?: mm.IModelViewPage }) {
   return null;
 }
 
-
-
 let Firstnames = [
   "Eberhard",
   "Thomas",

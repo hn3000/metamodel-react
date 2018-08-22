@@ -70,7 +70,19 @@ export class MetaFormInputNumber extends React.Component<IInputComponentProps, I
   }
 }
 
-export class MetaFormInputBool extends React.Component<IInputComponentProps, IInputComponentState> {
+export class MetaFormInputBoolRadio extends React.Component<IInputComponentProps, IInputComponentState> {
+  render() {
+    let { onChange, value } = this.props;
+    let isFalse = null != value && ('false' === value || false === value);
+    let isTrue = null != value && ('true' === value || true === value);
+    return <div title={this.props.field} >
+      <input type="radio" onChange={onChange} checked={isFalse} value="false"></input> No
+      <input type="radio" onChange={onChange} checked={isTrue} value="true"></input> Yes
+    </div>;
+  }
+}
+
+export class MetaFormInputBoolCheckbox extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
     return <input type="checkbox" onChange={props.onChange} checked={props.value}></input>;
@@ -336,10 +348,41 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
 }
 
 
+export class MetaFormInputDateMonth extends React.Component<IInputComponentProps, IInputComponentState> {
+  render() {
+    let { field, fieldType } = this.props;
+    return <input type="month" onChange={this.props.onChange} value={this.props.value} placeholder={this.props.field}></input>;
+  }
+}
+export class MetaFormInputDate extends React.Component<IInputComponentProps, IInputComponentState> {
+  render() {
+    let { field, fieldType } = this.props;
+    return <input type="date" onChange={this.props.onChange} value={this.props.value} placeholder={this.props.field}></input>;
+  }
+}
+
+export class MetaFormInputTime extends React.Component<IInputComponentProps, IInputComponentState> {
+  render() {
+    let { field, fieldType } = this.props;
+    return <input type="time" onChange={this.props.onChange} value={this.props.value} placeholder={this.props.field}></input>;
+  }
+}
+
+export class MetaFormInputDateTime extends React.Component<IInputComponentProps, IInputComponentState> {
+  render() {
+    let { field, fieldType } = this.props;
+    return <input type="datetime-local" onChange={this.props.onChange} value={this.props.value} placeholder={this.props.field}></input>;
+  }
+}
 
 export class MetaFormUnknownFieldType extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
-    let { field, fieldType } = this.props;
-    return <input type="text" placeholder={`${field}: unknown kind "${fieldType.kind}"`}></input>;
+    let { field, fieldType, onChange, value } = this.props;
+    return (
+      <label>
+      <div><input type="text" placeholder={field} value={value} onChange={onChange}></input></div>
+      <div><small>{`${field}: unknown kind "${fieldType.kind}"`}</small></div>
+      </label>
+    );
   }
 }

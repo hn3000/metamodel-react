@@ -200,6 +200,27 @@ export class MetaFormConfig implements IFormConfig {
         component: fields.MetaFormInputString
       },
       {
+        matchQuality: MatchQ.likeObject({
+          kind: 'string',
+          format: 'date'
+        }),
+        component: fields.MetaFormInputDate
+      },
+      {
+        matchQuality: MatchQ.likeObject({
+          kind: 'string',
+          format: 'month'
+        }),
+        component: fields.MetaFormInputDateMonth
+      },
+      {
+        matchQuality: MatchQ.likeObject({
+          kind: 'string',
+          format: 'datetime'
+        }),
+        component: fields.MetaFormInputDateTime
+      },
+      {
         matchQuality: MatchQ.kind('number'),
         component: fields.MetaFormInputNumber
       },
@@ -209,11 +230,22 @@ export class MetaFormConfig implements IFormConfig {
       },
       {
         matchQuality: MatchQ.kind('bool'),
-        component: fields.MetaFormInputBool
+        component: fields.MetaFormInputBoolRadio
       },
       {
-        matchQuality: MatchQ.likeObject({type:'bool'}),
-        component: fields.MetaFormInputBool
+        matchQuality: MatchQ.likeObject({kind:'boolean', required: true}),
+        component: fields.MetaFormInputBoolRadio
+      },
+      {
+        matchQuality: MatchQ.likeObject({kind:'boolean', required: false}),
+        component: fields.MetaFormInputBoolCheckbox
+      },
+      {
+        matchQuality: MatchQ.and(
+          MatchQ.likeObject({kind:'boolean', required: true}),
+          MatchQ.possibleValueCountRange(1,2)
+        ),
+        component: fields.MetaFormInputBoolCheckbox
       },
       {
         matchQuality: MatchQ.likeObject({type:'object', format: 'file'}),

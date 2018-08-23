@@ -173,8 +173,8 @@ export interface IFormContext extends IClientProps {
   /** Return true if all data up to the current page is valid */
   isValid():boolean;
 
-  /** Return true if all data on the current page is valid */
-  isPageValid():boolean;
+  /** Return true if all data on the specified (or current) page is valid */
+  isPageValid(aliasOrIndex?: string|number):boolean;
 
   /** Return true unless we're on the page behind the last model page */
   hasNextPage():boolean;

@@ -99,8 +99,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     return this._viewmodel.arePagesUpToCurrentValid();
   }
 
-  isPageValid() {
-    return this._viewmodel.isPageValid();
+  isPageValid(aliasOrIndex?: string|number) {
+    return this._viewmodel.isPageValid(aliasOrIndex);
   }
 
   get config(): IFormConfig {

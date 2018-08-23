@@ -53,7 +53,7 @@ export class MatchQ {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
       if (
         (flavor === flv)
-        || ((x) => x && (x.flavor === flv) || (x.flavour === flv))(type.propGet('schema'))
+        || ((x) => x && ((x.flavor === flv) || (x.flavour === flv)))(type.propGet('schema'))
       ) {
         return 1;
       }

@@ -7,6 +7,7 @@ import { MetaContextFollower } from './base-components';
 import { MetaForm } from './meta-form';
 
 import { propsDifferent } from './props-different';
+import { IPropertyStatusMessage, MessageSeverity } from '@hn3000/metamodel';
 
 export class MetaPage extends MetaContextFollower<IPageProps, any> {
 
@@ -63,11 +64,22 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
     if (isCurrentPage) {
       let Wrapper = context.config.wrappers.page;
       //console.log(`rendering page ${this.props.page}`);
+      let metamodel = context.metamodel;
+      let modelId = metamodel.propGet('schema').modelId || metamodel.name;
+        let hasErrors = !context.isValid();
+      let messages = context.viewmodel.getStatusMessages();
+      let errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
+  
       let wrapperProps = {
-        busy: context.isBusy(),
+        id: context.metamodel,
         pageAlias: context.currentPageAlias,
-        context
-      };
+        busy: context.isBusy(),
+        context,
+        hasErrors,
+        messages,
+        errors
+      }
+
       if (null == contents) {
         return <Wrapper {...wrapperProps}>{this.props.children}</Wrapper>;
       } else {

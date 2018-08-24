@@ -45,6 +45,7 @@ export interface IInputProps extends IMetaFormBaseProps {
 export interface IFormComponentProps {
     hasErrors?: boolean;
     errors?: IPropertyStatusMessage[];
+    messages?: IStatusMessage[];
     context?:IFormContext
 }
 

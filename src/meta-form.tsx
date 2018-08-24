@@ -12,6 +12,7 @@ import {
 
 import * as React from 'react';
 import { Requireable } from 'prop-types';
+import { MessageSeverity, IPropertyStatusMessage } from '@hn3000/metamodel';
 
 export class MetaForm extends MetaContextFollower<IFormProps, any> {
 	static childContextTypes = MetaContextAware.contextTypes; 
@@ -44,7 +45,20 @@ export class MetaForm extends MetaContextFollower<IFormProps, any> {
     let metamodel = formContext.metamodel;
     let modelId = metamodel.propGet('schema').modelId || metamodel.name;
 
-    return (<Wrapper id={modelId} busy={formContext.isBusy()} context={formContext}>
+    let hasErrors = !formContext.isValid();
+    let messages = formContext.viewmodel.getStatusMessages();
+    let errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
+
+    let wrapperProps = {
+      id: modelId,
+      busy: formContext.isBusy(),
+      context: formContext,
+      hasErrors,
+      messages,
+      errors
+    };
+
+    return (<Wrapper {...wrapperProps}>
         {this.props.children}
       </Wrapper>);
   }

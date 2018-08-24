@@ -100,7 +100,14 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   }
 
   isPageValid(aliasOrIndex?: string|number) {
-    return this._viewmodel.isPageValid(aliasOrIndex);
+    let adjustedIndex = aliasOrIndex;
+    if (!this._config.usePageIndex) {
+      let parsedIndex = Number.parseInt(''+aliasOrIndex);  
+      if (parsedIndex == aliasOrIndex) {
+        adjustedIndex = parsedIndex - 1;
+      }
+    }
+    return this._viewmodel.isPageValid(adjustedIndex);
   }
 
   get config(): IFormConfig {

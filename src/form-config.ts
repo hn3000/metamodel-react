@@ -22,8 +22,19 @@ import * as React from 'react';
 export type matchQFun = (type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]) => number;
 
 export class MatchQ {
-  /** Matches by similarity to the given object literal, all props must match. */
-  static likeObject(template:any): matchQFun { //</any>
+  /** 
+   * Matches by fieldName, match quality is 100 times that of other criteria by default.
+   * The quality argument can be used to change the strenght of the match. 
+   */
+  static fieldName(name:string, quality: number = 100):matchQFun {
+    return (type:IModelType<any>, fieldName: string) => (fieldName === name ? quality:0)
+  }
+  /** 
+   * Matches by similarity to the given object literal, all props must match. 
+   * Every matching item (i.e. key in the template) counts as 1 by default, the
+   * quality argument changes the quality per match. 
+   */
+  static likeObject(template:any, quality: number = 1): matchQFun { //</any>
     var keys = Object.keys(template);
     var n = keys.length;
 
@@ -35,7 +46,7 @@ export class MatchQ {
         let k = keys[i];
         let t = template[k];
         if (t == fieldObj[k] || t == schema[k]) {
-          ++result;
+          result += quality;
         } else {
           return 0;
         }
@@ -43,43 +54,57 @@ export class MatchQ {
       return result;
     });
   }
-  /** Matches by IModelType.kind. */
-  static kind(kind:string):matchQFun {
-    return (field:IModelType<any>) => (field.kind === kind?1:0)
+  /** 
+   * Matches by IModelType.kind, the match counts as 1 point by default. 
+   * The quality argument can be used to change the strenght of the match. 
+   */
+  static kind(kind:string, quality: number = 1):matchQFun {
+    return (field:IModelType<any>) => (field.kind === kind? quality : 0)
   }
-  static fieldName(name:string):matchQFun {
-    return (type:IModelType<any>, fieldName: string) => (fieldName === name?1:0)
-  }
-  /** Matches by flavor. Flavor can be given as a prop on the MetaInput or in the schema (where brit. spelling flavour is also accepted). */
-  static flavor(flavor:string):matchQFun {
+  /** 
+   * Matches by flavor. Flavor can be given as a prop on the MetaInput or in the schema 
+   * (where brit. spelling flavour is also accepted).
+   * By default, a match is worth one point, the quality argument can be used to
+   * change the value of a match. 
+   */
+  static flavor(flavor:string, quality: number = 1):matchQFun {
     let flv = flavor;
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
       if (
         (flavor === flv)
         || ((x) => x && ((x.flavor === flv) || (x.flavour === flv)))(type.propGet('schema'))
       ) {
-        return 1;
+        return quality;
       }
       return 0;
     };
   }
-  /** Matches by format, shorthand for .likeObject({fornat:'<format>'}) */
-  static format(format:string):matchQFun {
+  /** 
+   * Matches by format, shorthand for .likeObject({fornat:'<format>'}).
+   * By default, flavor matches are worth one point; the quality argument
+   * can be used to change this. 
+   */
+  static format(format:string, quality: number = 1):matchQFun {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
       if (
         ((x) => x && (x.format === format))(type.propGet('schema'))
       ) {
-        return 1;
+        return quality;
       }
       return 0;
     };
   }  
-  /** Matches an array type that has elements matching the given matcher. */
-  static element(matcher: matchQFun):matchQFun {
+  /** 
+   * Matches an array type that has elements matching the given matcher.
+   * By default, a match is worth 2 times that of the base matcher (to
+   * reflect the fact it's an array), the quality argument can be used to 
+   * change the factor.
+   */
+  static element(matcher: matchQFun, quality: number = 2):matchQFun {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
       let af = type as ModelTypeArray<any>;
       if (af.itemType && af.itemType()) {
-        return matcher(af.itemType(), fieldName, flavor, ...matchArgs);
+        return matcher(af.itemType(), fieldName, flavor, ...matchArgs) * quality;
       }
       return 0;
     };
@@ -89,13 +114,16 @@ export class MatchQ {
    * and to (exclusive). Only matches for types that actually have an enumerated list
    * of possible values, so will not match unconstrained numbers or strings. If no upper
    * limit (`to`) is given or it is spcecified as 0, only the minimum is checked.
+   * 
+   * By default, a match is worth one point, the quality argument can be used to
+   * change the value of a match. 
    */
-  static possibleValueCountRange(from:number, to?:number) {
+  static possibleValueCountRange(from:number, to?:number, quality: number = 1) {
     return (field:IModelType<any>) => {
       let possibleValues = field.asItemType() && field.asItemType().possibleValues();
       let pvc = possibleValues ? possibleValues.length : 0;
       if ((pvc >= from) && (!to || pvc < to)) {
-        return 1;
+        return quality;
       }
       return 0;
     }
@@ -103,7 +131,7 @@ export class MatchQ {
   /** 
    * Matches if all given matchers match by adding the returned quality values. 
    * Quality is zero if any of the matchers returns zero, the sum of all quality
-   * values if none of the matchers returned zero.
+   * values if none of the matchers returned zero. 
    */
   static and(...matcher:matchQFun[]):matchQFun {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) =>
@@ -123,6 +151,18 @@ export class MatchQ {
         let qq = m(type, fieldName, flavor, ...matchArgs);
         return q + ((null != qq) ? qq : 0);
       }, 0);
+  }
+  /**
+   * Multiply quality of a matcher by a factor. Can be used to manipulate priority of matchers 
+   * in case the default qualities don't work well.
+   * 
+   * @param matcher the base matcher
+   * @param factor that a match is multiplied by
+   */
+  static prioritize(factor: number, matcher: matchQFun):matchQFun {
+    return (type: IModelType<any>, fieldName: string, flavor: string, ...matchArgs: any[]) => {
+      return matcher(type, fieldName, flavor, ...matchArgs) * factor;
+    }
   }
 }
 

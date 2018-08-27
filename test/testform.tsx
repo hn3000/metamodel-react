@@ -11,10 +11,12 @@ import {
   MetaFormContext,
   MessageSeverity,
   MetaContextFollower,
-  IPropertyStatusMessage
+  IPropertyStatusMessage,
+  MatchQ
 } from '../src/metamodel-react';
 
 import * as mm from '@hn3000/metamodel';
+import { MetaFormInputEnumSelect } from '../src/default-field-types';
 
 var registry = new mm.ModelSchemaParser();
 
@@ -186,6 +188,14 @@ export function run() {
     config.onFailedPageTransition = (ctx) => { console.log('failed transition', ctx); }
     config.validateDebounceMS = 100;
     config.busyDelayMS = 200;
+
+    if (true) {
+      config.matchers.push({
+        matchQuality: MatchQ.fieldName('gender'),
+        component: MetaFormInputEnumSelect
+      });
+    }
+    
 
     let context = new MetaFormContext (config, model, {});
 

@@ -1,6 +1,7 @@
 {
     "type": "object",
     "properties": {
+      "gender": { "type": "string", "enum": [ "Mr", "Mrs", "Ms", "other" ] },
       "firstname": { "type": "string", "maxLength": 20 },
       "lastname":  { "type": "string", "maxLength": 20 },
       "username":  { "type": "string", "maxLength": 20, "format": "username", "pattern": "^[a-z][a-z0-9]+" },
@@ -29,13 +30,13 @@
         "years": 18
       }
     ],
-    "required": ["firstname", "lastname", "username", "country", "email", "email2", "birth", "flag1", "flag2"],
+    "required": ["gender", "firstname", "lastname", "username", "country", "email", "email2", "birth", "flag1", "flag2"],
     "pages": [
       {
         "alias": "names-and-country",
-        "fields": ["firstname", "lastname", "username", "country", "file", "options", "someNumber"],
+        "fields": ["gender", "firstname", "lastname", "username", "country", "file", "options", "someNumber"],
         "pages": [
-          { "fields": [ "firstname", "lastname"] }, 
+          { "fields": [ "gender", "firstname", "lastname"] }, 
           { "fields": [ "username"]}, 
           { "fields": [ "country" ]}, 
           { "fields": [ "file", "options"]}, 

@@ -47,6 +47,9 @@ export class MatchQ {
   static kind(kind:string):matchQFun {
     return (field:IModelType<any>) => (field.kind === kind?1:0)
   }
+  static fieldName(name:string):matchQFun {
+    return (type:IModelType<any>, fieldName: string) => (fieldName === name?1:0)
+  }
   /** Matches by flavor. Flavor can be given as a prop on the MetaInput or in the schema (where brit. spelling flavour is also accepted). */
   static flavor(flavor:string):matchQFun {
     let flv = flavor;

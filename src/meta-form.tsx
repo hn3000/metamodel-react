@@ -58,19 +58,23 @@ export class MetaForm extends MetaContextFollower<IFormProps, any> {
       errors
     };
 
+    //console.log('meta-form render', wrapperProps);
+
     return (<Wrapper {...wrapperProps}>
         {this.props.children}
       </Wrapper>);
   }
 
   _extractState(context:IFormContext) {
-    return {
+    const result = {
       busy: context.isBusy(),
       page: context.currentPage,
-      pageMessages: context.viewmodel.getStatusMessages(),
+      pageMessages: context.viewmodel.getPageMessages(),
       statusMessages: context.viewmodel.getStatusMessages(),
       conclusio: context.getConclusion()
     } as any;
+    //console.log("meta-form extractState", result);
+    return result;
   }
 }
 

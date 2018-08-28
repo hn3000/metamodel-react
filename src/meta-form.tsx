@@ -26,7 +26,7 @@ export class MetaForm extends MetaContextFollower<IFormProps, any> {
   constructor(props:IFormProps, context:any) {
     super(props, context);
     if (null == props.context) {
-      console.log("no context found in context for MetaForm", props);
+      console.log("no context found in props for MetaForm", props);
     } else {
       this.initialContext(this.props.context);
     }

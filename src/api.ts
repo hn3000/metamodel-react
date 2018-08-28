@@ -171,7 +171,7 @@ export interface IFormContext extends IClientProps {
   /** Return true while a Promise returned from an event handler is still in flight */
   isBusy():boolean;
 
-  /** Return true if all data up to the current page is valid */
+  /** Return true if all data up to and including the current page is valid */
   isValid():boolean;
 
   /** Return true if all data on the specified (or current) page is valid */

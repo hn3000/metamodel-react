@@ -127,14 +127,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   }
 
   get currentPageAlias(): string {
-    
-    const vm = this._viewmodel;
-    const pageCount = this._viewmodel.getPages().length;
-    if (vm.currentPageIndex === pageCount) {
-      return 'conclusion';
-    }
-    const thePage = vm.getPage();
-    return null != thePage ? thePage.alias : null;
+    return this._viewmodel.currentPageAlias;
   }
 
   getConclusion() {

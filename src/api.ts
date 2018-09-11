@@ -12,7 +12,8 @@ import {
   IMessageProps,
   IStatusMessage,
   IPropertyStatusMessage,
-  IClientProps
+  IClientProps,
+  IModelViewPage
 } from '@hn3000/metamodel';
 
 export interface IMetaFormBaseProps {
@@ -31,6 +32,14 @@ export interface IPageProps extends IMetaFormBaseProps {
     alias?: string;
     contents?: React.ReactType<any>; 
 }
+
+export interface ISectionProps extends IMetaFormBaseProps {
+    sectionAlias?: string;
+    section?: IModelViewPage;
+    contents?: React.ReactType<ISectionWrapperProps>;
+    contentsDefault?: React.ReactType<ISectionWrapperProps>;
+}
+
 export interface IInputChangeHandler {
     (formContext: IFormContext, fieldName: string, newValue: any, oldValue: any): void
 }
@@ -65,6 +74,14 @@ export interface IPageWrapperProps extends IWrapperComponentProps {
     pageAlias: string;
 }
 
+export interface ISectionWrapperProps extends IWrapperComponentProps {
+    section: IModelViewPage;
+    sectionAlias: string;
+}
+
+export type ISectionWrapper = React.ComponentType<ISectionWrapperProps>
+                            | React.ComponentType<any>;
+
 export interface IInputComponentProps extends IFormComponentProps {
     id?: string;
     field?: string;
@@ -81,7 +98,6 @@ export interface IInputComponentProps extends IFormComponentProps {
 export interface IInputComponentContext {
 
 }
-
 export interface IFieldWrapperProps extends IInputComponentProps {
     field?:string;
 }
@@ -100,6 +116,11 @@ export interface IWrappers extends IComponentLookup {
     form:  React.ComponentType<IFormWrapperProps>;  // </IFormWrapperProps>
     page:  React.ComponentType<IPageWrapperProps>;  // </IPageWrapperProps>
     field: React.ComponentType<IFieldWrapperProps>; // </IFieldWrapperProps>
+    section: ISectionWrapper;
+}
+
+export interface ISectionLookup {
+    [name: string]: ISectionWrapper;
 }
 
 export interface IComponentMatchFun {
@@ -113,6 +134,10 @@ export interface IComponentFinder {
     findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent;
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;
+    addSection(name: string, component: ISectionWrapper): void;
+    removeSection(name: string, component: ISectionWrapper): void;
+    setSectionDefault(component: ISectionWrapper): void;
+    findSection(name:string): ISectionWrapper;
 }
 
 export interface IModelUpdater {

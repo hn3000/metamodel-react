@@ -15,7 +15,8 @@ import {
   IInputComponentState,
   IFormWrapperProps,
   IPageWrapperProps,
-  IFieldWrapperProps
+  IFieldWrapperProps,
+  ISectionWrapperProps
 } from './api';
 
 import {
@@ -24,7 +25,7 @@ import {
 
 import { propsDifferent } from './props-different';
 
-export class FieldWrapper extends React.Component<IFieldWrapperProps,any> {
+export class FieldWrapperDefault extends React.Component<IFieldWrapperProps,any> {
   render() {
     var props:any = {};
     var errors:JSX.Element[] = [];
@@ -41,12 +42,17 @@ export class FieldWrapper extends React.Component<IFieldWrapperProps,any> {
     </div>;
   }
 }
-export class PageWrapper extends React.Component<IPageWrapperProps,any> {
+export class PageWrapperDefault extends React.Component<IPageWrapperProps,any> {
   render() {
     return <div>{this.props.children}</div>;
   }
 }
-export class FormWrapper extends React.Component<IFormWrapperProps,any> {
+export class SectionWrapperDefault extends React.Component<ISectionWrapperProps,any> {
+  render() {
+    return <div>{this.props.children}</div>;
+  }
+}
+export class FormWrapperDefault extends React.Component<IFormWrapperProps,any> {
   render() {
     let wrapperProps:any = {};
     if (this.props.busy) {

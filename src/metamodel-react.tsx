@@ -17,11 +17,13 @@ export {
 export {
   IFormProps,
   IPageProps,
+  ISectionProps,
   IInputProps,
   IMetaFormBaseProps,
   IWrappers,
   IFormWrapperProps,
   IPageWrapperProps,
+  ISectionWrapperProps,
   IFieldWrapperProps,
   IWrapperComponentProps,
   IInputComponentProps,
@@ -42,6 +44,7 @@ export { MetaFormContext } from './form-context';
 
 export { MetaForm } from './meta-form';
 export { MetaPage } from './meta-page';
+export { MetaSection } from './meta-section';
 export { MetaInput } from './meta-input';
 
 export {

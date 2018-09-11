@@ -1,14 +1,16 @@
 
+/*
 import {
   Primitive
 } from '@hn3000/metamodel';
+*/
 
 import {
   IInputProps,
   IInputComponentProps,
   InputComponent,
   IFormContext,
-  IWrapperComponentProps
+//  IWrapperComponentProps
 } from './api';
 import { MetaContextFollower, MetaContextAware } from './base-components';
 
@@ -86,6 +88,17 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
       return null;
     }
 
+    const hasChildren = 0 < React.Children.count(this.props.children);
+    let flavor = this.props.flavor || this.props.flavour;
+    let Input:InputComponent = null;
+    if (!hasChildren) {
+      Input = context.config.findBest(fieldType, fieldName, flavor);
+      if (null == Input) {
+        // no children, no renderer: omit completely
+        return null;
+      }
+    }
+
     let formid = this.formContext.metamodel.name;
 
     //let theValue = (undefined !== this.state.fieldValue) ? this.state.fieldValue : '';
@@ -122,19 +135,14 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
       context: this.formContext
     };
 
-    let flavor = this.props.flavor || this.props.flavour;
-
-    var Wrapper = context.config.wrappers.field;
+    let Wrapper = context.config.wrappers.field;
 
     if (this.props.hasOwnProperty('wrapper')) {
       Wrapper = this.props.wrapper;
     }
 
-    var children:any;
-
-    var Input:InputComponent;
-    if (0 === React.Children.count(this.props.children)) {
-      Input = context.config.findBest(fieldType, fieldName, flavor);
+    let children:any;
+    if (!hasChildren && null != Input) {
       children = [ <Input key={0} {...props} /> ];
     } else {
       children = React.Children.map(this.props.children, (c) => {

@@ -12,7 +12,11 @@ import {
   IFormConfig,
   IFormContext,
   InputComponent,
-  IModelUpdater
+  IModelUpdater,
+  ISectionProps,
+  ISectionWrapperProps,
+  ISectionLookup,
+  ISectionWrapper
 } from './api';
 
 import * as fields from './default-field-types';
@@ -168,9 +172,10 @@ export class MatchQ {
 
 export class MetaFormConfig implements IFormConfig {
 
-  constructor(wrappers?:IWrappers, components?:IComponentMatcher[]) {
+  constructor(wrappers?:IWrappers, components?:IComponentMatcher[], sections?: ISectionLookup) {
     this._wrappers = wrappers || MetaFormConfig.defaultWrappers();
     this._components = components || MetaFormConfig.defaultComponents();
+    this._sections = sections || {};
   }
 
   setWrappers(wrappers:IWrappers) {
@@ -210,6 +215,23 @@ export class MetaFormConfig implements IFormConfig {
     this._components = this._components.filter((x) => x != cm);
   }
 
+  addSection(name: string, component: ISectionWrapper): void {
+    this._sections[name] = component;
+  }
+  removeSection(name: string): void {
+    delete this._sections[name];
+  }
+  setSectionDefault(component: ISectionWrapper): void {
+    this._sectionDefault = null;
+  }
+  findSection(name:string): ISectionWrapper {
+    let result = this._sections[name];
+    if (null == result) {
+      result = this._sectionDefault;
+    }
+    return result;
+  }
+
   public usePageIndex = false;
   public validateOnUpdate: boolean = false;
   public validateOnUpdateIfInvalid: boolean = false;
@@ -226,13 +248,19 @@ export class MetaFormConfig implements IFormConfig {
   public onModelUpdate: (ctx:IFormContext) => Promise<IModelUpdater> = null;
 
   private _wrappers:IWrappers;
+
+  private _sections: {
+    [name: string]: ISectionWrapper
+  };
+  private _sectionDefault: ISectionWrapper;
   private _components: IComponentMatcher[];
 
   public static defaultWrappers():IWrappers {
     return {
-      form: fields.FormWrapper,
-      page: fields.PageWrapper,
-      field: fields.FieldWrapper,
+      form: fields.FormWrapperDefault,
+      page: fields.PageWrapperDefault,
+      field: fields.FieldWrapperDefault,
+      section: fields.SectionWrapperDefault
     }
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "@hn3000/metamodel-react",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "react components for metamodel rendering",
   "main": "out/src/metamodel-react.js",
   "typings": "out/src/metamodel-react.d.ts",
@@ -15,7 +15,7 @@
   "repository": "git@github.com:hn3000/metamodel-react",
   "dependencies": {
     "@hn3000/json-ref": "^0.11.5",
-    "@hn3000/metamodel": "^1.2.8",
+    "@hn3000/metamodel": "^1.3.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2"

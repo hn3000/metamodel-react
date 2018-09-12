@@ -92,11 +92,17 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     let flavor = this.props.flavor || this.props.flavour;
     let Input:InputComponent = null;
     if (!hasChildren) {
-      Input = context.config.findBest(fieldType, fieldName, flavor);
-      if (null == Input) {
+      let matcher = context.config.findBestMatcher(fieldType, fieldName, flavor);
+      if (null != matcher && matcher.condition) {
+        if (!matcher.condition(context)) {
+          matcher = null;
+        }
+      }
+      if (null == matcher) {
         // no children, no renderer: omit completely
         return null;
       }
+      Input = matcher.component;
     }
 
     let formid = this.formContext.metamodel.name;

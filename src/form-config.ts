@@ -190,15 +190,28 @@ export class MetaFormConfig implements IFormConfig {
     return this._components;
   }
 
+  private _deprecatedFindBestUsed = false;
   findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent {
+    let matcher = this._findBestMatcher(type, fieldName, flavor, matchargs);
+    if (matcher && matcher.condition) {
+      console.warn("ignoring condition on matcher", matcher)
+    }
+    return matcher && matcher.component;
+  }
+
+  findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher {
+    return this._findBestMatcher(type, fieldName, flavor, matchargs);
+  }
+
+  _findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher {
     var bestQ = 0;
-    var match:InputComponent = fields.MetaFormUnknownFieldType;
+    var match:IComponentMatcher = null;
 
     let matchers = this._components;
     for (var i = 0, n = matchers.length; i<n; ++i) {
       let thisQ = matchers[i].matchQuality(type, fieldName, flavor, ...matchargs);
       if (thisQ > bestQ) {
-        match = matchers[i].component;
+        match = matchers[i];
         bestQ = thisQ;
       }
     }

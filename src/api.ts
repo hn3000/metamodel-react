@@ -129,9 +129,11 @@ export interface IComponentMatchFun {
 export interface IComponentMatcher {
     matchQuality(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): number;
     component: InputComponent;
+    condition?: (formContext: IFormContext) => boolean;
 }
 export interface IComponentFinder {
     findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent;
+    findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher;
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;
     addSection(name: string, component: ISectionWrapper): void;

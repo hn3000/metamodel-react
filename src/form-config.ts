@@ -45,7 +45,7 @@ export class MatchQ {
     return ((field:IModelType<any> /*</any>*/) => {
       var result = 0;
       var fieldObj = field as any;
-      let schema = fieldObj && fieldObj.propGet && fieldObj.propGet('schema');
+      let schema = (fieldObj && fieldObj.propGet && fieldObj.propGet('schema')) || {};
       for (var i = 0; i < n; i++) {
         let k = keys[i];
         let t = template[k];

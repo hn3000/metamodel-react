@@ -2,8 +2,6 @@
 import * as React from 'react';
 
 import {
-  IModelType,
-  IModelTypeComposite,
   ModelTypeArray,
   ModelTypeConstraintMore,
   ModelTypeConstraintLess,
@@ -19,11 +17,10 @@ import {
   ISectionWrapperProps
 } from './api';
 
-import {
-  MetaContextAwarePure
-} from './base-components'
 
 import { propsDifferent } from './props-different';
+import { MetaInput } from './meta-input';
+import { MetaSection } from './meta-section';
 
 export class FieldWrapperDefault extends React.Component<IFieldWrapperProps,any> {
   render() {
@@ -44,12 +41,36 @@ export class FieldWrapperDefault extends React.Component<IFieldWrapperProps,any>
 }
 export class PageWrapperDefault extends React.Component<IPageWrapperProps,any> {
   render() {
-    return <div>{this.props.children}</div>;
+    const hasChildren = React.Children.count(this.props.children);
+    if (hasChildren) {
+      return <div>{this.props.children}</div>;
+    }
+
+    const page = this.props.context.viewmodel.getPage(this.props.pageAlias);
+    const hasSections = page.pages && 0 < page.pages.length;
+    return (
+      <div>
+        { page && hasSections && page.pages.map(sx => <MetaSection key={sx.alias} section={sx} />) }
+        { page && !hasSections && <MetaSection section={page} /> }
+      </div>
+    );
   }
 }
 export class SectionWrapperDefault extends React.Component<ISectionWrapperProps,any> {
   render() {
-    return <div>{this.props.children}</div>;
+    const props = this.props;
+    const children = props.children;
+    const hasChildren = 0 < React.Children.count(children);
+    if (hasChildren) {
+      return <div>{children}</div>;
+    }
+    const section = props.section || props.context.viewmodel.getPage(props.sectionAlias);
+    const fields = section.fields;
+    return (
+      <div>
+        { fields.map((field: string) => (<MetaInput field={field} key={field} />)) }
+      </div>
+    );
   }
 }
 export class FormWrapperDefault extends React.Component<IFormWrapperProps,any> {

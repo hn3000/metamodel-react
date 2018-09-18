@@ -53,6 +53,9 @@ export class MetaSection extends MetaContextAware<ISectionProps, any> {
     let modelPage = context.viewmodel.getPage(sectionAlias);
     if (null != modelPage) {
         messages = messages.filter(isSectionMessageFilter(modelPage));
+        if (null != modelPage.skipPredicate && modelPage.skipPredicate(context.viewmodel.getModel())) {
+          return null;
+        }
     }
     let errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
     let hasErrors = errors.length > 0;

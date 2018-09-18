@@ -17,7 +17,8 @@
       }
     },
     "allOf": [
-      { "$ref": "#/pages/1/schema"}
+      { "$ref": "#/pages/1/schema"},
+      { "$ref": "#/pages/2/schema"}
     ],
     "constraints": [
       {
@@ -41,6 +42,46 @@
           { "fields": [ "country" ]}, 
           { "fields": [ "file", "options"]}, 
           { "fields": [ "someNumber"]}
+        ]
+      },
+      {
+        "alias": "skippable-page",
+        "schema": {
+          "properties": {
+            "extraInfo":     { "type": "string", "maxLength": 20 },
+            "moreExtraInfo":     { "type": "string", "maxLength": 20 },
+            "additionalExtraInfo":     { "type": "string", "maxLength": 20 }
+          },
+          "pages": [
+            { "fields": [ "extraInfo" ]},
+            { 
+              "fields": [ "moreExtraInfo", "additionalExtraInfo" ], 
+              "skipIf": [
+                {
+                  "property": "username",
+                  "op": "=",
+                  "invert": true,
+                  "value": "skippyExtra"
+                }
+              ]
+            }
+          ]
+        },
+        "x-skipIfAny": [
+          [
+            {
+              "property": "username",
+              "op": "=",
+              "invert": true,
+              "value": "skippy"
+            },
+            {
+              "property": "username",
+              "op": "=",
+              "invert": true,
+              "value": "skippyExtra"
+            }
+          ]
         ]
       },
       {

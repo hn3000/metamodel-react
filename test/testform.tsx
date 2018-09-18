@@ -12,7 +12,8 @@ import {
   MessageSeverity,
   MetaContextFollower,
   IPropertyStatusMessage,
-  MatchQ
+  MatchQ,
+  MetaSection
 } from '../src/metamodel-react';
 
 import * as mm from '@hn3000/metamodel';
@@ -65,6 +66,7 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
         <button disabled={!this.state.back} onClick={this.props.context.pageBack}>back</button>
         <button disabled={!this.state.next} onClick={this.props.context.pageNext}>next</button>
         </div>
+        <div>{`Current page is ${this.props.context.currentPageAlias}`}</div>
       </MetaForm>
     );
   }
@@ -81,10 +83,10 @@ function FormPage(props: { alias: string; page?: mm.IModelViewPage }) {
         </MetaPage>
       );
     default:
+
+      const hasSections = page.pages && page.pages.length > 0;
       return (
-        <MetaPage alias={alias}>
-          { page && page.fields.map(field => <MetaInput field={field} key={field} />) }
-        </MetaPage>
+        <MetaPage alias={alias} />
       );
   }
   return null;
@@ -174,7 +176,8 @@ export function run() {
   console.log("fetching test form");
   var promise = registry.addSchemaFromURL("./test/test-form.json");
 
-  promise.then(formWithModel);
+  let pfwm = promise.then(formWithModel);
+  pfwm.then(null, (err) => console.log('error in formWithModel:', err));
 
   function formWithModel(model:mm.ModelTypeObject<any>) {
     let formElem = document.getElementById('form-content');

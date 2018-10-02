@@ -68,6 +68,7 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
         <button disabled={!this.state.next} onClick={this.props.context.pageNext}>next</button>
         </div>
         <div>{`Current page is ${context.currentPageAlias}, #${vm.currentUnskippedPageNo} / ${vm.totalUnskippedPageCount} (${vm.currentPageNo} / ${vm.totalPageCount})`}</div>
+        { vm.getFocusedPage() != null && (<div>{`Focused page: ${vm.getFocusedPageNo()} / ${vm.getFocusedPage().alias}`}</div>)}
       </MetaForm>
     );
   }

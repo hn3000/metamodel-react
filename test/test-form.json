@@ -17,6 +17,7 @@
       }
     },
     "allOf": [
+      { "$ref": "#/pages/0/schema"},
       { "$ref": "#/pages/1/schema"},
       { "$ref": "#/pages/2/schema"}
     ],

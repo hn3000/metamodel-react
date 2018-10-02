@@ -41,6 +41,8 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
   _extractState(formContext: IFormContext) {
     var result = {
       currentPage: formContext.currentPage,
+      currentUnskippedPageNo: formContext.viewmodel.currentUnskippedPageNo,
+      totalUnskippedPageCount: formContext.viewmodel.totalUnskippedPageCount,
       back: pageBackAllowed(formContext),
       next: pageNextAllowed(formContext)
     };
@@ -49,8 +51,7 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
 
   render() {
     let { context } = this.props;
-    let { currentPage, currentPageAlias } = context;
-    let viewPage = context.viewmodel.getPage();
+    let vm = context.viewmodel;
     let pages = context.viewmodel.getPages();
     return (
       <MetaForm context={this.props.context}>
@@ -66,7 +67,7 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
         <button disabled={!this.state.back} onClick={this.props.context.pageBack}>back</button>
         <button disabled={!this.state.next} onClick={this.props.context.pageNext}>next</button>
         </div>
-        <div>{`Current page is ${this.props.context.currentPageAlias}`}</div>
+        <div>{`Current page is ${context.currentPageAlias}, #${vm.currentUnskippedPageNo} / ${vm.totalUnskippedPageCount} (${vm.currentPageNo} / ${vm.totalPageCount})`}</div>
       </MetaForm>
     );
   }

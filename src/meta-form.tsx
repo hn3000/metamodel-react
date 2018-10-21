@@ -34,22 +34,23 @@ export class MetaForm extends MetaContextFollower<IFormProps, any> {
 
 
   render() {
-    let formContext = this.formContext;
-    let Wrapper = formContext.config.wrappers.form;
+    const formContext = this.formContext;
+    const Wrapper = formContext.config.wrappers.form;
 
     /*
     let adjustedChildren = React.Children.map(this.props.children,
       (c) => React.cloneElement(c, {context: this.props.context}));
     */
 
-    let metamodel = formContext.metamodel;
-    let modelId = metamodel.propGet('schema').modelId || metamodel.name;
+    const metamodel = formContext.metamodel;
+    const schema = metamodel.propGet('schema');
+    const modelId = (schema && schema.modelId) || metamodel.name;
 
-    let hasErrors = !formContext.isValid();
-    let messages = formContext.viewmodel.getStatusMessages();
-    let errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
+    const hasErrors = !formContext.isValid();
+    const messages = formContext.viewmodel.getStatusMessages();
+    const errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
 
-    let wrapperProps = {
+    const wrapperProps = {
       id: modelId,
       busy: formContext.isBusy(),
       context: formContext,

@@ -62,15 +62,13 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
     )
 
     if (isCurrentPage) {
-      let Wrapper = context.config.wrappers.page;
+      const Wrapper = context.config.wrappers.page;
       //console.log(`rendering page ${this.props.page}`);
-      let metamodel = context.metamodel;
-      let modelId = metamodel.propGet('schema').modelId || metamodel.name;
-        let hasErrors = !context.isValid();
-      let messages = context.viewmodel.getStatusMessages();
-      let errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
+      const hasErrors = !context.isValid();
+      const messages = context.viewmodel.getStatusMessages();
+      const errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
   
-      let wrapperProps = {
+      const wrapperProps = {
         id: context.metamodel,
         pageAlias: context.currentPageAlias,
         busy: context.isBusy(),
@@ -86,7 +84,7 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
         if (0 != React.Children.count(this.props.children)) {
           console.log(`warning: MetaPage ignores children if contents (${this.props.contents}) is specified`);
         }
-        let Contents = this.props.contents;
+        const Contents = this.props.contents;
         return <Wrapper {...wrapperProps}><Contents /></Wrapper>;
       }
     }

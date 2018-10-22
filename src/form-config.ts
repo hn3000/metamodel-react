@@ -28,10 +28,19 @@ export type matchQFun = (type: IModelType<any>, fieldName:string, flavor:string,
 export class MatchQ {
   /** 
    * Matches by fieldName, match quality is 100 times that of other criteria by default.
-   * The quality argument can be used to change the strenght of the match. 
+   * The quality argument can be used to change the strength of the match. 
    */
   static fieldName(name:string, quality: number = 100):matchQFun {
     return (type:IModelType<any>, fieldName: string) => (fieldName === name ? quality:0)
+  }
+  /** 
+   * Matches fieldName with a regular expression, match quality is 100 times that of other 
+   * criteria by default.
+   * The quality argument can be used to change the strength of the match. 
+   */
+  static fieldNameLike(pattern:RegExp|string, quality: number = 100):matchQFun {
+    let re = ('string' === typeof pattern) ? new RegExp(pattern) : pattern; 
+    return (type:IModelType<any>, fieldName: string) => (re.test(fieldName) ? quality:0)
   }
   /** 
    * Matches by similarity to the given object literal, all props must match. 

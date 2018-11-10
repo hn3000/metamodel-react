@@ -130,6 +130,7 @@ export interface IComponentMatcher {
     matchQuality(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): number;
     component: InputComponent;
     condition?: (formContext: IFormContext) => boolean;
+    wrapper?: React.ComponentType<IFieldWrapperProps>;
 }
 export interface IComponentFinder {
     findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent;

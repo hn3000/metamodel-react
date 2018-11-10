@@ -90,7 +90,10 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
 
     const hasChildren = 0 < React.Children.count(this.props.children);
     let flavor = this.props.flavor || this.props.flavour;
+
     let Input:InputComponent = null;
+    let Wrapper = context.config.wrappers.field;
+
     if (!hasChildren) {
       let matcher = context.config.findBestMatcher(fieldType, fieldName, flavor);
       if (null != matcher && matcher.condition) {
@@ -98,11 +101,18 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
           matcher = null;
         }
       }
-      if (null == matcher) {
+      if (null == matcher || null == matcher.component) {
         // no children, no renderer: omit completely
         return null;
       }
       Input = matcher.component;
+      if (null != matcher.wrapper) {
+        Wrapper = matcher.wrapper;
+      }
+    }
+
+    if (this.props.hasOwnProperty('wrapper')) {
+      Wrapper = this.props.wrapper;
     }
 
     let formid = this.formContext.metamodel.name;
@@ -140,12 +150,6 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
       onChange: isEditable ? this.changeHandler : this.nochangeHandler,
       context: this.formContext
     };
-
-    let Wrapper = context.config.wrappers.field;
-
-    if (this.props.hasOwnProperty('wrapper')) {
-      Wrapper = this.props.wrapper;
-    }
 
     let children:any;
     if (!hasChildren && null != Input) {

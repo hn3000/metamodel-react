@@ -3,13 +3,9 @@ import * as React from 'react';
 import { Requireable } from 'prop-types';
 
 import {
-  Primitive,
   IModelType,
   IModelTypeComposite,
-  IModelTypeItem,
   IModelView,
-  MessageSeverity,
-  IMessageProps,
   IStatusMessage,
   IPropertyStatusMessage,
   IClientProps,
@@ -106,16 +102,23 @@ export interface IInputComponentState extends IInputProps {
     flavour: string;
 }
 
-export type InputComponent = React.ComponentType<IInputComponentProps>;
+export type IInputComponent = React.ComponentType<IInputComponentProps>;
+export type InputComponent = IInputComponent;
+
+export type IInputFormWrapper = React.ComponentType<IFormWrapperProps>;
+export type IInputPageWrapper = React.ComponentType<IPageWrapperProps>;
+export type IInputFieldWrapper = React.ComponentType<IFieldWrapperProps>;
+
+
 
 export interface IComponentLookup {
     [key: string]: React.ReactType;
 }
 
 export interface IWrappers extends IComponentLookup {
-    form:  React.ComponentType<IFormWrapperProps>;  // </IFormWrapperProps>
-    page:  React.ComponentType<IPageWrapperProps>;  // </IPageWrapperProps>
-    field: React.ComponentType<IFieldWrapperProps>; // </IFieldWrapperProps>
+    form:  IInputFormWrapper;
+    page:  IInputPageWrapper;
+    field: IInputFieldWrapper;
     section: ISectionWrapper;
 }
 

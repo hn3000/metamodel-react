@@ -129,21 +129,25 @@ export interface ISectionLookup {
 export interface IComponentMatchFun {
     (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]): number;
 }
-export interface IComponentMatcher {
+export interface IComponentMatcher<C, W> {
     matchQuality(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): number;
-    component: InputComponent;
+    component: C;
+    wrapper?: W;
+}
+export interface IInputComponentMatcher extends IComponentMatcher<IInputComponent, IInputFieldWrapper> {
     condition?: (formContext: IFormContext) => boolean;
-    wrapper?: React.ComponentType<IFieldWrapperProps>;
 }
 export interface IComponentFinder {
-    findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent;
-    findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher;
-    add(matcher: IComponentMatcher): any;
-    remove(matcher: IComponentMatcher): any;
+    findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IInputComponentMatcher;
+    findSection(name:string): ISectionWrapper;
+}
+
+export interface IComponentFinderBuilder {
+    add(matcher: IInputComponentMatcher): any;
+    remove(matcher: IInputComponentMatcher): any;
     addSection(name: string, component: ISectionWrapper): void;
     removeSection(name: string, component: ISectionWrapper): void;
     setSectionDefault(component: ISectionWrapper): void;
-    findSection(name:string): ISectionWrapper;
 }
 
 export interface IModelUpdater {

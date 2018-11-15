@@ -11,12 +11,12 @@ import {
   IComponentMatcher,
   IFormConfig,
   IFormContext,
-  InputComponent,
   IModelUpdater,
   ISectionProps,
   ISectionWrapperProps,
   ISectionLookup,
-  ISectionWrapper
+  ISectionWrapper,
+  IInputComponentMatcher
 } from './api';
 
 import * as fields from './default-field-types';
@@ -181,7 +181,7 @@ export class MatchQ {
 
 export class MetaFormConfig implements IFormConfig {
 
-  constructor(wrappers?:IWrappers, components?:IComponentMatcher[], sections?: ISectionLookup) {
+  constructor(wrappers?:IWrappers, components?:IInputComponentMatcher[], sections?: ISectionLookup) {
     this._wrappers = wrappers || MetaFormConfig.defaultWrappers();
     this._components = components || MetaFormConfig.defaultComponents();
     this._sections = sections || {};
@@ -195,26 +195,17 @@ export class MetaFormConfig implements IFormConfig {
     return this._wrappers;
   }
 
-  public get matchers(): IComponentMatcher[] {
+  public get matchers(): IInputComponentMatcher[] {
     return this._components;
   }
 
-  private _deprecatedFindBestUsed = false;
-  findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent {
-    let matcher = this._findBestMatcher(type, fieldName, flavor, matchargs);
-    if (matcher && matcher.condition) {
-      console.warn("ignoring condition on matcher", matcher)
-    }
-    return matcher && matcher.component;
-  }
-
-  findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher {
+  findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IInputComponentMatcher {
     return this._findBestMatcher(type, fieldName, flavor, matchargs);
   }
 
-  _findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher {
+  _findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IInputComponentMatcher {
     var bestQ = 0;
-    var match:IComponentMatcher = null;
+    var match:IInputComponentMatcher = null;
 
     let matchers = this._components;
     for (var i = 0, n = matchers.length; i<n; ++i) {
@@ -228,12 +219,12 @@ export class MetaFormConfig implements IFormConfig {
     return match;
   }
 
-  add(cm:IComponentMatcher) {
+  add(cm:IInputComponentMatcher) {
     if (-1 == this._components.indexOf(cm)) {
       this._components.push(cm);
     }
   }
-  remove(cm:IComponentMatcher) {
+  remove(cm:IInputComponentMatcher) {
     this._components = this._components.filter((x) => x != cm);
   }
 
@@ -275,7 +266,7 @@ export class MetaFormConfig implements IFormConfig {
     [name: string]: ISectionWrapper
   };
   private _sectionDefault: ISectionWrapper;
-  private _components: IComponentMatcher[];
+  private _components: IInputComponentMatcher[];
 
   public static defaultWrappers():IWrappers {
     return {

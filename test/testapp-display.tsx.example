@@ -1,0 +1,26 @@
+
+
+// fictional client code Metamodel-based display components
+
+const fieldsExample = 'username,password,fooFlag,dataLala'.split(',');
+
+ITableHeadWrapper
+ITableRowWrapper
+ITableCellWrapper
+
+
+function RenderTable<T>(props: {data: T[]; type: IModelTypeComposite<T>, fields?: string[]}) {
+    let theFields = fields || Object.keys(data[0]);
+    let slicedType = type.slice(fields);
+    config: MetaDisplayConfig = ...;
+    return (
+        <MetaTable config={config} data={data} type={type} fields={fields} />
+    );
+}
+
+function RenderDetails<T>(props: {data: T[]; type: IModelTypeComposite<T>, fields?: string[]}) {
+    return (
+        <MetaDisplay data={data} type={type} fields={fields}>
+        </MetaDisplay>
+    );
+}

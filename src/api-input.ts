@@ -1,6 +1,5 @@
 
 import * as React from 'react';
-import { Requireable } from 'prop-types';
 
 import {
   IModelType,
@@ -11,6 +10,10 @@ import {
   IClientProps,
   IModelViewPage
 } from '@hn3000/metamodel';
+
+import {
+  IComponentLookup
+} from './api-common';
 
 export interface IMetaFormBaseProps {
     context?: IFormContext;
@@ -26,7 +29,7 @@ export interface IFormProps {
 export interface IPageProps extends IMetaFormBaseProps {
     page?: number; // needs either page or alias
     alias?: string;
-    contents?: React.ReactType<any>; 
+    contents?: React.ReactType<any>;
 }
 
 export interface ISectionProps extends IMetaFormBaseProps {
@@ -91,9 +94,6 @@ export interface IInputComponentProps extends IFormComponentProps {
     onChange?: (update: React.FormEvent<HTMLElement>|any) => void;
 }
 
-export interface IInputComponentContext {
-
-}
 export interface IFieldWrapperProps extends IInputComponentProps {
     field?:string;
 }
@@ -110,10 +110,6 @@ export type IInputPageWrapper = React.ComponentType<IPageWrapperProps>;
 export type IInputFieldWrapper = React.ComponentType<IFieldWrapperProps>;
 
 
-
-export interface IComponentLookup {
-    [key: string]: React.ReactType;
-}
 
 export interface IWrappers extends IComponentLookup {
     form:  IInputFormWrapper;

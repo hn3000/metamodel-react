@@ -11,7 +11,7 @@ import {
   InputComponent,
   IFormContext,
 //  IWrapperComponentProps
-} from './api';
+} from './api-input';
 import { MetaContextFollower, MetaContextAware } from './base-components';
 
 import * as React from 'react';

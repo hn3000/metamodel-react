@@ -1,22 +1,20 @@
 
 import {
-  IFormProps, 
+  IFormProps,
   IFormContext
-} from './api';
+} from './api-input';
 
-import { 
-  MetaContextAware, 
-  MetaContextFollower, 
-  MetaContextAwarePure 
+import {
+  MetaContextAware,
+  MetaContextFollower
 } from './base-components';
 
 import * as React from 'react';
-import { Requireable } from 'prop-types';
 import { MessageSeverity, IPropertyStatusMessage } from '@hn3000/metamodel';
 
 export class MetaForm extends MetaContextFollower<IFormProps, any> {
-	static childContextTypes = MetaContextAware.contextTypes; 
-	
+	static childContextTypes = MetaContextAware.contextTypes;
+
   getChildContext() {
 	  return {
       formContext: this.props.context

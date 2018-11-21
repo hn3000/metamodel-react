@@ -15,7 +15,7 @@ import {
   IPageWrapperProps,
   IFieldWrapperProps,
   ISectionWrapperProps
-} from './api';
+} from './api-input';
 
 
 import { propsDifferent } from './props-different';

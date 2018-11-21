@@ -1,12 +1,10 @@
 
 import * as React from 'react';
-import { Requireable } from 'prop-types';
 
-import { IPageProps, IFormContext } from './api';
+import { IPageProps, IFormContext } from './api-input';
 import { MetaContextFollower } from './base-components';
 import { MetaForm } from './meta-form';
 
-import { propsDifferent } from './props-different';
 import { IPropertyStatusMessage, MessageSeverity } from '@hn3000/metamodel';
 
 export class MetaPage extends MetaContextFollower<IPageProps, any> {
@@ -67,7 +65,7 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
       const hasErrors = !context.isValid();
       const messages = context.viewmodel.getStatusMessages();
       const errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
-  
+
       const wrapperProps = {
         id: context.metamodel,
         pageAlias: context.currentPageAlias,

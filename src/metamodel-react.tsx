@@ -34,7 +34,9 @@ export {
   InputComponent,
   IModelUpdater,
   IConclusionMessage
-} from './api';
+} from './api-input';
+
+export * from './api-display';
 
 export { propsDifferent } from './props-different';
 export { parseSearchParams } from './search-params';

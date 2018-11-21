@@ -1,8 +1,7 @@
 
 import * as React from 'react';
-import { Requireable } from 'prop-types';
 
-import { ISectionProps } from './api';
+import { ISectionProps } from './api-input';
 import { MetaContextAware } from './base-components';
 import { MetaForm } from './meta-form';
 
@@ -24,7 +23,7 @@ export class MetaSection extends MetaContextAware<ISectionProps, any> {
     let { section, sectionAlias, contents, contentsDefault } = this.props;
 
     let config = context.config;
-    
+
     let Wrapper = config.wrappers.section;
 
     if (null == sectionAlias) {
@@ -40,13 +39,13 @@ export class MetaSection extends MetaContextAware<ISectionProps, any> {
         console.warn(`MetaSection got both section and sectionAlias but they don't match: ${section.alias} != ${sectionAlias}`);
       }
     }
-    
+
     if (null == contents) {
       contents = config.findSection(sectionAlias);
       if (null == contents) {
         contents = contentsDefault;
       }
-    } 
+    }
 
     //console.log(`rendering page ${this.props.page}`);
     let messages = context.viewmodel.getStatusMessages();
@@ -92,7 +91,7 @@ function isSectionMessageFilter(page: IModelViewPage) {
                 return -1 != fields.indexOf(prop);
             }
             return false;
-        } 
+        }
     }
     return () => false;
 }

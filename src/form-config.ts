@@ -8,16 +8,13 @@ import {
 
 import {
   IWrappers,
-  IComponentMatcher,
   IFormConfig,
   IFormContext,
   IModelUpdater,
-  ISectionProps,
-  ISectionWrapperProps,
   ISectionLookup,
   ISectionWrapper,
   IInputComponentMatcher
-} from './api';
+} from './api-input';
 
 import * as fields from './default-field-types';
 
@@ -26,26 +23,26 @@ import * as React from 'react';
 export type matchQFun = (type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]) => number;
 
 export class MatchQ {
-  /** 
+  /**
    * Matches by fieldName, match quality is 100 times that of other criteria by default.
-   * The quality argument can be used to change the strength of the match. 
+   * The quality argument can be used to change the strength of the match.
    */
   static fieldName(name:string, quality: number = 100):matchQFun {
     return (type:IModelType<any>, fieldName: string) => (fieldName === name ? quality:0)
   }
-  /** 
-   * Matches fieldName with a regular expression, match quality is 100 times that of other 
+  /**
+   * Matches fieldName with a regular expression, match quality is 100 times that of other
    * criteria by default.
-   * The quality argument can be used to change the strength of the match. 
+   * The quality argument can be used to change the strength of the match.
    */
   static fieldNameLike(pattern:RegExp|string, quality: number = 100):matchQFun {
-    let re = ('string' === typeof pattern) ? new RegExp(pattern) : pattern; 
+    let re = ('string' === typeof pattern) ? new RegExp(pattern) : pattern;
     return (type:IModelType<any>, fieldName: string) => (re.test(fieldName) ? quality:0)
   }
-  /** 
-   * Matches by similarity to the given object literal, all props must match. 
+  /**
+   * Matches by similarity to the given object literal, all props must match.
    * Every matching item (i.e. key in the template) counts as 1 by default, the
-   * quality argument changes the quality per match. 
+   * quality argument changes the quality per match.
    */
   static likeObject(template:any, quality: number = 1): matchQFun { //</any>
     var keys = Object.keys(template);
@@ -67,18 +64,18 @@ export class MatchQ {
       return result;
     });
   }
-  /** 
-   * Matches by IModelType.kind, the match counts as 1 point by default. 
-   * The quality argument can be used to change the strenght of the match. 
+  /**
+   * Matches by IModelType.kind, the match counts as 1 point by default.
+   * The quality argument can be used to change the strenght of the match.
    */
   static kind(kind:string, quality: number = 1):matchQFun {
     return (field:IModelType<any>) => (field.kind === kind? quality : 0)
   }
-  /** 
-   * Matches by flavor. Flavor can be given as a prop on the MetaInput or in the schema 
+  /**
+   * Matches by flavor. Flavor can be given as a prop on the MetaInput or in the schema
    * (where brit. spelling flavour is also accepted).
    * By default, a match is worth one point, the quality argument can be used to
-   * change the value of a match. 
+   * change the value of a match.
    */
   static flavor(flavor:string, quality: number = 1):matchQFun {
     let flv = flavor;
@@ -92,10 +89,10 @@ export class MatchQ {
       return 0;
     };
   }
-  /** 
+  /**
    * Matches by format, shorthand for .likeObject({fornat:'<format>'}).
    * By default, flavor matches are worth one point; the quality argument
-   * can be used to change this. 
+   * can be used to change this.
    */
   static format(format:string, quality: number = 1):matchQFun {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
@@ -106,11 +103,11 @@ export class MatchQ {
       }
       return 0;
     };
-  }  
-  /** 
+  }
+  /**
    * Matches an array type that has elements matching the given matcher.
    * By default, a match is worth 2 times that of the base matcher (to
-   * reflect the fact it's an array), the quality argument can be used to 
+   * reflect the fact it's an array), the quality argument can be used to
    * change the factor.
    */
   static element(matcher: matchQFun, quality: number = 2):matchQFun {
@@ -122,14 +119,14 @@ export class MatchQ {
       return 0;
     };
   }
-  /** 
+  /**
    * Matches if the number of possible values for the element is between from (inclusive)
    * and to (exclusive). Only matches for types that actually have an enumerated list
    * of possible values, so will not match unconstrained numbers or strings. If no upper
    * limit (`to`) is given or it is spcecified as 0, only the minimum is checked.
-   * 
+   *
    * By default, a match is worth one point, the quality argument can be used to
-   * change the value of a match. 
+   * change the value of a match.
    */
   static possibleValueCountRange(from:number, to?:number, quality: number = 1) {
     return (field:IModelType<any>) => {
@@ -141,10 +138,10 @@ export class MatchQ {
       return 0;
     }
   }
-  /** 
-   * Matches if all given matchers match by adding the returned quality values. 
+  /**
+   * Matches if all given matchers match by adding the returned quality values.
    * Quality is zero if any of the matchers returns zero, the sum of all quality
-   * values if none of the matchers returned zero. 
+   * values if none of the matchers returned zero.
    */
   static and(...matcher:matchQFun[]):matchQFun {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) =>
@@ -153,8 +150,8 @@ export class MatchQ {
         return qq && q + qq;
       }, 0);
   }
-  /** 
-   * Matches if any of the given matchers match by adding the returned quality values. 
+  /**
+   * Matches if any of the given matchers match by adding the returned quality values.
    * Quality is the sum of all quality values and can only be zero if all of the matchers
    * returned zero.
    */
@@ -166,9 +163,9 @@ export class MatchQ {
       }, 0);
   }
   /**
-   * Multiply quality of a matcher by a factor. Can be used to manipulate priority of matchers 
+   * Multiply quality of a matcher by a factor. Can be used to manipulate priority of matchers
    * in case the default qualities don't work well.
-   * 
+   *
    * @param matcher the base matcher
    * @param factor that a match is multiplied by
    */

@@ -13,7 +13,7 @@ import {
   IFormContext,
   IFormConfig,
   IModelUpdater
-} from './api';
+} from './api-input';
 
 import {
   ListenerManager,
@@ -102,7 +102,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   isPageValid(aliasOrIndex?: string|number) {
     let adjustedIndex = aliasOrIndex;
     if (!this._config.usePageIndex) {
-      let parsedIndex = Number.parseInt(''+aliasOrIndex);  
+      let parsedIndex = Number.parseInt(''+aliasOrIndex);
       if (parsedIndex == aliasOrIndex) {
         adjustedIndex = parsedIndex - 1;
       }

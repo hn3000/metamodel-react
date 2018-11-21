@@ -2,12 +2,14 @@
 
 // fictional client code Metamodel-based display components
 
-const fieldsExample = 'username,password,fooFlag,dataLala'.split(',');
+const fieldsExample = 'username,password,fooFlag,data,lala'.split(',');
 
 ITableHeadWrapper
 ITableRowWrapper
 ITableCellWrapper
 
+IDetailViewWrapper
+IDetailFieldWrapper
 
 function RenderTable<T>(props: {data: T[]; type: IModelTypeComposite<T>, fields?: string[]}) {
     let theFields = fields || Object.keys(data[0]);

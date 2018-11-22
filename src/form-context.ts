@@ -102,7 +102,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   isPageValid(aliasOrIndex?: string|number) {
     let adjustedIndex = aliasOrIndex;
     if (!this._config.usePageIndex) {
-      let parsedIndex = Number.parseInt(''+aliasOrIndex);  
+      let parsedIndex = Number.parseInt(''+aliasOrIndex);
       if (parsedIndex == aliasOrIndex) {
         adjustedIndex = parsedIndex - 1;
       }
@@ -163,16 +163,14 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   updateModel(field:string, value:any) {
     this.updateModelTransactional(model => model.withChangedField(field,value));
   }
-  updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean) {
+  updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean):Promise<IModelView<any>> {
     if (this.isBusy()) {
       //let error = new Error('causality violation: updateModelTransactional not allowed while already busy');
       //console.warn('updateModelTransactional called while busy, deferring action');
-      Promise.all(this._promises).then(() => {
+      return Promise.all(this._promises).then(() => {
         //console.log('updateModelTransactional - next attempt, busy: ', this.isBusy());
-        this.updateModelTransactional(updater, skipValidation);
+        return this.updateModelTransactional(updater, skipValidation);
       });
-
-      return;
     }
 
     let newModel = updater(this._viewmodel, this);
@@ -184,7 +182,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     if (config.onModelUpdate) {
       nextUpdate = nextUpdate.then(() => config.onModelUpdate(this));
     }
-    nextUpdate.then(
+    const result = nextUpdate.then(
       (updater2) => {
         let updatedModel = updater2(newModel, this);
         this._updateViewModel(updatedModel);
@@ -202,11 +200,14 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
             window.clearTimeout(this._debounceValidationTimeout);
           }
           this._debounceValidationTimeout = window.setTimeout(validator, config.validateDebounceMS);
+
+          return updatedModel;
         }
       }
     );
     this._promiseInFlight(nextUpdate);
 
+    return result;
   }
   private _debounceValidationTimeout: number;
 

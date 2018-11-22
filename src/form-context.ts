@@ -78,8 +78,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     }
   }
 
-  pageNext:(event:React.SyntheticEvent<HTMLElement>)=>void;
-  pageBack:(event:React.SyntheticEvent<HTMLElement>)=>void;
+  pageNext:(event:React.SyntheticEvent<HTMLElement>)=>Promise<IModelView<any>>;
+  pageBack:(event:React.SyntheticEvent<HTMLElement>)=>Promise<IModelView<any>>;
 
   hasNextPage():boolean {
     let vm = this._viewmodel;
@@ -255,7 +255,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     //console.log('/notify all');
   }
 
-  updatePage(step:number) {
+  updatePage(step:number): Promise<IModelView<any>> {
     let originalModel = this._viewmodel;
 
     let nextModel:Promise<IModelView<any>>;
@@ -322,8 +322,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         }
         return validatedModel;
       })
-      .then((x) => this._updateViewModel(x))
-      .then(() => {
+      .then((x) => (this._updateViewModel(x),x))
+      .then((x) => {
         let currentIndex = this._viewmodel.currentPageIndex;
         if (originalModel.currentPageIndex == currentIndex) {
           if (this._config.onFailedPageTransition) {
@@ -334,9 +334,12 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
             this._config.onAfterPageTransition(this);
           }
         }
+        return x;
       });
 
     this._promiseInFlight(promise);
+
+    return promise;
   }
 
   public isBusy() {

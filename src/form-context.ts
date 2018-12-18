@@ -160,9 +160,14 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     return this._listeners.subscribe(listener);
   }
 
-  updateModel(field:string, value:any) {
-    this.updateModelTransactional(model => model.withChangedField(field,value));
+  updateModel(fieldOrValues:string|{[k:string]:any}, value?:any) {
+    if (typeof fieldOrValues === 'string') {
+      this.updateModelTransactional(model => model.withChangedField(fieldOrValues,value));
+    } else {
+      this.updateModelTransactional(model => model.withAddedData(fieldOrValues));
+    }
   }
+
   updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean):Promise<IModelView<any>> {
     if (this.isBusy()) {
       //let error = new Error('causality violation: updateModelTransactional not allowed while already busy');

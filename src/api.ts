@@ -200,6 +200,7 @@ export interface IFormContext extends IClientProps {
   subscribe(listener:()=>any):()=>void;
 
   //updated in place, viewmodel will change, though
+  updateModel(values:{ [key: string]: any; }):void;
   updateModel(field:string, value:any):void;
   updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean):Promise<IModelView<any>>;
 

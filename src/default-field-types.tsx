@@ -83,17 +83,34 @@ export class FormWrapperDefault extends React.Component<IFormWrapperProps,any> {
   }
 }
 
-export class MetaFormInputString extends React.Component<IInputComponentProps, IInputComponentState> {
+export class MetaFormInput extends React.Component<IInputComponentProps, IInputComponentState> {
+  constructor(props:IInputComponentProps, context: any, type?: string) {
+    super(props, context);
+    this._type = type;
+  }
   render() {
-    let { field, onChange, value, placeholder } = this.props;
-    return <input type="text" placeholder={placeholder || field} onChange={onChange} value={value}></input>;
+    const { field, onChange, value, placeholder } = this.props;
+    return <input type={this._type} placeholder={placeholder || field} onChange={onChange} value={value}></input>;
+  }
+
+  private _type: string = 'text';
+}
+
+export class MetaFormInputString extends MetaFormInput {
+  constructor(props:IInputComponentProps, context: any) {
+    super(props, context, 'text');
   }
 }
 
-export class MetaFormInputNumber extends React.Component<IInputComponentProps, IInputComponentState> {
-  render() {
-    let props = this.props;
-    return <input type="text" placeholder={this.props.field} onChange={props.onChange} value={props.value}></input>;
+export class MetaFormInputNumber extends MetaFormInput {
+  constructor(props:IInputComponentProps, context: any) {
+    super(props, context, 'number');
+  }
+}
+
+export class MetaFormInputPassword extends MetaFormInput {
+  constructor(props:IInputComponentProps, context: any) {
+    super(props, context, 'password');
   }
 }
 
@@ -118,15 +135,15 @@ export class MetaFormInputBoolCheckbox extends React.Component<IInputComponentPr
 
 export class MetaFormInputEnumSelect extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
-    let props = this.props;
-    let vm = props.context.viewmodel;
+    let { value, field, context, onChange } = this.props;
+    let vm = context.viewmodel;
 
-    let values:any[] = vm.getPossibleFieldValues(props.field);
+    let values:any[] = vm.getPossibleFieldValues(field);
     if (null == values) {
       values = [];
     }
-    let hasValue = null != props.value;
-    return (<select onChange={props.onChange} value={props.value}>
+    let hasValue = null != value && '' !== value;
+    return (<select onChange={onChange} value={value}>
       <option key={null} value={null} disabled={hasValue} hidden={hasValue}>choose one</option>
       {values.map((x:string)=> (<option key={x} value={x}>{x}</option>))}
     </select>);
@@ -238,12 +255,14 @@ export class MetaFormInputNumberSliderCombo extends React.Component<IInputNumber
     super(props, context);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.deriveState = this.deriveState.bind(this);
 
-    this.state = this.deriveState(null, props);
+    // make react happy (b/c of getDerivedStateFromProps)
+    this.state = {} as any;
   }
 
-  deriveState(oldState: IInputNumberSliderState, props:IInputNumberSliderProps) {
+
+
+  static getDerivedStateFromProps(props:IInputNumberSliderProps, oldState: IInputNumberSliderState) {
     let itemType = props.fieldType.asItemType();
     let minC = itemType.lowerBound() as ModelTypeConstraintMore;
     let maxC = itemType.upperBound() as ModelTypeConstraintLess;
@@ -273,12 +292,6 @@ export class MetaFormInputNumberSliderCombo extends React.Component<IInputNumber
     return { min, max, step };
   }
 
-  componentWillReceiveProps(props: IInputNumberSliderProps) {
-    if (propsDifferent(props, this.props)) {
-      this.setState(this.deriveState);
-    }
-  }
-
   handleMouseMove(ev: React.MouseEvent<HTMLInputElement>) {
     if (ev.buttons !== 0) {
       this.handleChange(ev);
@@ -286,19 +299,7 @@ export class MetaFormInputNumberSliderCombo extends React.Component<IInputNumber
   }
 
   handleChange(ev: React.FormEvent<HTMLInputElement>) {
-    let { min, max, step } = this.state;
     let value: string|number = Number(ev.currentTarget.value);
-
-    if (isNaN(value)) {
-      value = ev.currentTarget.value;
-    } else if (null != step) {
-      value = Math.round(Math.round(value/step) * step);
-      if (null != min && value < min) {
-        value = Math.round(Math.ceil(min/step) * step);
-      } else if (null != max && value > max) {
-        value = Math.round(Math.floor(max/step) * step);
-      }
-    }
 
     this.props.onChange(value);
   }

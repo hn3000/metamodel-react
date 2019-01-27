@@ -78,8 +78,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     }
   }
 
-  pageNext:(event:React.SyntheticEvent<HTMLElement>)=>void;
-  pageBack:(event:React.SyntheticEvent<HTMLElement>)=>void;
+  pageNext:(event:React.SyntheticEvent<HTMLElement>)=>Promise<IModelView<any>>;
+  pageBack:(event:React.SyntheticEvent<HTMLElement>)=>Promise<IModelView<any>>;
 
   hasNextPage():boolean {
     let vm = this._viewmodel;
@@ -160,19 +160,22 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     return this._listeners.subscribe(listener);
   }
 
-  updateModel(field:string, value:any) {
-    this.updateModelTransactional(model => model.withChangedField(field,value));
+  updateModel(fieldOrValues:string|{[k:string]:any}, value?:any) {
+    if (typeof fieldOrValues === 'string') {
+      this.updateModelTransactional(model => model.withChangedField(fieldOrValues,value));
+    } else {
+      this.updateModelTransactional(model => model.withAddedData(fieldOrValues));
+    }
   }
-  updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean) {
+
+  updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean):Promise<IModelView<any>> {
     if (this.isBusy()) {
       //let error = new Error('causality violation: updateModelTransactional not allowed while already busy');
       //console.warn('updateModelTransactional called while busy, deferring action');
-      Promise.all(this._promises).then(() => {
+      return Promise.all(this._promises).then(() => {
         //console.log('updateModelTransactional - next attempt, busy: ', this.isBusy());
-        this.updateModelTransactional(updater, skipValidation);
+        return this.updateModelTransactional(updater, skipValidation);
       });
-
-      return;
     }
 
     let newModel = updater(this._viewmodel, this);
@@ -184,7 +187,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     if (config.onModelUpdate) {
       nextUpdate = nextUpdate.then(() => config.onModelUpdate(this));
     }
-    nextUpdate.then(
+    const result = nextUpdate.then(
       (updater2) => {
         let updatedModel = updater2(newModel, this);
         this._updateViewModel(updatedModel);
@@ -202,11 +205,14 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
             window.clearTimeout(this._debounceValidationTimeout);
           }
           this._debounceValidationTimeout = window.setTimeout(validator, config.validateDebounceMS);
+
+          return updatedModel;
         }
       }
     );
     this._promiseInFlight(nextUpdate);
 
+    return result;
   }
   private _debounceValidationTimeout: number;
 
@@ -254,7 +260,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     //console.log('/notify all');
   }
 
-  updatePage(step:number) {
+  updatePage(step:number): Promise<IModelView<any>> {
     let originalModel = this._viewmodel;
 
     let nextModel:Promise<IModelView<any>>;
@@ -321,8 +327,8 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
         }
         return validatedModel;
       })
-      .then((x) => this._updateViewModel(x))
-      .then(() => {
+      .then((x) => (this._updateViewModel(x),x))
+      .then((x) => {
         let currentIndex = this._viewmodel.currentPageIndex;
         if (originalModel.currentPageIndex == currentIndex) {
           if (this._config.onFailedPageTransition) {
@@ -333,9 +339,12 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
             this._config.onAfterPageTransition(this);
           }
         }
+        return x;
       });
 
     this._promiseInFlight(promise);
+
+    return promise;
   }
 
   public isBusy() {

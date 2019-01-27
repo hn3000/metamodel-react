@@ -81,6 +81,15 @@ export interface ISectionWrapperProps extends IWrapperComponentProps {
 export type ISectionWrapper = React.ComponentType<ISectionWrapperProps>
                             | React.ComponentType<any>;
 
+export interface ILabelRendererProps {
+    children?: React.ReactNode;
+
+    field?: string;
+    [key: string]: string | any;
+}
+
+export type ILabelRenderer = React.ComponentType<ILabelRendererProps>;
+
 export interface IInputComponentProps extends IFormComponentProps {
     id?: string;
     field?: string;
@@ -91,6 +100,7 @@ export interface IInputComponentProps extends IFormComponentProps {
     value?: any;
     defaultValue?: any;
     placeholder?:string;
+    renderLabel?: ILabelRenderer;
     onChange?: (update: React.FormEvent<HTMLElement>|any) => void;
 }
 
@@ -185,13 +195,14 @@ export interface IFormContext extends IClientProps {
   /*
    * similar to redux: returns the unsubscribe function
    * listeners always called asynchronously: validation runs before
-   * listeners are notfied
+   * listeners are notified
    */
   subscribe(listener:()=>any):()=>void;
 
   //updated in place, viewmodel will change, though
+  updateModel(values:{ [key: string]: any; }):void;
   updateModel(field:string, value:any):void;
-  updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean):void;
+  updateModelTransactional(updater:IModelUpdater, skipValidation?:boolean):Promise<IModelView<any>>;
 
   updatePage(step:number):void;
 

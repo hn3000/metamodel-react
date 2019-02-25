@@ -38,10 +38,10 @@ export class ListenerManager<T> {
 }
 
 
-export function clickHandler(fun:(...args:any[])=>void, ...args:any[]):(event:React.SyntheticEvent<HTMLElement>)=>void {
+export function clickHandler<T=void>(fun:(...args:any[])=>T, ...args:any[]):(event?:React.SyntheticEvent<HTMLElement>)=>T {
     return (event:React.SyntheticEvent<HTMLElement>) => {
-        event.preventDefault();
-        fun.apply(args[0], args.slice(1));
+        if (null != event) event.preventDefault();
+        return fun.apply(args[0], args.slice(1));
     }
 }
 

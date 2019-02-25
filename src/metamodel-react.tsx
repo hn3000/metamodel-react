@@ -58,3 +58,5 @@ export {
 export {
   chainUpdaters
 } from './chain-updaters';
+
+export * from './render-utilities';

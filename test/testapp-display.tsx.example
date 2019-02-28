@@ -22,6 +22,202 @@ function RenderTable<T>(props: {data: T[]; type: IModelTypeComposite<T>, fields?
     );
 }
 
+<tr><th colspan="2"></tr>
+<tr><th></th><th></th></tr>
+
+
+
+<table>                             // tableWrapper
+    <caption></caption>             //
+    <colgroup>                      //
+        <col class="col--a" />      //
+        <col class="col--b" />      //
+        <col class="col--c" />      //
+    </colgroup>                     //
+
+    <thead><tr> // tableHeadWrapper
+        <th>{cellHeaderA}</th><th>{cellHeaderB}</th><th>{cellHeaderC}</th>
+    </tr></thead> // /tableHeadWrapper
+
+    <tbody>     // tableBodyWrapper
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+    </tbody>    // /tableBodyWrapper
+
+    <
+</table>                            // /tableWrapper
+
+
+<table>
+
+export interface ITableWrapperProps {
+    fields: ITableField[];
+
+    children: ...
+}
+
+function MyTableWrapper (props: ITableWrapperProps) {
+    return (
+        <table>
+            {props.fields.map(x => (<col className=`col--${x['x-kebabKey']}`>))}
+            <thead><tr>
+            {props.fields.map(x => (<th>{x.label}<TableColumnOptions field={x} /></th>))}
+            </tr></thead>
+            <tbody>
+            {props.children}
+            </tbody>
+        </table>
+    );
+}
+------------------------
+
+function ATableWrapper (props: ITableWrapperProps) {
+    return (
+        <table>
+            {props.fields.map(x => (<col className=`col--${x['x-kebabKey']}`>))}
+            {props.children}
+        </table>
+    );
+}
+function ATableHeadWrapper (props: ITableWrapperProps) {
+    return (
+        <thead><tr>
+            {props.children}
+        </tr></thead>
+    );
+}
+function ATableHeadCellWrapper (props: ITableWrapperProps) {
+    return (<th>{props.children}</th>);
+}
+function ATableBodyWrapper (props: ITableWrapperProps) {
+    return (<tbody className="">{props.children}</tbody>);
+}
+function ATableBodyRowWrapper (props: ITableWrapperProps) {
+    return (<tr>{props.children}</tr>);
+}
+function ATableBodyCellWrapper (props: ITableWrapperProps) {
+    return (<td>{props.children}</td>);
+}
+
+function ATableColumnOptions() {
+
+}
+
+...
+
+const matchers: IDisplayFieldMatcher[] = [
+    { matchQ: FieldDisplayMatchQ.fieldNameLike('.*Date$'), component: DisplayDate },
+    { matchQ: FieldDisplayMatchQ.and(
+                FieldDisplayMatchQ.fieldName(''),
+                FieldDisplayMatchQ.format('sonderlocke'),
+                FieldDisplayMatchQ.flavor('specialK'),
+            ),
+      component: DisplaySonderlocke
+    }
+];
+
+
+export class MyDisplayConfig extends MetaDisplayConfig {
+    constructor() {
+        super({
+            tableWrapper: ATableWrapper,
+            tableHeadWrapper: ATableHeadWrapper,
+            tableHeadCellWrapper: ATableHeadCellWrapper,
+            tableBodyWrapper: ATableBodyWrapper,
+            tableBodyRowWrapper: ATableBodyRowWrapper,
+            tableBodyCellWrapper: ATableBodyCellWrapper,
+            tableColOptions: ATableColumnOptions,
+        }, matchers);
+
+        super.addMatcher(FieldDisplayMatchQ.kind('number'), DisplayNumber);
+        super.addMatcher(FieldDisplayMatchQ.kebabKey('full-name'), DisplayFullName);
+        super.addMatcher(FieldDisplayMatchQ.kebabKey('...'), Display...);
+        ...
+    }
+}
+
+...
+
+
+
+const MetaDisplayContext = React.createContext();
+
+const displayConfig = new MyDisplayConfig(modelType);
+//const displayConfig = width > 500 ? new MyDisplayConfigTable(modelType): new MyDisplayConfigDivs(modelType);
+
+<MetaDisplayContext.Provider value={displayContext}>
+    <MetaDisplayTable
+        data={data}
+    />
+</MetaDisplayContext.Provider>
+
+------------------------
+
+function MetaDisplayTable(props: IDisplayTableProps) {
+    const ctx = useContext(MetaDisplayContext);
+    const fields = props.fields;
+    const data = props.data;
+    const headerCells = fields.map(f => ctx.headerCell(f));
+    const rowCells = fields.map(f => ctx.tableRowCell(f));
+
+    const TableWrapper = props.tableWrapper;
+    ...
+    const TableBodyCellWrapper = props.tableBodyCellWrapper;
+
+    const wrapperProps = {
+        ctx,
+        data,
+        fields
+    }
+
+    const rowWrapperProps = { ctx, fields };
+
+    return (
+        <TableWrapper {...wrapperProps}>
+          <TableHeadWrapper></TableHeadWrapper>
+          <TableBodyWrapper>
+          {data.map(row => (
+              <TableRowWrapper row={row} {...rowWrapperProps}>
+                 fields.map((f,i) => <rowCells[i] ... />)
+              </TableRowWrapper>
+          ))}
+          </TableBodyWrapper>
+        </TableWrapper>
+    )
+}
+
+------------------------
+
+<style>
+.table-staffmember {
+    display: grid;
+    grid-areas: a b c;
+}
+</style>
+<ul class="table-staffmember">
+    <li class="head">
+        <div class="col--a"></div>
+        <div class="col--b"></div>
+        <div class="col--c"></div>
+    </li>
+    <li class="row">
+        <div class="col--a"></div>
+        <div class="col--b"></div>
+        <div class="col--c"></div>
+    </li>
+    <li class="row">
+        <div class="col--a"></div>
+        <div class="col--b"></div>
+        <div class="col--c"></div>
+    </li>
+    <li class="row">
+        <div class="col--a"></div>
+        <div class="col--b"></div>
+        <div class="col--c"></div>
+    </li>
+</ul>
+
 function RenderDetails<T>(props: {data: T[]; type: IModelTypeComposite<T>, fields?: string[]}) {
     return (
         <MetaDisplay data={data} type={type} fields={fields}>

@@ -2,14 +2,27 @@
 <html>
   <head>
     <style>
-      #form-content {
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      body * {
+        box-sizing: border-box;
+      }
+      #wrapper {
         min-width: 300px;
         width: 50%;
+        height: 100vh;
         margin: auto;
+        padding-top: 2em;
+        position: relative;
+      }
+      #wrapper form {
+        background: #eee;
+        padding: 2em;
       }
       #form-content * input {
-        width: 95%;
-        width: calc(100% - 5px);
+        width: 100%;
       }
       #form-content * input[type=radio],
       #form-content * input[type=checkbox] {
@@ -27,13 +40,28 @@
       .form-busy {
         border-right: 3px solid blue;
       }
+      section {
+        z-index: 1;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        padding: 2em;
+        background: #eee;
+      }
     </style>
   </head>
   <body>
-    <div id="form-content">
-
+    <div id="wrapper">
+      <div id="form-content"></div>
+      <section>
+        <article>
+          <h3>Note:</h3>
+          <div>usernames 'skippy' and 'skippyExtra' enable the skippable page</div>
+          <div>extraInfo `skipFirst` skips first page</div>
+        </article>
+      </section>
     </div>
-    <!--<script src="node_modules/systemjs/dist/system-polyfills.src.js"></script>-->
+<!--<script src="node_modules/systemjs/dist/system-polyfills.src.js"></script>-->
     <script src="node_modules/systemjs/dist/system.src.js"></script>
     <script>
       let process = { env: { NODE_ENV: null } };

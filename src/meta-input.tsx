@@ -12,10 +12,9 @@ import {
   IFormContext,
 //  IWrapperComponentProps
 } from './api';
-import { MetaContextFollower, MetaContextAware } from './base-components';
+import { MetaContextFollower } from './base-components';
 
 import * as React from 'react';
-import { Requireable } from 'prop-types';
 
 export class MetaInput extends MetaContextFollower<IInputProps, any> {
 

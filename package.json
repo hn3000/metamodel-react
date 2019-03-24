@@ -15,18 +15,25 @@
   "repository": "git@github.com:hn3000/metamodel-react",
   "dependencies": {
     "@hn3000/json-ref": "^1.0.0",
-    "@hn3000/metamodel": "^1.5.3",
-    "prop-types": "^15.6.2",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3"
+    "@hn3000/metamodel": "^1.6.3",
+    "tslint": "^5.14.0"
   },
   "devDependencies": {
-    "@types/prop-types": "^15.5.6",
-    "@types/react": "^16.7.6",
-    "@types/react-dom": "^16.0.9",
-    "systemjs": "^0.21.4",
-    "tslint": "^5.12.0",
-    "typescript": "^3.3.0-dev.20181122",
+    "@types/prop-types": "^15.7.0",
+    "@types/react": "^16.8.8",
+    "@types/react-dom": "^16.8.3",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.5",
+    "react-dom": "^16.8.5",
+    "react-is": "^16.8.5",
+    "systemjs": "^0.21.6",
+    "typescript": "^3.3.4000",
     "whatwg-fetch": "^2.0.4"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.7.2",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "react-is": "^16.8.0"
   }
 }

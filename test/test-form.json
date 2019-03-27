@@ -92,7 +92,11 @@
               "value": "skippyExtra"
             }
           ]
-        ]
+        ],
+        "x-preventBackIf": { 
+          "property": "extraInfo", 
+          "value": "no return" 
+        }
       },
       {
         "alias": "email-etc",

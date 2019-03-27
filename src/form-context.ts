@@ -88,7 +88,11 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
 
   hasPreviousPage():boolean {
     let vm = this._viewmodel;
-    return null != vm.getNextUnskippedPage(-1) && !this.isFinished(); 
+    return (
+      null != vm.getNextUnskippedPage(-1) 
+      && !this.isFinished() 
+      && !vm.isPageFlagTrue('preventBack')
+    ); 
   }
 
   isFinished():boolean {

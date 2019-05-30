@@ -27,6 +27,7 @@
     "react-is": "^16.8.5",
     "systemjs": "^0.21.6",
     "typescript": "^3.5.1",
+    "tslint": "^5.14.0",
     "whatwg-fetch": "^2.0.4"
   },
   "peerDependencies": {

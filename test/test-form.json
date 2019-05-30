@@ -1,124 +1,138 @@
 {
-    "type": "object",
-    "properties": {
-      "gender": { "type": "string", "enum": [ "Mr", "Mrs", "Ms", "other" ] },
-      "firstname": { "type": "string", "maxLength": 20 },
-      "lastname":  { "type": "string", "maxLength": 20 },
-      "username":  { "type": "string", "maxLength": 20, "format": "username", "pattern": "^[a-z][a-z0-9]+" },
-      "country":   { "$ref": "#/definitions/Country" },
-      "file":      { "type": "object", "format": "file" },
-      "options":   { "type": "array", "items": { "type": "string", "enum": [ "alpaka", "berta", "charlotte" ]}, "uniqueItems": true },
-      "someNumber": {
-        "type": "number",
-        "flavour": "slider",
-        "minimum": 12000,
-        "maximum": 100000,
-        "multipleOf": 17
+  "type": "object",
+  "properties": {
+    "gender": { "type": "string", "enum": [ "Mr", "Mrs", "Ms", "other" ] },
+    "firstname": { "type": "string", "maxLength": 20 },
+    "lastname":  { "type": "string", "maxLength": 20 },
+    "username":  { "type": "string", "maxLength": 20, "format": "username", "pattern": "^[a-z][a-z0-9]+" },
+    "country":   { "$ref": "#/definitions/Country" },
+    "file":      { "type": "object", "format": "file" },
+    "options":   { "type": "array", "items": { "type": "string", "enum": [ "alpaka", "berta", "charlotte" ]}, "uniqueItems": true },
+    "someNumber": {
+      "type": "number",
+      "flavour": "slider",
+      "minimum": 12000,
+      "maximum": 100000,
+      "multipleOf": 17
+    }
+  },
+  "allOf": [
+    { "$ref": "#/pages/0/schema"},
+    { "$ref": "#/pages/1/schema"},
+    { "$ref": "#/pages/2/schema"}
+  ],
+  "constraints": [
+    {
+      "constraint": "equalProperties",
+      "properties": [ "email", "email2" ]
+    },
+    {
+      "constraint": "minAge",
+      "property": "birth",
+      "years": 18
+    }
+  ],
+  "required": ["gender", "firstname", "lastname", "username", "country", "email", "email2", "birth", "flag1", "flag2"],
+  "pages": [
+    {
+      "alias": "names-and-country",
+      "fields": ["gender", "firstname", "lastname", "username", "country", "file", "options", "someNumber"],
+      "pages": [
+        { "fields": [ "gender", "firstname", "lastname"] }, 
+        { "fields": [ "username"]}, 
+        { "fields": [ "country" ]}, 
+        { "fields": [ "file", "options"]}, 
+        { "fields": [ "someNumber"]}
+      ],
+      "skipIf": [
+        {
+          "property": "extraInfo",
+          "op": "=",
+          "invert": false,
+          "value": "skipFirst"
+        }
+      ]
+
+    },
+    {
+      "alias": "skippable-page",
+      "schema": {
+        "properties": {
+          "extraInfo":     { "type": "string", "maxLength": 20 },
+          "moreExtraInfo":     { "type": "string", "maxLength": 20 },
+          "additionalExtraInfo":     { "type": "string", "maxLength": 20 }
+        },
+        "pages": [
+          { "fields": [ "extraInfo" ]},
+          { 
+            "fields": [ "moreExtraInfo", "additionalExtraInfo" ], 
+            "skipIf": [
+              {
+                "property": "username",
+                "op": "=",
+                "invert": true,
+                "value": "skippyExtra"
+              }
+            ]
+          }
+        ]
+      },
+      "x-skipIfAny": [
+        [
+          {
+            "property": "username",
+            "op": "=",
+            "invert": true,
+            "value": "skippy"
+          },
+          {
+            "property": "username",
+            "op": "=",
+            "invert": true,
+            "value": "skippyExtra"
+          }
+        ]
+      ],
+      "x-preventBackIf": { 
+        "property": "extraInfo", 
+        "value": "no return" 
       }
     },
-    "allOf": [
-      { "$ref": "#/pages/0/schema"},
-      { "$ref": "#/pages/1/schema"},
-      { "$ref": "#/pages/2/schema"}
-    ],
-    "constraints": [
-      {
-        "constraint": "equalProperties",
-        "properties": [ "email", "email2" ]
-      },
-      {
-        "constraint": "minAge",
-        "property": "birth",
-        "years": 18
-      }
-    ],
-    "required": ["gender", "firstname", "lastname", "username", "country", "email", "email2", "birth", "flag1", "flag2"],
-    "pages": [
-      {
-        "alias": "names-and-country",
-        "fields": ["gender", "firstname", "lastname", "username", "country", "file", "options", "someNumber"],
-        "pages": [
-          { "fields": [ "gender", "firstname", "lastname"] }, 
-          { "fields": [ "username"]}, 
-          { "fields": [ "country" ]}, 
-          { "fields": [ "file", "options"]}, 
-          { "fields": [ "someNumber"]}
-        ]
-      },
-      {
-        "alias": "skippable-page",
-        "schema": {
-          "properties": {
-            "extraInfo":     { "type": "string", "maxLength": 20 },
-            "moreExtraInfo":     { "type": "string", "maxLength": 20 },
-            "additionalExtraInfo":     { "type": "string", "maxLength": 20 }
-          },
-          "pages": [
-            { "fields": [ "extraInfo" ]},
-            { 
-              "fields": [ "moreExtraInfo", "additionalExtraInfo" ], 
-              "skipIf": [
-                {
-                  "property": "username",
-                  "op": "=",
-                  "invert": true,
-                  "value": "skippyExtra"
-                }
-              ]
-            }
-          ]
+    {
+      "alias": "email-etc",
+      "x-not-fields": ["email", "email2", "birth", "flag1", "flag2" ],
+      "schema": {
+        "properties": {
+          "email":     { "type": "string", "maxLength": 20, "format": "email" },
+          "email2":    { "type": "string", "maxLength": 20, "format": "email" },
+          "birth":     { "type": "string", "format": "date", "pattern": "\\d{4}-\\d{2}-\\d{2}" },
+          "licensed":  { "type": "string", "format": "date", "pattern": "\\d{4}-\\d{2}-\\d{2}", 
+                          "constraints":[ { "constraint": "minAge", "age": "18months" }] 
+                        },
+          "languages": { "type": "array", "items": { "$ref": "#/definitions/Language" }, "uniqueItems": true },
+          "flag1":     { "type": "boolean", "enum": [ true ] },
+          "flag2":     { "type": "boolean" }
         },
-        "x-skipIfAny": [
-          [
-            {
-              "property": "username",
-              "op": "=",
-              "invert": true,
-              "value": "skippy"
-            },
-            {
-              "property": "username",
-              "op": "=",
-              "invert": true,
-              "value": "skippyExtra"
-            }
-          ]
+        "pages": [
+          { "fields": [ "email", "email2"] }, 
+          { "fields": [ "birth"]}, 
+          { "fields": [ "licensed"]}, 
+          { "fields": [ "languages" ]}, 
+          { "fields": [ "flag1", "flag2"]}
         ]
-      },
-      {
-        "alias": "email-etc",
-        "x-not-fields": ["email", "email2", "birth", "flag1", "flag2" ],
-        "schema": {
-          "properties": {
-            "email":     { "type": "string", "maxLength": 20, "format": "email" },
-            "email2":    { "type": "string", "maxLength": 20, "format": "email" },
-            "birth":     { "type": "string", "format": "date", "pattern": "\\d{4}-\\d{2}-\\d{2}" },
-            "licensed":  { "type": "string", "format": "date", "pattern": "\\d{4}-\\d{2}-\\d{2}", 
-                           "constraints":[ { "constraint": "minAge", "age": "18months" }] },
-            "languages": { "type": "array", "items": { "$ref": "#/definitions/Language" }, "uniqueItems": true },
-            "flag1":     { "type": "boolean", "enum": [ true ] },
-            "flag2":     { "type": "boolean" }
-          },
-          "pages": [
-            { "fields": [ "email", "email2"] }, 
-            { "fields": [ "birth"]}, 
-            { "fields": [ "licensed"]}, 
-            { "fields": [ "languages" ]}, 
-            { "fields": [ "flag1", "flag2"]}
-          ]
-        }
-      }
-    ],
-    "definitions": {
-      "Country": {
-        "type": "string",
-        "format": "countrycode",
-        "enum": [ "DE", "GB", "AT", "CH", "JP", "CN", "HN", "US", "FR", "AB", "CD", "EF", "FG", "HI", "JK"  ]
-      },
-      "Language": {
-        "type": "string",
-        "format": "language",
-        "enum": [ "de", "en", "fr", "it", "es", "da", "sv", "no" ]
       }
     }
+  ],
+  "definitions": {
+    "Country": {
+      "type": "string",
+      "format": "countrycode",
+      "enum": [ "DE", "GB", "AT", "CH", "JP", "CN", "HN", "US", "FR", "AB", "CD", "EF", "FG", "HI", "JK"  ]
+    },
+    "Language": {
+      "type": "string",
+      "format": "language",
+      "enum": [ "de", "en", "fr", "it", "es", "da", "sv", "no" ]
+    }
   }
+}

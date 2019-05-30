@@ -39,10 +39,15 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
   }
 
   _extractState(formContext: IFormContext) {
-    var result = {
+    const { 
+      currentUnskippedPageNo, 
+      totalUnskippedPageCount 
+    } = formContext.viewmodel;
+    
+    const result = {
       currentPage: formContext.currentPage,
-      currentUnskippedPageNo: formContext.viewmodel.currentUnskippedPageNo,
-      totalUnskippedPageCount: formContext.viewmodel.totalUnskippedPageCount,
+      currentUnskippedPageNo,
+      totalUnskippedPageCount,
       back: pageBackAllowed(formContext),
       next: pageNextAllowed(formContext)
     };

@@ -26,7 +26,7 @@ export interface IFormProps {
 export interface IPageProps extends IMetaFormBaseProps {
     page?: number; // needs either page or alias
     alias?: string;
-    contents?: React.ReactType<any>;
+    contents?: React.ComponentType<any>;
 }
 
 export interface ISectionProps extends IMetaFormBaseProps {

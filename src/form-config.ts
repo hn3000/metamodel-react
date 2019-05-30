@@ -21,8 +21,17 @@ import {
 
 import * as fields from './default-field-types';
 
-import * as React from 'react';
-
+/**
+ * Type for a function that determines match quality of a control
+ * for dealing with a given field of the specified type.
+ * 
+ * Used by the IFormConfig to find a component for rendering an
+ * input in a form. If several components match equally well,
+ * the form config returns the component that was added last.
+ * 
+ * see IFormConfig.findBestMatch
+ *  
+ */
 export type matchQFun = (type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]) => number;
 
 export class MatchQ {
@@ -219,7 +228,7 @@ export class MetaFormConfig implements IFormConfig {
     let matchers = this._components;
     for (var i = 0, n = matchers.length; i<n; ++i) {
       let thisQ = matchers[i].matchQuality(type, fieldName, flavor, ...matchargs);
-      if (thisQ > bestQ) {
+      if (thisQ >= bestQ) {
         match = matchers[i];
         bestQ = thisQ;
       }
@@ -229,9 +238,11 @@ export class MetaFormConfig implements IFormConfig {
   }
 
   add(cm:IComponentMatcher) {
-    if (-1 == this._components.indexOf(cm)) {
-      this._components.push(cm);
+    const pos = this._components.indexOf(cm);
+    if (-1 != pos) {
+      this._components.splice(pos, 1);
     }
+    this._components.push(cm);
   }
   remove(cm:IComponentMatcher) {
     this._components = this._components.filter((x) => x != cm);

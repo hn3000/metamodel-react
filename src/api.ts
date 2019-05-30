@@ -146,7 +146,26 @@ export interface IComponentMatcher {
     wrapper?: React.ComponentType<IFieldWrapperProps>;
 }
 export interface IComponentFinder {
+    /** 
+     * Finds an InputComponent for a field with the given type, 
+     * name and flavor. Other arguments may be used by matchers, 
+     * if specified.
+     * 
+     * The list of components is evaluated using IComponentMatcher.matchQuality,
+     * the best match is returned. If several components match equally well,
+     * the component that was added last is returned.
+     */
     findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent;
+
+    /** 
+     * Finds an IComponentMatcher for a field with the given type, 
+     * name and flavor. Other arguments may be used by matchers, 
+     * if specified.
+     * 
+     * The list of components is evaluated using IComponentMatcher.matchQuality,
+     * the best match is returned. If several components match equally well,
+     * the component that was added last is returned.
+     */
     findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher;
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;

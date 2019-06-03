@@ -78,10 +78,10 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
   }
 
   render() {
-    let context = this.formContext;
-    var fieldName = this.props.field;
-    var fieldType = context.viewmodel.getFieldType(fieldName);
-
+    const context = this.formContext;
+    const fieldName = this.props.field;
+    const fieldContainerType = context.viewmodel.getFieldContainerType(fieldName);
+    const fieldType = context.viewmodel.getFieldType(fieldName);
     if (!fieldType) {
       console.log(`field ${fieldName} not found in ${context.metamodel.name}`);
       return null;
@@ -94,7 +94,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     let Wrapper = context.config.wrappers.field;
 
     if (!hasChildren) {
-      let matcher = context.config.findBestMatcher(fieldType, fieldName, flavor);
+      let matcher = context.config.findBestMatcher(fieldType, fieldName, flavor, fieldContainerType);
       if (null != matcher && matcher.condition) {
         if (!matcher.condition(context)) {
           matcher = null;

@@ -1,6 +1,6 @@
 {
   "name": "@hn3000/metamodel-react",
-  "version": "1.6.6",
+  "version": "1.7.0",
   "description": "react components for metamodel rendering",
   "main": "out/src/metamodel-react.js",
   "typings": "out/src/metamodel-react.d.ts",
@@ -15,25 +15,25 @@
   "repository": "git@github.com:hn3000/metamodel-react",
   "dependencies": {
     "@hn3000/json-ref": "^1.0.1",
-    "@hn3000/metamodel": "^1.6.6"
+    "@hn3000/metamodel": "^1.7.0"
   },
   "devDependencies": {
     "@types/prop-types": "^15.7.1",
     "@types/react": "^16.8.19",
     "@types/react-dom": "^16.8.4",
     "prop-types": "^15.7.2",
-    "react": "^16.8.5",
-    "react-dom": "^16.8.5",
-    "react-is": "^16.8.5",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-is": "^16.8.6",
     "systemjs": "^0.21.6",
     "typescript": "^3.5.1",
-    "tslint": "^5.14.0",
+    "tslint": "^5.17.0",
     "whatwg-fetch": "^2.0.4"
   },
   "peerDependencies": {
-    "prop-types": "^15.7.2",
-    "react": "^16.8.5",
-    "react-dom": "^16.8.5",
-    "react-is": "^16.8.5"
+    "prop-types": "^15.7.0",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "react-is": "^16.8.0"
   }
 }

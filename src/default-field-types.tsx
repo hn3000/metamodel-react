@@ -24,10 +24,11 @@ import { MetaSection } from './meta-section';
 
 export class FieldWrapperDefault extends React.Component<IFieldWrapperProps,any> {
   render() {
-    var props:any = {};
-    var errors:JSX.Element[] = [];
+    var props:any = {
+      className: 'mmr-field'
+    };
     if (this.props.hasErrors) {
-      props['className'] = 'has-error';
+      props['className'] += ' has-error';
     }
     return <div {...props}>
       {this.props.children}
@@ -49,7 +50,7 @@ export class PageWrapperDefault extends React.Component<IPageWrapperProps,any> {
     const page = this.props.context.viewmodel.getPage(this.props.pageAlias);
     const hasSections = page.pages && 0 < page.pages.length;
     return (
-      <div>
+      <div className="mmr-page">
         { page && hasSections && page.pages.map(sx => <MetaSection key={sx.alias} section={sx} />) }
         { page && !hasSections && <MetaSection section={page} /> }
       </div>
@@ -67,7 +68,7 @@ export class SectionWrapperDefault extends React.Component<ISectionWrapperProps,
     const section = props.section || props.context.viewmodel.getPage(props.sectionAlias);
     const fields = section.fields;
     return (
-      <div>
+      <div className="mmr-section">
         { fields.map((field: string) => (<MetaInput field={field} key={field} />)) }
       </div>
     );
@@ -75,9 +76,11 @@ export class SectionWrapperDefault extends React.Component<ISectionWrapperProps,
 }
 export class FormWrapperDefault extends React.Component<IFormWrapperProps,any> {
   render() {
-    let wrapperProps:any = {};
+    let wrapperProps:any = {
+      className: 'mmr-form'
+    };
     if (this.props.busy) {
-      wrapperProps.className = 'form-busy';
+      wrapperProps.className += ' form-busy';
     }
     return <form method="POST" action="#" {...wrapperProps}>{this.props.children}</form>;
   }

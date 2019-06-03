@@ -3,7 +3,8 @@
 import {
   IModelType,
   ModelTypeArray,
-  IPropertyStatusMessage
+  IPropertyStatusMessage,
+  IModelTypeComposite
 } from  '@hn3000/metamodel';
 
 import {
@@ -20,6 +21,7 @@ import {
 } from './api';
 
 import * as fields from './default-field-types';
+import { string } from 'prop-types';
 
 /**
  * Type for a function that determines match quality of a control
@@ -43,16 +45,16 @@ export class MatchQ {
     return (type:IModelType<any>, fieldName: string) => (fieldName === name ? quality:0)
   }
   /** 
-   * Matches fieldName with a regular expression, match quality is 100 times that of other 
-   * criteria by default.
+   * Matches fieldName with a regular expression, match quality is 90 times that of other 
+   * criteria by default (which is less than a fieldName match).
    * The quality argument can be used to change the strength of the match. 
    */
-  static fieldNameLike(pattern:RegExp|string, quality: number = 100):matchQFun {
+  static fieldNameLike(pattern:RegExp|string, quality: number = 90):matchQFun {
     let re = ('string' === typeof pattern) ? new RegExp(pattern) : pattern; 
     return (type:IModelType<any>, fieldName: string) => (re.test(fieldName) ? quality:0)
   }
   /** 
-   * Matches by similarity to the given object literal, all props must match. 
+   * Matches by similarity of the fieldType to the given object literal, all props must match. 
    * Every matching item (i.e. key in the template) counts as 1 by default, the
    * quality argument changes the quality per match. 
    */
@@ -76,6 +78,14 @@ export class MatchQ {
       return result;
     });
   }
+  /**
+   *  Matches by similarity of the container type to the given object literal, all props must match. 
+   * Every matching item (i.e. key in the template) counts as 1 by default, the
+   * quality argument changes the quality per match. 
+   */
+  static containerLikeObject(template:any, quality: number = 1): matchQFun { //</any>
+    return MatchQ.container(MatchQ.likeObject(template, quality));
+  }
   /** 
    * Matches by IModelType.kind, the match counts as 1 point by default. 
    * The quality argument can be used to change the strenght of the match. 
@@ -83,9 +93,9 @@ export class MatchQ {
   static kind(kind:string, quality: number = 1):matchQFun {
     return (field:IModelType<any>) => (field.kind === kind? quality : 0)
   }
-  /** 
+  /**
    * Matches by flavor. Flavor can be given as a prop on the MetaInput or in the schema 
-   * (where brit. spelling flavour is also accepted).
+   * (where brit. spelling flavour and x- prefix are also accepted).
    * By default, a match is worth one point, the quality argument can be used to
    * change the value of a match. 
    */
@@ -94,6 +104,7 @@ export class MatchQ {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
       if (
         (flavor === flv)
+        || (flv === type.propGet('flavor'))
         || ((x) => x && ((x.flavor === flv) || (x.flavour === flv)))(type.propGet('schema'))
       ) {
         return quality;
@@ -101,7 +112,10 @@ export class MatchQ {
       return 0;
     };
   }
-  /** 
+  static flavour(flavor:string, quality: number = 1):matchQFun {
+    return MatchQ.flavor(flavor, quality);
+  }
+    /** 
    * Matches by format, shorthand for .likeObject({fornat:'<format>'}).
    * By default, flavor matches are worth one point; the quality argument
    * can be used to change this. 
@@ -152,15 +166,15 @@ export class MatchQ {
   }
   /** 
    * Matches if all given matchers match by adding the returned quality values. 
-   * Quality is zero if any of the matchers returns zero, the sum of all quality
+   * Quality is zero if any of the matchers returns zero, the product of all quality
    * values if none of the matchers returned zero. 
    */
   static and(...matcher:matchQFun[]):matchQFun {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) =>
       matcher.reduce((q, m) => {
         let qq = m(type, fieldName, flavor, ...matchArgs);
-        return qq && q + qq;
-      }, 0);
+        return qq ? q * qq : 0;
+      }, 1);
   }
   /** 
    * Matches if any of the given matchers match by adding the returned quality values. 
@@ -186,6 +200,20 @@ export class MatchQ {
       return matcher(type, fieldName, flavor, ...matchArgs) * factor;
     }
   }
+
+  /**
+   * Change match to use the containerType. 
+   */
+  static container(matcher: matchQFun, qualityFactor: number = 1): matchQFun {
+    return (
+      type: IModelType<any>, 
+      fieldName: string, 
+      flavor: string, 
+      container: IModelTypeComposite<any>
+    ) => {
+      return matcher(container, fieldName, flavor, container);
+    }; 
+  }
 }
 
 export class MetaFormConfig implements IFormConfig {
@@ -209,25 +237,25 @@ export class MetaFormConfig implements IFormConfig {
   }
 
   private _deprecatedFindBestUsed = false;
-  findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent {
-    let matcher = this._findBestMatcher(type, fieldName, flavor, matchargs);
+  findBest(type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchargs: any[]): InputComponent {
+    let matcher = this._findBestMatcher(type, fieldName, flavor, container, matchargs);
     if (matcher && matcher.condition) {
       console.warn("ignoring condition on matcher", matcher)
     }
     return matcher && matcher.component;
   }
 
-  findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher {
-    return this._findBestMatcher(type, fieldName, flavor, matchargs);
+  findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchargs: any[]): IComponentMatcher {
+    return this._findBestMatcher(type, fieldName, flavor, container, matchargs);
   }
 
-  _findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher {
+  _findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchargs: any[]): IComponentMatcher {
     var bestQ = 0;
     var match:IComponentMatcher = null;
 
     let matchers = this._components;
     for (var i = 0, n = matchers.length; i<n; ++i) {
-      let thisQ = matchers[i].matchQuality(type, fieldName, flavor, ...matchargs);
+      let thisQ = matchers[i].matchQuality(type, fieldName, flavor, container, ...matchargs);
       if (thisQ >= bestQ) {
         match = matchers[i];
         bestQ = thisQ;

@@ -137,7 +137,7 @@ export interface ISectionLookup {
 }
 
 export interface IComponentMatchFun {
-    (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]): number;
+    (type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchArgs: any[]): number;
 }
 export interface IComponentMatcher {
     matchQuality(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): number;
@@ -155,7 +155,7 @@ export interface IComponentFinder {
      * the best match is returned. If several components match equally well,
      * the component that was added last is returned.
      */
-    findBest(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): InputComponent;
+    findBest(type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchargs: any[]): InputComponent;
 
     /** 
      * Finds an IComponentMatcher for a field with the given type, 
@@ -166,7 +166,7 @@ export interface IComponentFinder {
      * the best match is returned. If several components match equally well,
      * the component that was added last is returned.
      */
-    findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IComponentMatcher;
+    findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchargs: any[]): IComponentMatcher;
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;
     addSection(name: string, component: ISectionWrapper): void;

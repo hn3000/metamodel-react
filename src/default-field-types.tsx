@@ -166,7 +166,7 @@ export class MetaFormInputEnumRadios extends React.Component<IInputComponentProp
     let group = this._group;
     let radios = values.map((x:string)=> (
       <label key={x+'_'+group}>
-        <input type="radio" name={group} onChange={props.onChange} value={x} checked={x === props.value} />{x}
+        <input type="radio" name={group} onChange={props.onChange} value={x} checked={x === props.value} />{asString(x)}
       </label>
     ));
 
@@ -188,8 +188,8 @@ export class MetaFormInputEnumCheckbox extends React.Component<IInputComponentPr
     }
 
     let checkBoxes = values.map((x:string)=> (
-      <label>
-        <input type="checkbox" onChange={props.onChange} value={x} checked={x === props.value} />{x}
+      <label key={x}>
+        <input type="checkbox" onChange={props.onChange} value={x} checked={x === props.value} />{asString(x)}
       </label>
     ));
 
@@ -229,7 +229,7 @@ export class MetaFormInputEnumCheckboxArray extends React.Component<IInputCompon
 
     let checkBoxes = values.map((x:string)=> (
       <label key={x}>
-        <input type="checkbox" onChange={this.updateValue} value={x} checked={-1 !== props.value.indexOf(x)} />{x}
+        <input type="checkbox" onChange={this.updateValue} value={x} checked={-1 !== props.value.indexOf(x)} />{asString(x)}
       </label>
     ));
 
@@ -413,4 +413,8 @@ export class MetaFormUnknownFieldType extends React.Component<IInputComponentPro
       </label>
     );
   }
+}
+
+function asString(x: any) {
+  return `${x}`;
 }

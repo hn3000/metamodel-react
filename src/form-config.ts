@@ -261,15 +261,11 @@ export class MetaFormConfig implements IFormConfig {
     for (var i = 0, n = matchers.length; i<n; ++i) {
       const m = matchers[i] as any;
       let thisQ = m.matchQuality(type, fieldName, flavor, container, ...matchargs);
-      if (m.log === fieldName) {
-        console.debug(`match: ${fieldName} ${m.name} = ${thisQ}`);
-      }
       if (thisQ >= bestQ) {
         match = m;
         bestQ = thisQ;
       }
     }
-    console.log(`best was ${bestQ} ${fieldName} ${flavor}`, match, type);
     return match;
   }
 
@@ -371,17 +367,14 @@ export class MetaFormConfig implements IFormConfig {
       {
         matchQuality: MatchQ.kind('bool'),
         component: fields.MetaFormInputBoolRadio
-        ,log:'flag1', name:'bool'
       },
       {
         matchQuality: MatchQ.likeObject({kind:'bool', required: true}),
         component: fields.MetaFormInputBoolRadio
-        ,log:'flag1', name:'bool-required'
       },
       {
         matchQuality: MatchQ.likeObject({kind:'bool', required: false}),
         component: fields.MetaFormInputBoolCheckbox
-        ,log:'flag1', name:'bool-optional'
       },
       {
         matchQuality: MatchQ.and(
@@ -389,7 +382,6 @@ export class MetaFormConfig implements IFormConfig {
           MatchQ.possibleValueCountRange(1,2)
         ),
         component: fields.MetaFormInputBoolCheckbox
-        ,log:'flag1', name:'bool-required-1v'
       },
       {
         matchQuality: MatchQ.likeObject({type:'object', format: 'file'}),
@@ -406,7 +398,6 @@ export class MetaFormConfig implements IFormConfig {
       {
         matchQuality: MatchQ.and(MatchQ.kind('string'), MatchQ.possibleValueCountRange(1,2)),
         component: fields.MetaFormInputEnumCheckbox
-        ,log:'flag1', name:'string-1v'
       },
       {
         matchQuality: MatchQ.and(MatchQ.kind('array'), MatchQ.element(MatchQ.kind('string'))),
@@ -414,5 +405,4 @@ export class MetaFormConfig implements IFormConfig {
       }
     ];
   }
-
 }

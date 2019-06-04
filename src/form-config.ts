@@ -166,15 +166,18 @@ export class MatchQ {
   }
   /** 
    * Matches if all given matchers match by adding the returned quality values. 
-   * Quality is zero if any of the matchers returns zero, the product of all quality
+   * Quality is zero if any of the matchers returns zero, the sum of all quality
    * values if none of the matchers returned zero. 
    */
   static and(...matcher:matchQFun[]):matchQFun {
-    return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) =>
-      matcher.reduce((q, m) => {
+    return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
+      const t = matcher.reduce(([s,f], m) => {
         let qq = m(type, fieldName, flavor, ...matchArgs);
-        return qq ? q * qq : 0;
-      }, 1);
+        return qq ? [s + qq, f*1] : [0, 0];
+      }, [0,1]);
+      console.debug('and', t, fieldName, flavor, type);
+      return t[0] * t[1];
+    }
   }
   /** 
    * Matches if any of the given matchers match by adding the returned quality values. 

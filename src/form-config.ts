@@ -62,14 +62,15 @@ export class MatchQ {
     var keys = Object.keys(template);
     var n = keys.length;
 
-    return ((field:IModelType<any> /*</any>*/) => {
+    return ((field:IModelType<any>, fieldName, flavor, container: IModelTypeComposite /*</any>*/) => {
       var result = 0;
       var fieldObj = field as any;
       let schema = (fieldObj && fieldObj.propGet && fieldObj.propGet('schema')) || {};
+      let item = (container && container.findItem(fieldName)) as any;
       for (var i = 0; i < n; i++) {
         let k = keys[i];
         let t = template[k];
-        if (t == fieldObj[k] || t == schema[k]) {
+        if (t == fieldObj[k] || t == item[k] || t == schema[k]) {
           result += quality;
         } else {
           return 0;
@@ -91,7 +92,8 @@ export class MatchQ {
    * The quality argument can be used to change the strenght of the match. 
    */
   static kind(kind:string, quality: number = 1):matchQFun {
-    return (field:IModelType<any>) => (field.kind === kind? quality : 0)
+    const kk = kind === 'boolean' ? 'bool' : kind;
+    return (field:IModelType<any>) => (field.kind === kk ? quality : 0)
   }
   /**
    * Matches by flavor. Flavor can be given as a prop on the MetaInput or in the schema 
@@ -171,11 +173,10 @@ export class MatchQ {
    */
   static and(...matcher:matchQFun[]):matchQFun {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
-      const t = matcher.reduce(([s,f], m) => {
+      const t = matcher.reduce(([sum,fact], m) => {
         let qq = m(type, fieldName, flavor, ...matchArgs);
-        return qq ? [s + qq, f*1] : [0, 0];
+        return qq > 0 ? [sum + qq, fact*1] : [0, 0];
       }, [0,1]);
-      console.debug('and', t, fieldName, flavor, type);
       return t[0] * t[1];
     }
   }
@@ -258,13 +259,17 @@ export class MetaFormConfig implements IFormConfig {
 
     let matchers = this._components;
     for (var i = 0, n = matchers.length; i<n; ++i) {
-      let thisQ = matchers[i].matchQuality(type, fieldName, flavor, container, ...matchargs);
+      const m = matchers[i] as any;
+      let thisQ = m.matchQuality(type, fieldName, flavor, container, ...matchargs);
+      if (m.log === fieldName) {
+        console.debug(`match: ${fieldName} ${m.name} = ${thisQ}`);
+      }
       if (thisQ >= bestQ) {
-        match = matchers[i];
+        match = m;
         bestQ = thisQ;
       }
     }
-
+    console.log(`best was ${bestQ} ${fieldName} ${flavor}`, match, type);
     return match;
   }
 
@@ -366,21 +371,25 @@ export class MetaFormConfig implements IFormConfig {
       {
         matchQuality: MatchQ.kind('bool'),
         component: fields.MetaFormInputBoolRadio
+        ,log:'flag1', name:'bool'
       },
       {
-        matchQuality: MatchQ.likeObject({kind:'boolean', required: true}),
+        matchQuality: MatchQ.likeObject({kind:'bool', required: true}),
         component: fields.MetaFormInputBoolRadio
+        ,log:'flag1', name:'bool-required'
       },
       {
-        matchQuality: MatchQ.likeObject({kind:'boolean', required: false}),
+        matchQuality: MatchQ.likeObject({kind:'bool', required: false}),
         component: fields.MetaFormInputBoolCheckbox
+        ,log:'flag1', name:'bool-optional'
       },
       {
         matchQuality: MatchQ.and(
-          MatchQ.likeObject({kind:'boolean', required: true}),
+          MatchQ.likeObject({kind:'bool', required: true}),
           MatchQ.possibleValueCountRange(1,2)
         ),
         component: fields.MetaFormInputBoolCheckbox
+        ,log:'flag1', name:'bool-required-1v'
       },
       {
         matchQuality: MatchQ.likeObject({type:'object', format: 'file'}),
@@ -397,6 +406,7 @@ export class MetaFormConfig implements IFormConfig {
       {
         matchQuality: MatchQ.and(MatchQ.kind('string'), MatchQ.possibleValueCountRange(1,2)),
         component: fields.MetaFormInputEnumCheckbox
+        ,log:'flag1', name:'string-1v'
       },
       {
         matchQuality: MatchQ.and(MatchQ.kind('array'), MatchQ.element(MatchQ.kind('string'))),

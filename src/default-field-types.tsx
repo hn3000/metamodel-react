@@ -132,7 +132,10 @@ export class MetaFormInputBoolRadio extends React.Component<IInputComponentProps
 export class MetaFormInputBoolCheckbox extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
-    return <input type="checkbox" onChange={props.onChange} checked={props.value}></input>;
+    return <label>
+      <input type="checkbox" onChange={props.onChange} checked={props.value} />
+      {String(props.field)}
+    </label>;
   }
 }
 

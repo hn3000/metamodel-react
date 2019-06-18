@@ -139,6 +139,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
 
     let props:IInputComponentProps = {
       id: formid+'#'+this.props.field,
+      flavor, flavour: flavor,
       field: this.props.field,
       fieldType: fieldType,
       editable: isEditable,

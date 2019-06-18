@@ -106,7 +106,6 @@ export class MatchQ {
     return (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]) => {
       if (
         (flavor === flv)
-        || (flv === type.propGet('flavor'))
         || ((x) => x && ((x.flavor === flv) || (x.flavour === flv)))(type.propGet('schema'))
       ) {
         return quality;

@@ -88,7 +88,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
     }
 
     const hasChildren = 0 < React.Children.count(this.props.children);
-    let flavor = this.props.flavor || this.props.flavour;
+    let flavor = this.props.flavor || this.props.flavour || fieldType.propGet('flavour');
 
     let Input:InputComponent = null;
     let Wrapper = context.config.wrappers.field;

@@ -118,7 +118,7 @@ export class MatchQ {
     return MatchQ.flavor(flavor, quality);
   }
     /** 
-   * Matches by format, shorthand for .likeObject({fornat:'<format>'}).
+   * Matches by format, shorthand for .likeObject({format:'<format>'}).
    * By default, flavor matches are worth one point; the quality argument
    * can be used to change this. 
    */

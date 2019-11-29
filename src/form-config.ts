@@ -66,7 +66,7 @@ export class MatchQ {
       var result = 0;
       var fieldObj = field as any;
       let schema = (fieldObj && fieldObj.propGet && fieldObj.propGet('schema')) || {};
-      let item = (container && container.findItem(fieldName)) as any;
+      let item = (container && container.findItem(fieldName)) || {} as any;
       for (var i = 0; i < n; i++) {
         let k = keys[i];
         let t = template[k];

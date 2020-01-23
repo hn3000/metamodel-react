@@ -1,0 +1,6 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "terminal.integrated.env.osx": {
+    "PATH": "/Users/hn3000/.platformio/penv/bin:/Users/hn3000/sencha/sencha-cmd-4.0.5/Sencha/Cmd/4.0.5.87:/Users/hn3000/.cargo/bin:/Users/hn3000/.cargo/bin:/Users/hn3000/.nvm/versions/node/v8.9.4/bin:/Applications/Java/apache-maven*/bin:/Users/hn3000/Library/Haskell/bin:/Users/hn3000/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/CrossPack-AVR/bin:/usr/local/MacGPG2/bin:/Library/TeX/texbin:/Applications/VMware Fusion.app/Contents/Public:/usr/local/share/dotnet:/Users/hn3000/.cabal/bin:/Users/hn3000/.local/bin:/Users/hn3000/play/dot-fluff/bin:/Users/hn3000/.mos/bin"
+  }
+}

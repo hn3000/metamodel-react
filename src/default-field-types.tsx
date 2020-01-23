@@ -24,10 +24,11 @@ import { MetaSection } from './meta-section';
 
 export class FieldWrapperDefault extends React.Component<IFieldWrapperProps,any> {
   render() {
-    var props:any = {};
-    var errors:JSX.Element[] = [];
+    var props:any = {
+      className: 'mmr-field'
+    };
     if (this.props.hasErrors) {
-      props['className'] = 'has-error';
+      props['className'] += ' has-error';
     }
     return <div {...props}>
       {this.props.children}
@@ -49,7 +50,7 @@ export class PageWrapperDefault extends React.Component<IPageWrapperProps,any> {
     const page = this.props.context.viewmodel.getPage(this.props.pageAlias);
     const hasSections = page.pages && 0 < page.pages.length;
     return (
-      <div>
+      <div className="mmr-page">
         { page && hasSections && page.pages.map(sx => <MetaSection key={sx.alias} section={sx} />) }
         { page && !hasSections && <MetaSection section={page} /> }
       </div>
@@ -67,7 +68,7 @@ export class SectionWrapperDefault extends React.Component<ISectionWrapperProps,
     const section = props.section || props.context.viewmodel.getPage(props.sectionAlias);
     const fields = section.fields;
     return (
-      <div>
+      <div className="mmr-section">
         { fields.map((field: string) => (<MetaInput field={field} key={field} />)) }
       </div>
     );
@@ -75,9 +76,11 @@ export class SectionWrapperDefault extends React.Component<ISectionWrapperProps,
 }
 export class FormWrapperDefault extends React.Component<IFormWrapperProps,any> {
   render() {
-    let wrapperProps:any = {};
+    let wrapperProps:any = {
+      className: 'mmr-form'
+    };
     if (this.props.busy) {
-      wrapperProps.className = 'form-busy';
+      wrapperProps.className += ' form-busy';
     }
     return <form method="POST" action="#" {...wrapperProps}>{this.props.children}</form>;
   }
@@ -129,7 +132,10 @@ export class MetaFormInputBoolRadio extends React.Component<IInputComponentProps
 export class MetaFormInputBoolCheckbox extends React.Component<IInputComponentProps, IInputComponentState> {
   render() {
     let props = this.props;
-    return <input type="checkbox" onChange={props.onChange} checked={props.value}></input>;
+    return <label>
+      <input type="checkbox" onChange={props.onChange} checked={props.value} />
+      {String(props.field)}
+    </label>;
   }
 }
 
@@ -166,7 +172,7 @@ export class MetaFormInputEnumRadios extends React.Component<IInputComponentProp
     let group = this._group;
     let radios = values.map((x:string)=> (
       <label key={x+'_'+group}>
-        <input type="radio" name={group} onChange={props.onChange} value={x} checked={x === props.value} />{x}
+        <input type="radio" name={group} onChange={props.onChange} value={x} checked={x === props.value} />{asString(x)}
       </label>
     ));
 
@@ -188,8 +194,8 @@ export class MetaFormInputEnumCheckbox extends React.Component<IInputComponentPr
     }
 
     let checkBoxes = values.map((x:string)=> (
-      <label>
-        <input type="checkbox" onChange={props.onChange} value={x} checked={x === props.value} />{x}
+      <label key={x}>
+        <input type="checkbox" onChange={props.onChange} value={x} checked={x === props.value} />{asString(x)}
       </label>
     ));
 
@@ -229,7 +235,7 @@ export class MetaFormInputEnumCheckboxArray extends React.Component<IInputCompon
 
     let checkBoxes = values.map((x:string)=> (
       <label key={x}>
-        <input type="checkbox" onChange={this.updateValue} value={x} checked={-1 !== props.value.indexOf(x)} />{x}
+        <input type="checkbox" onChange={this.updateValue} value={x} checked={-1 !== props.value.indexOf(x)} />{asString(x)}
       </label>
     ));
 
@@ -413,4 +419,8 @@ export class MetaFormUnknownFieldType extends React.Component<IInputComponentPro
       </label>
     );
   }
+}
+
+function asString(x: any) {
+  return `${x}`;
 }

@@ -13,7 +13,8 @@ import {
   MetaContextFollower,
   IPropertyStatusMessage,
   MatchQ,
-  MetaSection
+  MetaSection,
+  IInputComponentProps
 } from '../src/metamodel-react';
 
 import * as mm from '@hn3000/metamodel';
@@ -60,7 +61,7 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
     let pages = context.viewmodel.getPages();
     return (
       <MetaForm context={this.props.context}>
-        <div className={'page'+this.props.context.currentPage}> 
+        <div className={'mmr-page page'+this.props.context.currentPage}> 
           <button disabled={!this.state.back} onClick={this.props.context.pageBack}>back</button>
           <button disabled={!this.state.next} onClick={this.props.context.pageNext}>next</button>
         </div>
@@ -68,11 +69,11 @@ class TestForm extends MetaContextFollower<TestFormProps,any> {
           { pages.map(p => <FormPage key={p.alias} alias={p.alias} page={p} />)}
           <FormPage alias="conclusion" />
         </div>
-        <div className={'page'+this.props.context.currentPage+'b:'+!this.state.back+'-n:'+!this.state.back}>
+        <div className={'mmr-page page'+this.props.context.currentPage+'b:'+!this.state.back+'-n:'+!this.state.back}>
         <button disabled={!this.state.back} onClick={this.props.context.pageBack}>back</button>
         <button disabled={!this.state.next} onClick={this.props.context.pageNext}>next</button>
         </div>
-        <div>{`Current page is ${context.currentPageAlias}, #${vm.currentUnskippedPageNo} / ${vm.totalUnskippedPageCount} (${vm.currentPageNo} / ${vm.totalPageCount})`}</div>
+        <div className="mmr-page">{`Current page is ${context.currentPageAlias}, #${vm.currentUnskippedPageNo} / ${vm.totalUnskippedPageCount} (${vm.currentPageNo} / ${vm.totalPageCount})`}</div>
         { vm.getFocusedPage() != null && (<div>{`Focused page: ${vm.getFocusedPageNo()} / ${vm.getFocusedPage().alias}`}</div>)}
       </MetaForm>
     );
@@ -200,7 +201,7 @@ export function run() {
     config.busyDelayMS = 200;
 
     if (true) {
-      config.matchers.push({
+      config.add({
         matchQuality: MatchQ.fieldName('gender'),
         component: MetaFormInputEnumSelect
       });

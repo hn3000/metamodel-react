@@ -133,7 +133,7 @@ export interface ISectionLookup {
 }
 
 export interface IComponentMatchFun {
-    (type: IModelType<any>, fieldName:string, flavor:string, ...matchArgs: any[]): number;
+    (type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchArgs: any[]): number;
 }
 export interface IComponentMatcher<C, W> {
     matchQuality(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): number;
@@ -144,13 +144,26 @@ export interface IInputComponentMatcher extends IComponentMatcher<IInputComponen
     condition?: (formContext: IFormContext) => boolean;
 }
 export interface IComponentFinder {
-    findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, ...matchargs: any[]): IInputComponentMatcher;
+    /** 
+     * Finds an IComponentMatcher for a field with the given type, 
+     * name and flavor. Other arguments may be used by matchers, 
+     * if specified.
+     * 
+     * The list of components is evaluated using IComponentMatcher.matchQuality,
+     * the best match is returned. If several components match equally well,
+     * the component that was added last is returned.
+     */
+    findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchargs: any[]): IInputComponentMatcher;
     findSection(name:string): ISectionWrapper;
+
+
+
 }
 
 export interface IComponentFinderBuilder {
     add(matcher: IInputComponentMatcher): any;
     remove(matcher: IInputComponentMatcher): any;
+ 
     addSection(name: string, component: ISectionWrapper): void;
     removeSection(name: string, component: ISectionWrapper): void;
     setSectionDefault(component: ISectionWrapper): void;

@@ -78,23 +78,23 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
   }
 
   render() {
-    let context = this.formContext;
-    var fieldName = this.props.field;
-    var fieldType = context.viewmodel.getFieldType(fieldName);
-
+    const context = this.formContext;
+    const fieldName = this.props.field;
+    const fieldContainerType = context.viewmodel.getFieldContainerType(fieldName);
+    const fieldType = context.viewmodel.getFieldType(fieldName);
     if (!fieldType) {
       console.log(`field ${fieldName} not found in ${context.metamodel.name}`);
       return null;
     }
 
     const hasChildren = 0 < React.Children.count(this.props.children);
-    let flavor = this.props.flavor || this.props.flavour;
+    let flavor = this.props.flavor || this.props.flavour || fieldType.propGet('flavour');
 
     let Input:InputComponent = null;
     let Wrapper = context.config.wrappers.field;
 
     if (!hasChildren) {
-      let matcher = context.config.findBestMatcher(fieldType, fieldName, flavor);
+      let matcher = context.config.findBestMatcher(fieldType, fieldName, flavor, fieldContainerType);
       if (null != matcher && matcher.condition) {
         if (!matcher.condition(context)) {
           matcher = null;
@@ -139,6 +139,7 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
 
     let props:IInputComponentProps = {
       id: formid+'#'+this.props.field,
+      flavor, flavour: flavor,
       field: this.props.field,
       fieldType: fieldType,
       editable: isEditable,

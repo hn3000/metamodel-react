@@ -60,8 +60,12 @@ export class MetaSection extends MetaContextAware<ISectionProps, any> {
     let errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
     let hasErrors = errors.length > 0;
 
-    let wrapperProps = {
-      id: context.metamodel,
+    const metamodel = context.metamodel;
+    const schema = metamodel.propGet('schema');
+    const modelId = (schema && schema.modelId) || metamodel.name;
+
+  let wrapperProps = {
+      id: modelId,
       section,
       sectionAlias,
       busy: context.isBusy(),

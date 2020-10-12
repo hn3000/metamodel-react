@@ -114,7 +114,9 @@ export class MetaInput extends MetaContextFollower<IInputProps, any> {
       Wrapper = this.props.wrapper;
     }
 
-    let formid = this.formContext.metamodel.name;
+    const metamodel = this.formContext.metamodel;
+    const schema = metamodel.propGet('schema');
+    const formid = (schema && schema.modelId) || metamodel.name;
 
     //let theValue = (undefined !== this.state.fieldValue) ? this.state.fieldValue : '';
     let viewmodel = context.viewmodel;

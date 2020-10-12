@@ -68,8 +68,12 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
       const messages = context.viewmodel.getStatusMessages();
       const errors = messages.filter(x => x.severity == MessageSeverity.ERROR && 'property' in x) as IPropertyStatusMessage[];
   
+      const metamodel = context.metamodel;
+      const schema = metamodel.propGet('schema');
+      const modelId = (schema && schema.modelId) || metamodel.name;
+
       const wrapperProps = {
-        id: context.metamodel,
+        id: modelId,
         pageAlias: context.currentPageAlias,
         busy: context.isBusy(),
         context,

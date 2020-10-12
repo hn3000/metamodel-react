@@ -15,7 +15,7 @@
   "repository": "git@github.com:hn3000/metamodel-react",
   "dependencies": {
     "@hn3000/json-ref": "^1.0.1",
-    "@hn3000/metamodel": "^1.7.1"
+    "@hn3000/metamodel": "^1.8.2"
   },
   "devDependencies": {
     "@types/prop-types": "^15.7.1",
@@ -26,8 +26,8 @@
     "react-dom": "^16.8.6",
     "react-is": "^16.8.6",
     "systemjs": "^0.21.6",
-    "typescript": "^3.5.1",
     "tslint": "^5.17.0",
+    "typescript": "^3.9.7",
     "whatwg-fetch": "^2.0.4"
   },
   "peerDependencies": {

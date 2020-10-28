@@ -236,14 +236,14 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     const lnfy = this._lastNotified;
     if (
       !lnfy
-      || (lnfy.busy !== (this._promises && 0 !== this._promises.length))
+      || (lnfy.busy !== (this.isBusy()))
       || (lnfy.viewmodel != this._viewmodel)
       || (lnfy.conclusion != this._conclusion)
     ) {
       this._lastNotified = {
         viewmodel: this._viewmodel,
         conclusion: this._conclusion,
-        busy: this._promises && 0 !== this._promises.length
+        busy: this.isBusy()
       };
       this._notifyAll();
     } else {

@@ -163,21 +163,33 @@ function fetchFormData() {
   });
 }
 
-function validateFormData(context:IFormContext) {
+/**
+ * Perform some fake "validation" to show how a server-side validation
+ * could be hooked into the form. This function can be fully async, simulated
+ * with the `delayValue` function here (see above).
+ * @param context 
+ * @param direction of transition, use to skip validation on back
+ */
+async function pageTransitionHandler(context:IFormContext, direction: number) {
+  if (direction < 0) {
+    return []; // no validation messages: no validation on stepping backwards
+  }
+
   let viewmodel = context.viewmodel;
-  let page = viewmodel.getPage(null);  
   let data = viewmodel.getModel();
   var messages: IPropertyStatusMessage[] = [];
 
   if (null != data.username) {
     if (0 === data.username.indexOf('hn30')) {
       messages = [ { property: 'username', msg:'username is already taken', code:'username-taken', severity: MessageSeverity.ERROR } ];
-  
+    }
+    if (0 === data.username.indexOf('hn30') || 0 === data.username.indexOf('slow')) {
       return delayValue(messages, 500*parseInt(data.username.substr(4)));
     }
   }
-
-  return delayValue(messages, 100);
+  const delayMS = 100*(10*Math.random());
+  console.debug(`delaying messages for ${delayMS}`);
+  return delayValue(messages, delayMS);
 }
 
 export function run() {
@@ -194,7 +206,7 @@ export function run() {
     config.usePageIndex = true;
     config.validateOnUpdate = true;
     config.onFormInit = fetchFormData;
-    config.onPageTransition = validateFormData;
+    config.onPageTransition = pageTransitionHandler;
     config.onAfterPageTransition = (ctx) => { console.log('after transition', ctx); }
     config.onFailedPageTransition = (ctx) => { console.log('failed transition', ctx); }
     config.validateDebounceMS = 100;

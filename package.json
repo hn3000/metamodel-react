@@ -15,7 +15,7 @@
   "repository": "git@github.com:hn3000/metamodel-react",
   "dependencies": {
     "@hn3000/json-ref": "^1.0.1",
-    "@hn3000/metamodel": "^1.8.2"
+    "@hn3000/metamodel": "^1.8.4"
   },
   "devDependencies": {
     "@types/prop-types": "^15.7.1",

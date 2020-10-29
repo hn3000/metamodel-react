@@ -352,7 +352,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   }
 
   public isBusy() {
-    return this._promises.length > 0 && Date.now() > this._promisesBusyTime;
+    return this._promises.length > 0 && this._afterBusyDelay;
   }
 
   private _promiseInFlight(promise: Promise<any>) {
@@ -364,9 +364,10 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       promise.then(remove,removeX);
       if (this._promises.length == 1) {
         let delay = this._config.busyDelayMS;
-        this._promisesBusyTime = Date.now() + delay;
+        this._afterBusyDelay = false;
         this._promisesTimeout = window.setTimeout(() => {
           this._promisesTimeout = null;
+          this._afterBusyDelay = true;
           this._maybeNotifyAll();
         }, delay);
       }
@@ -393,7 +394,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   private _viewmodel: IModelView<any>;            //</any>
 
   private _promises: Promise<any>[]; // </any>
-  private _promisesBusyTime:number;
+  private _afterBusyDelay:boolean;
   private _promisesTimeout:number;
 
   private _conclusion:IConclusionMessage;

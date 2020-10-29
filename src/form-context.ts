@@ -221,7 +221,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   private _debounceValidationTimeout: number;
 
   _updateViewModel(viewmodel:IModelView<any>) {
-    if (this._viewmodel.currentPageIndex > viewmodel.currentPageIndex) {
+    if (false && this._viewmodel.currentPageIndex > viewmodel.currentPageIndex) {
       try {
         throw new Error('stacktrace for debugging');
       } catch (xx) {
@@ -247,7 +247,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
       };
       this._notifyAll();
     } else {
-      if (console.debug) {
+      if (false && console.debug) {
         try {
           throw new Error();
         } catch (xx) {

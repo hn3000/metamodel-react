@@ -32,8 +32,8 @@ export interface IPageProps extends IMetaFormBaseProps {
 export interface ISectionProps extends IMetaFormBaseProps {
     sectionAlias?: string;
     section?: IModelViewPage;
-    contents?: React.ReactType<ISectionWrapperProps>;
-    contentsDefault?: React.ReactType<ISectionWrapperProps>;
+    contents?: React.ComponentType<ISectionWrapperProps>;
+    contentsDefault?: React.ComponentType<ISectionWrapperProps>;
 }
 
 export interface IInputChangeHandler {

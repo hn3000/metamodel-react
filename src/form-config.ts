@@ -303,7 +303,7 @@ export class MetaFormConfig implements IFormConfig {
     this._components = this._components.filter((x) => x != cm);
   }
 
-  addSection(name: string, section: ISectionRenderer, wrapper: ISectionWrapper): void {
+  addSection(name: string, section: ISectionRenderer, wrapper?: ISectionWrapper): void {
     this._sections[name] = { section, wrapper };
   }
   removeSection(name: string): void {

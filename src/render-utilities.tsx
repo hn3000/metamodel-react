@@ -1,15 +1,15 @@
 
 import * as React from 'react';
 
-function emptyRenderer(): null {
+function EmptyRenderer(): JSX.Element {
   return null;
 }
 
-function bareRenderer(props: {children: React.ReactChildren}): React.ReactElement<any> {
+function BareRenderer(props: {children: React.ReactChildren}): JSX.Element {
   return <>{props.children}</>;
 }
 
 export var renderUtilities = {
-  EMPTY: emptyRenderer,
-  BARE: bareRenderer
+  EMPTY: EmptyRenderer,
+  BARE: BareRenderer
 };

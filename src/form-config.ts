@@ -14,10 +14,13 @@ import {
   IFormContext,
   InputComponent,
   IModelUpdater,
-  ISectionProps,
-  ISectionWrapperProps,
   ISectionLookup,
-  ISectionWrapper
+  ISectionWrapper,
+  ISectionComponents,
+  ISectionRenderer,
+  IPageLookup,
+  IInputPageRenderer,
+  IInputPageWrapper
 } from './api';
 
 import * as fields from './default-field-types';
@@ -219,12 +222,33 @@ export class MatchQ {
   }
 }
 
+interface ISectionLookupInternal {
+  [name: string]: ISectionComponents;
+}
+
+
 export class MetaFormConfig implements IFormConfig {
 
-  constructor(wrappers?:IWrappers, components?:IComponentMatcher[], sections?: ISectionLookup) {
+  constructor(
+    wrappers?:IWrappers, 
+    components?:IComponentMatcher[], 
+    sections: ISectionLookup = {},
+    pages: IPageLookup = {},
+  ) {
     this._wrappers = wrappers || MetaFormConfig.defaultWrappers();
     this._components = components || MetaFormConfig.defaultComponents();
-    this._sections = sections || {};
+
+    this._sections = {};
+    Object.keys(sections).forEach(k => {
+      const thisOne = sections[k];
+      if ('section' in thisOne) {
+        this._sections[k] = thisOne;
+      } else {
+        this._sections[k] = { section: thisOne, wrapper: undefined };
+      }
+    });
+
+    this._pages = { ...pages};
   }
 
   setWrappers(wrappers:IWrappers) {
@@ -279,8 +303,8 @@ export class MetaFormConfig implements IFormConfig {
     this._components = this._components.filter((x) => x != cm);
   }
 
-  addSection(name: string, component: ISectionWrapper): void {
-    this._sections[name] = component;
+  addSection(name: string, section: ISectionRenderer, wrapper: ISectionWrapper): void {
+    this._sections[name] = { section, wrapper };
   }
   removeSection(name: string): void {
     delete this._sections[name];
@@ -288,10 +312,40 @@ export class MetaFormConfig implements IFormConfig {
   setSectionDefault(component: ISectionWrapper): void {
     this._sectionDefault = null;
   }
-  findSection(name:string): ISectionWrapper {
-    let result = this._sections[name];
+  findSection(name:string): ISectionRenderer {
+    let result: ISectionRenderer = (this._sections[name])?.section;
     if (null == result) {
       result = this._sectionDefault;
+    }
+    return result;
+  }
+
+  findSectionWrapper(name:string): ISectionRenderer {
+    let result: ISectionRenderer = (this._sections[name])?.wrapper;
+    if (null == result) {
+      result = this._wrappers.section;
+    }
+    return result;
+  }
+
+  addPage(name: string, page: IInputPageRenderer, wrapper: IInputPageWrapper): void {
+    this._pages[name] = { page, wrapper };
+  }
+  removePage(name: string): void {
+    delete this._sections[name];
+  }
+  findPage(name:string): IInputPageRenderer {
+    let result: IInputPageRenderer = (this._pages[name])?.page;
+    // if (null == result) {
+    //   result = this._sectionDefault;
+    // }
+    return result;
+  }
+
+  findPageWrapper(name:string): IInputPageRenderer {
+    let result: IInputPageRenderer = (this._pages[name])?.wrapper;
+    if (null == result) {
+      result = this._wrappers.page;
     }
     return result;
   }
@@ -313,10 +367,9 @@ export class MetaFormConfig implements IFormConfig {
 
   private _wrappers:IWrappers;
 
-  private _sections: {
-    [name: string]: ISectionWrapper
-  };
-  private _sectionDefault: ISectionWrapper;
+  private _pages: IPageLookup;
+  private _sections: ISectionLookupInternal;
+  private _sectionDefault: ISectionRenderer;
   private _components: IComponentMatcher[];
 
   public static defaultWrappers():IWrappers {

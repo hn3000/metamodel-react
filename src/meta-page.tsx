@@ -62,7 +62,10 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
     )
 
     if (isCurrentPage) {
-      const Wrapper = context.config.wrappers.page;
+      const pageAlias = context.currentPageAlias;
+      const Wrapper = context.config.findPageWrapper(pageAlias);
+      const Page = context.config.findPage(pageAlias);
+
       //console.log(`rendering page ${this.props.page}`);
       const hasErrors = !context.isValid();
       const messages = context.viewmodel.getStatusMessages();
@@ -74,7 +77,7 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
 
       const wrapperProps = {
         id: modelId,
-        pageAlias: context.currentPageAlias,
+        pageAlias,
         busy: context.isBusy(),
         context,
         hasErrors,
@@ -82,8 +85,13 @@ export class MetaPage extends MetaContextFollower<IPageProps, any> {
         errors
       }
 
-      if (null == contents) {
+      if (null == contents && null == Page) {
         return <Wrapper {...wrapperProps}>{this.props.children}</Wrapper>;
+      } else if (null != Page) {
+        if (0 != React.Children.count(this.props.children) || null != contents) {
+          console.log(`warning: MetaPage ignores children and contents (${this.props.contents}) if a page is configured (${pageAlias})`);
+        }
+        return <Wrapper {...wrapperProps}><Page {...wrapperProps}/></Wrapper>;
       } else {
         if (0 != React.Children.count(this.props.children)) {
           console.log(`warning: MetaPage ignores children if contents (${this.props.contents}) is specified`);

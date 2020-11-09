@@ -25,8 +25,6 @@ export class MetaSection extends MetaContextAware<ISectionProps, any> {
 
     let config = context.config;
     
-    let Wrapper = config.wrappers.section;
-
     if (null == sectionAlias) {
       if (null != section) {
         sectionAlias = section.alias;
@@ -40,13 +38,15 @@ export class MetaSection extends MetaContextAware<ISectionProps, any> {
         console.warn(`MetaSection got both section and sectionAlias but they don't match: ${section.alias} != ${sectionAlias}`);
       }
     }
-    
+
     if (null == contents) {
       contents = config.findSection(sectionAlias);
       if (null == contents) {
         contents = contentsDefault;
       }
     } 
+
+    const Wrapper = config.findSectionWrapper(sectionAlias);
 
     //console.log(`rendering page ${this.props.page}`);
     let messages = context.viewmodel.getStatusMessages();

@@ -78,6 +78,9 @@ export interface ISectionWrapperProps extends IWrapperComponentProps {
 export type ISectionWrapper = React.ComponentType<ISectionWrapperProps>
                             | React.ComponentType<any>;
 
+// just an alias, to better communicate intent:
+export type ISectionRenderer = ISectionWrapper;
+
 export interface ILabelRendererProps {
     children?: React.ReactNode;
 
@@ -117,6 +120,7 @@ export type InputComponent = IInputComponent;
 
 export type IInputFormWrapper = React.ComponentType<IFormWrapperProps>;
 export type IInputPageWrapper = React.ComponentType<IPageWrapperProps>;
+export type IInputPageRenderer = IInputPageWrapper;
 export type IInputFieldWrapper = React.ComponentType<IFieldWrapperProps>;
 
 
@@ -132,10 +136,23 @@ export interface IWrappers extends IComponentLookup {
     section: ISectionWrapper;
 }
 
-export interface ISectionLookup {
-    [name: string]: ISectionWrapper;
+export interface ISectionComponents {
+    section: ISectionRenderer;
+    wrapper: ISectionWrapper;
 }
 
+export interface IPageComponents {
+    page: IInputPageRenderer;
+    wrapper: IInputPageWrapper;
+}
+
+export interface ISectionLookup {
+    [name: string]: ISectionRenderer | ISectionComponents;
+}
+
+export interface IPageLookup {
+    [name: string]: IPageComponents;
+}
 export interface IComponentMatchFun {
     (type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchArgs: any[]): number;
 }
@@ -169,10 +186,17 @@ export interface IComponentFinder {
     findBestMatcher(type: IModelType<any>, fieldName:string, flavor:string, container: IModelTypeComposite, ...matchargs: any[]): IComponentMatcher;
     add(matcher: IComponentMatcher): any;
     remove(matcher: IComponentMatcher): any;
-    addSection(name: string, component: ISectionWrapper): void;
-    removeSection(name: string, component: ISectionWrapper): void;
-    setSectionDefault(component: ISectionWrapper): void;
-    findSection(name:string): ISectionWrapper;
+
+    addSection(name: string, component: ISectionRenderer, wrapper?: ISectionWrapper): void;
+    removeSection(name: string): void;
+    setSectionDefault(component: ISectionRenderer): void;
+    findSection(name:string): ISectionRenderer;
+    findSectionWrapper(name:string): ISectionWrapper;
+
+    addPage(name: string, component: IInputPageRenderer, wrapper?: IInputPageWrapper): void;
+    removePage(name: string): void;
+    findPage(name:string): IInputPageRenderer;
+    findPageWrapper(name:string): IInputPageWrapper;
 }
 
 export interface IModelUpdater {

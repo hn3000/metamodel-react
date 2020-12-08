@@ -158,7 +158,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
   /*
    * similar to redux: returns the unsubscribe function
    * listeners always called asynchronously: validation runs before
-   * listeners are notfied
+   * listeners are notified
    */
   subscribe(listener:()=>any):()=>void {
     return this._listeners.subscribe(listener);

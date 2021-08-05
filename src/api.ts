@@ -32,6 +32,7 @@ export interface IPageProps extends IMetaFormBaseProps {
 export interface ISectionProps extends IMetaFormBaseProps {
     sectionAlias?: string;
     section?: IModelViewPage;
+    wrapper?: React.ComponentType<ISectionWrapperProps>;
     contents?: React.ComponentType<ISectionWrapperProps>;
     contentsDefault?: React.ComponentType<ISectionWrapperProps>;
 }
@@ -189,7 +190,6 @@ export interface IComponentFinder {
 
     addSection(name: string, component: ISectionRenderer, wrapper?: ISectionWrapper): void;
     removeSection(name: string): void;
-    setSectionDefault(component: ISectionRenderer): void;
     findSection(name:string): ISectionRenderer;
     findSectionWrapper(name:string): ISectionWrapper;
 

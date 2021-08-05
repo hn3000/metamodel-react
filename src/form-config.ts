@@ -247,7 +247,6 @@ export class MetaFormConfig implements IFormConfig {
         this._sections[k] = { section: thisOne, wrapper: undefined };
       }
     });
-
     this._pages = { ...pages};
   }
 
@@ -309,14 +308,8 @@ export class MetaFormConfig implements IFormConfig {
   removeSection(name: string): void {
     delete this._sections[name];
   }
-  setSectionDefault(component: ISectionWrapper): void {
-    this._sectionDefault = null;
-  }
   findSection(name:string): ISectionRenderer {
     let result: ISectionRenderer = (this._sections[name])?.section;
-    if (null == result) {
-      result = this._sectionDefault;
-    }
     return result;
   }
 

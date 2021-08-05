@@ -21,7 +21,7 @@ export class MetaSection extends MetaContextAware<ISectionProps, any> {
   render() {
     let context = this.formContext;
 
-    let { section, sectionAlias, contents, contentsDefault } = this.props;
+    let { section, sectionAlias, contents, contentsDefault, wrapper: Wrapper } = this.props;
 
     let config = context.config;
     
@@ -46,7 +46,9 @@ export class MetaSection extends MetaContextAware<ISectionProps, any> {
       }
     } 
 
-    const Wrapper = config.findSectionWrapper(sectionAlias);
+    if (null == Wrapper) {
+      Wrapper = config.findSectionWrapper(sectionAlias);
+    }
 
     //console.log(`rendering page ${this.props.page}`);
     let messages = context.viewmodel.getStatusMessages();

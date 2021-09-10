@@ -116,8 +116,14 @@ export class MatchQ {
       return 0;
     };
   }
-  static flavour(flavor:string, quality: number = 1):matchQFun {
-    return MatchQ.flavor(flavor, quality);
+  /**
+   * Matches by flavour. Flavour can be given as a prop on the MetaInput or in the schema 
+   * (where amer. spelling flavor and x- prefix are also accepted).
+   * By default, a match is worth one point, the quality argument can be used to
+   * change the value of a match. 
+   */
+   static flavour(flavour:string, quality: number = 1):matchQFun {
+    return MatchQ.flavor(flavour, quality);
   }
     /** 
    * Matches by format, shorthand for .likeObject({format:'<format>'}).

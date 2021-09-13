@@ -1,6 +1,6 @@
 {
   "name": "@hn3000/metamodel-react",
-  "version": "1.10.3",
+  "version": "1.10.4",
   "description": "react components for metamodel rendering",
   "main": "out/src/metamodel-react.js",
   "typings": "out/src/metamodel-react.d.ts",
@@ -32,7 +32,7 @@
   },
   "peerDependencies": {
     "prop-types": "^15.7.2",
-    "react": "^16.8.0,^17.0.0",
+    "react": ">=16.8.0",
     "react-dom": ">=16.8.0",
     "react-is": ">=16.8.0"
   }

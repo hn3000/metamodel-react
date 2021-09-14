@@ -360,7 +360,7 @@ export class MetaFormContext extends ClientProps implements IFormContext, IClien
     if (-1 == index) {
       this._promises.push(promise);
       let remove = (x:any) => (this._promiseResolved(promise),x);
-      let removeX = (x:any) => (console.log('promise unhandled exception', x), remove(x));
+      let removeX = (x:any) => (console.warn('promise unhandled exception', x, x.stacktrace), remove(x));
       promise.then(remove,removeX);
       if (this._promises.length == 1) {
         let delay = this._config.busyDelayMS;

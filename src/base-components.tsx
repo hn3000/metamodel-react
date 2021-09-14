@@ -111,8 +111,11 @@ export abstract class MetaContextFollower<
   }
 
   componentWillUnmount() {
-    this._unsubscribe && this._unsubscribe();
-    this._unsubscribe = null;
+    const unsub = this._unsubscribe;
+    if (null != unsub) {
+      this._unsubscribe = null;
+      unsub();
+    }
   }
 
   private _unsubscribe:()=>void;

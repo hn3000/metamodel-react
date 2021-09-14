@@ -373,10 +373,14 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
   render() {
     let props = this.props;
     let state = this.state;
-    return <div>
-      <input type="file" onChange={this.handleFile} defaultValue={this.props.defaultValue.file}></input>
-      { state.dataurl && <img src={state.dataurl} height="50" /> }
-      { state.error && <span className="error">{state.dataurl}</span> }
+    return <div style={{border: '1px solid black', borderRadius: '3px', padding: 5, display: 'inline-block', position:'relative'}}>
+      <label>
+        {props.value?.name ? props.value?.name : 'drop file or click to select'}
+        <input type="file" onChange={this.handleFile} defaultValue={''} style={{position:'absolute',top:0,left:0,bottom:0,right:0, opacity:0}}></input>
+        <br/>
+        { state.dataurl && <img src={state.dataurl} height="50" /> }
+        { state.error && <span className="error">{state.dataurl}</span> }
+      </label>
     </div>;
   }
 }

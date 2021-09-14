@@ -339,8 +339,8 @@ export interface IFileInputState {
 export class MetaFormInputFile extends React.Component<IInputComponentProps, IFileInputState> {
   constructor(props:IInputComponentProps, reactContext:any) {
     super(props, reactContext);
-
-    this.state = { dataurl: null };
+    const { value } = props;
+    this.state = { dataurl: value?.dataurl };
     this.handleFile = this.handleFile.bind(this);
     this.handleContents = this.handleContents.bind(this);
     this.handleError = this.handleError.bind(this);
@@ -348,11 +348,26 @@ export class MetaFormInputFile extends React.Component<IInputComponentProps, IFi
 
   handleContents(evt:ProgressEvent) {
     //console.log('loaded: ', evt.target);
-    this.setState({ dataurl: ''+(evt.target as FileReader).result });
+    const dataurl = ''+(evt.target as FileReader).result;
+    const field = this.props.field;
+    const value = this.props.context.viewmodel.getFieldValue(field);
+    this.props.context.updateModel(field, {
+      file: value.file,
+      name: value.name,
+      dataurl,
+    });
+    this.setState({ dataurl });
   }
   handleError(reader: FileReader, evt:ProgressEvent) {
     console.log('error: ', evt);
     this.setState({ error: ''+reader.error, dataurl: null });
+    const field = this.props.field;
+    const value = this.props.context.viewmodel.getFieldValue(field);
+    this.props.context.updateModel(field, {
+      file: value.file,
+      name: value.name,
+      dataurl: null,
+    });
   }
 
   handleFile(evt:React.FormEvent<HTMLElement>) {
